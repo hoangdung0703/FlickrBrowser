@@ -1,0 +1,12 @@
+<resources>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_s">8dp</dimen>
+    <dimen name="spacing_m">12dp</dimen>
+    <dimen name="spacing_l">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+
+    <dimen name="radius_s">6dp</dimen>
+    <dimen name="radius_m">8dp</dimen>
+    <dimen name="elev_s">2dp</dimen>
+
+</resources>

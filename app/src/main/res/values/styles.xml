@@ -1,0 +1,17 @@
+<resources>
+    <style name="Text.Flickr.Title" parent="TextAppearance.Material3.TitleLarge"/>
+    <style name="Text.Flickr.Section" parent="TextAppearance.Material3.TitleMedium"/>
+    <style name="Text.Flickr.Body" parent="TextAppearance.Material3.BodyMedium"/>
+    <style name="Text.Flickr.Caption" parent="TextAppearance.Material3.BodySmall"/>
+
+
+    <style name="Widget.Flickr.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">@dimen/radius_m</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardElevation">@dimen/elev_s</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="strokeColor">@color/md_theme_outline</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+</resources>
