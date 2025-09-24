@@ -1,0 +1,62 @@
+Timeline chi tiết (12 ngày)
+A1: Béo – A2: Ivan – A3: Minh Hiếu  N1: Onip – N2: Tôm – N3: Trình - N4: Xuân Hiếu
+Ngày chỉ là tham khảo, thực chất làm 2 task 1 ngày (Tổng thời gian làm chỉ khoảng 8-10 ngày – cần hoàn thành trước 5/10 để chốt và kiểm lỗi). Sau khi hoàn thành 1 tính năng thì commit lại và đẩy lên nhánh riêng của mình. Tiếp đó được review chốt thì merge vào main.
+Ngày 1
+•	A1: Tạo project module API, thêm Retrofit/OkHttp, config RapidAPI key/host.
+•	A2: Tạo theme Material 3 light, định nghĩa color + typography.
+•	N2, N3, N4: Khởi tạo nhánh riêng, dựng layout cơ bản với mock data.
+•	N1: Tạo màn About + khung README.md.
+Ngày 2
+•	A1: Viết interface getRecent, search, log JSON → Logcat.
+•	A2: Làm card style (radius, elevation), chuẩn spacing dimens.
+•	N2: RecyclerView 2 cột + card adapter mock.
+•	N3: Layout Search bar + adapter reuse Explore.
+•	N4: Layout Detail screen + Toolbar + ImageView.
+•	N1: Thêm contentDescription cho ảnh + icon vector (Share, Open).
+Ngày 3
+•	A1: Map JSON → PhotoItem, chuẩn bị Result.Success/Error.
+•	A2: Tạo shimmer skeleton component.
+•	N2: Tích hợp shimmer khi load mock.
+•	N3: Thêm shimmer khi search mock.
+•	N4: Glide load ảnh mock vào Detail.
+Ngày 4
+•	A1: Test getRecent, bàn giao ApiClient + hướng dẫn gọi.
+•	N2: Gọi API thật (getRecent), hiển thị ảnh.
+•	A2: Tạo EmptyView component (icon + text).
+•	N3: Gọi API search, hiển thị kết quả (hoặc empty).
+•	N4: Nhận PhotoItem từ N2 → mở Detail, hiển thị mock URL.
+Ngày 5
+•	N2: Hoàn thiện Explore (refresh + empty).
+•	N3: Hoàn thiện Search (IME action + empty).
+•	N4: Bổ sung Back navigation, kết nối với N1.
+•	A2: Review PR N2/N3 → fix spacing/card/shimmer.
+Ngày 6
+•	N1: Implement Share (ACTION_SEND).
+•	N4: Gắn Share button vào Detail, truyền URL.
+•	A3: Tạo nhánh Favorites, layout grid 2 cột + EmptyView.
+•	A2: Làm Toolbar chuẩn (Back + action slot).
+Ngày 7
+•	N1: Implement Open (ACTION_VIEW).
+•	N4: Gắn Open button vào Detail.
+•	A3: Thêm nút ♥ ở card Explore/Search (toggle UI).
+•	N2/N3: Chỉnh UI đồng bộ spacing, polish shimmer.
+Ngày 8
+•	N1: Viết helper check mạng → toast khi mất mạng.
+•	N2/N3: Test toast lỗi mạng khi gọi API.
+•	A3: Lưu danh sách yêu thích tạm (Singleton/ViewModel).
+•	A2: Review toàn bộ UI consistency (card, spacing, shimmer).
+Ngày 9
+•	Cả team: Tích hợp toàn bộ flow Explore → Detail → Share/Open.
+•	A3: Hiển thị danh sách Favorites.
+•	N1: Thêm ảnh/GIF minh họa vào README.
+Ngày 10
+•	Cả team: Test mất mạng, null URL, empty result.
+•	Fix crash nhỏ, chỉnh toast + placeholder.
+Ngày 11
+•	Polish cuối: spacing, icons, text description.
+•	N1: Update README đầy đủ (API key, run app, screenshot).
+•	A2: Check accessibility cơ bản (contentDescription, tap area).
+Ngày 12
+•	A3: Test Favorites end-to-end.
+•	Cả team: Build APK demo, tag v0.1.
+•	Gửi bản demo + tài liệu.
