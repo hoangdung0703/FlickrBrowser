@@ -1,30 +1,31 @@
 # FlickrBrowser – Android Project
 
-Dự án môn học: Flickr Image Browser (Android, Java).
+Course project: Flickr Image Browser (Android, Java).
 
 ---
 
-## 📂 Tài liệu nhóm
+## 📂 Team Documentation
 
 ### 1. Git Workflow
-👉 [Hướng dẫn làm việc với Git cho nhóm 7 người](https://github.com/hoangdung0703/FlickrBrowser/blob/main/docs/guideline/GIT_Workflow_Team_Guide.md)  
-Giải thích chi tiết từ clone repo → tạo nhánh riêng → commit/push → pull request → xử lý conflict → khôi phục khi lỡ tay.
+👉 [Git workflow guide for 7-member team](https://github.com/hoangdung0703/FlickrBrowser/blob/main/docs/guideline/GIT_Workflow_Team_Guide.md)  
+Detailed instructions: clone repo → create your own branch → commit/push → pull request → conflict resolution → recovery when mistakes happen.
 
 ### 2. UI Guideline
-👉 [UI Guideline – Tuần 1](docs/guideline/UI_Guideline_Week1.md)  
-Định nghĩa màu thương hiệu, typography, spacing, card style để team dùng chung, tránh hardcode.
+👉 [UI Guideline – Week 1](docs/guideline/UI_Guideline_Week1.md)  
+Defines brand colors, typography, spacing, card style for team-wide consistency, avoiding hardcode.
 
-### Còn update sau
+### More docs coming soon
 ---
 
-## 🚀 Quy trình làm việc cơ bản
+## 🚀 Basic Workflow
 
-1. Clone repo:  
+1. Clone the repo:  
    ```bash
    git clone https://github.com/hoangdung0703/FlickrBrowser.git
-2. Tạo nhánh riêng:
+
+2. Create your own branch:
    git checkout -b feature/<tên-nhiệm-vụ>
-3. Commit + push code.
-4. Tạo Pull Request → chờ lead review & merge vào main.
-5. Tất cả cập nhật main bằng:
+3. Commit + push your code.
+4. Open a Pull Request → wait for lead review & merge into main.
+5. Everyone update their main branch:
    git pull origin main
