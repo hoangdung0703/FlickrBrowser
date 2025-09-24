@@ -14,6 +14,8 @@ Detailed instructions: clone repo → create your own branch → commit/push →
 👉 [UI Guideline – Week 1](docs/guideline/UI_Guideline_Week1.md)  
 Defines brand colors, typography, spacing, card style for team-wide consistency, avoiding hardcode.
 
+### 3. Timeline
+👉 [Timeline](https://github.com/hoangdung0703/FlickrBrowser/blob/main/docs/guideline/Timeline)
 ### More docs coming soon
 ---
 
