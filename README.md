@@ -7,7 +7,7 @@ Dự án môn học: Flickr Image Browser (Android, Java).
 ## 📂 Tài liệu nhóm
 
 ### 1. Git Workflow
-👉 [Hướng dẫn làm việc với Git cho nhóm 7 người](docs/guideline/GIT_Workflow_Team_Guide_vi.md)  
+👉 [Hướng dẫn làm việc với Git cho nhóm 7 người](https://github.com/hoangdung0703/FlickrBrowser/blob/main/docs/guideline/GIT_Workflow_Team_Guide.md)  
 Giải thích chi tiết từ clone repo → tạo nhánh riêng → commit/push → pull request → xử lý conflict → khôi phục khi lỡ tay.
 
 ### 2. UI Guideline
