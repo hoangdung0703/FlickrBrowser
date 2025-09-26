@@ -14,4 +14,27 @@
         <item name="strokeWidth">0dp</item>
     </style>
 
+
+    <!-- ShapeAppearance chung cho card -->
+    <style name="ShapeAppearance.App.Card" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/radius_m</item>
+    </style>
+
+    <!-- Style nền tảng cho Card -->
+    <style name="Widget.App.Card" parent="Widget.Material3.CardView.Filled">
+        <!-- Màu & viền -->
+        <item name="cardBackgroundColor">@color/colorSurface</item>
+        <item name="strokeColor">@color/outline</item>
+        <item name="strokeWidth">@dimen/card_stroke</item>
+
+        <!-- Bóng & shape -->
+        <item name="cardElevation">@dimen/elev_s</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Card</item>
+
+        <!-- Padding bên trong (nếu card có text/icon) -->
+        <item name="contentPadding">@dimen/spacing_s</item>
+
+
+    </style>
 </resources>
