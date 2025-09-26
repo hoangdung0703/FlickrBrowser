@@ -1,62 +1,68 @@
 Timeline chi tiết (12 ngày)
 A1: Béo – A2: Ivan – A3: Minh Hiếu  N1: Onip – N2: Tôm – N3: Trình - N4: Xuân Hiếu
-Ngày chỉ là tham khảo, thực chất làm 2 task 1 ngày (Tổng thời gian làm chỉ khoảng 8-10 ngày – cần hoàn thành trước 5/10 để chốt và kiểm lỗi). Sau khi hoàn thành 1 tính năng thì commit lại và đẩy lên nhánh riêng của mình. Tiếp đó được review chốt thì merge vào main.
+Nguyên tắc giao việc: Mỗi người 2 đầu mục/ngày. Hoàn xong thì commit & push nhánh riêng, mở PR nhỏ, được review rồi hãy merge vào main.
 Ngày 1
-•	A1: Tạo project module API, thêm Retrofit/OkHttp, config RapidAPI key/host.
-•	A2: Tạo theme Material 3 light, định nghĩa color + typography.
-•	N2, N3, N4: Khởi tạo nhánh riêng, dựng layout cơ bản với mock data.
-•	N1: Tạo màn About + khung README.md.
+•	A1: Khởi tạo module API + Retrofit/OkHttp; cấu hình RapidAPI key/host qua BuildConfig/local.properties.
+•	A2: Thiết lập Theme Material 3 (light), color tokens, typography.
+•	2: Tạo nhánh feature/explore-grid; dựng RecyclerView 2 cột + card mock.
+•	3: Tạo nhánh feature/search; dựng layout Search (AppBar + TextInput) + grid mock.
+•	4: Tạo nhánh feature/detail; layout Toolbar + ImageView full; Glide load ảnh mock.
+•	1: Tạo nhánh feature/share; tạo màn About + khung README (A2 sẽ tiếp quản README chính).
+•	7 (A3): Tạo nhánh feature/favorites; layout grid 2 cột + EmptyView mock.
 Ngày 2
-•	A1: Viết interface getRecent, search, log JSON → Logcat.
-•	A2: Làm card style (radius, elevation), chuẩn spacing dimens.
-•	N2: RecyclerView 2 cột + card adapter mock.
-•	N3: Layout Search bar + adapter reuse Explore.
-•	N4: Layout Detail screen + Toolbar + ImageView.
-•	N1: Thêm contentDescription cho ảnh + icon vector (Share, Open).
+•	A1: Viết interface FlickrApi: getRecent(page=1), search(q,page=1); log JSON → Logcat.
+•	A2: Tạo style card (radius 12–16dp, elevation nhẹ) + spacing dimens (4/8/12/16/24dp).
+•	2: Áp dụng card style + spacing; thêm ShimmerSkeleton (tạm dùng placeholder).
+•	3: Reuse card adapter từ Explore; thêm EmptyView khi chưa có kết quả.
+•	4: Nhận PhotoItem mock từ 2/3 (id, title?, imageUrl) → hiển thị ảnh mock.
+•	1: Thêm contentDescription cho ảnh & nút Back/Share/Open.
+•	7 (A3): Thêm nút ‘♥’ toggle UI trên card mock.
 Ngày 3
-•	A1: Map JSON → PhotoItem, chuẩn bị Result.Success/Error.
-•	A2: Tạo shimmer skeleton component.
-•	N2: Tích hợp shimmer khi load mock.
-•	N3: Thêm shimmer khi search mock.
-•	N4: Glide load ảnh mock vào Detail.
+•	A1: Map JSON → PhotoItem(id,title?,imageUrl); chuẩn hoá Result.Success/Error(message).
+•	A2: Cung cấp ShimmerSkeleton & EmptyView component dùng chung.
+•	2: Tích hợp ShimmerSkeleton khi load mock; EmptyView khi rỗng.
+•	3: Tích hợp ShimmerSkeleton khi search mock; EmptyView khi rỗng.
+•	4: Hoàn chỉnh Glide placeholder/error; xử lý imageUrl null → toast ‘Ảnh không hợp lệ’ + finish().
+•	1: Viết NetworkUtils.hasInternet(context) dùng ConnectivityManager (newbie friendly).
+•	7 (A3): Tạo danh sách favorites tạm (Singleton/ViewModel) – dữ liệu mock.
 Ngày 4
-•	A1: Test getRecent, bàn giao ApiClient + hướng dẫn gọi.
-•	N2: Gọi API thật (getRecent), hiển thị ảnh.
-•	A2: Tạo EmptyView component (icon + text).
-•	N3: Gọi API search, hiển thị kết quả (hoặc empty).
-•	N4: Nhận PhotoItem từ N2 → mở Detail, hiển thị mock URL.
+•	A1: Bàn giao ApiClient + hướng dẫn gọi (README mini cho dev).
+•	2: Gọi API thật getRecent(page=1) → hiển thị ảnh; trạng thái: Loading/Success/Empty/Error.
+•	3: Gọi API thật search(q) khi IME Action ‘Search’; trạng thái: Loading/Success/Empty/Error.
+•	4: Nhận PhotoItem thật từ 2/3 → hiển thị ảnh thật.
+•	A2: Tạo Toolbar chuẩn (Back + action slot) & review PR 2/3 (style, spacing).
 Ngày 5
-•	N2: Hoàn thiện Explore (refresh + empty).
-•	N3: Hoàn thiện Search (IME action + empty).
-•	N4: Bổ sung Back navigation, kết nối với N1.
-•	A2: Review PR N2/N3 → fix spacing/card/shimmer.
+•	2: Thêm Pull-to-Refresh (reload page=1); khi lỗi mạng/timeout → toast + dừng shimmer, không crash.
+•	3: Hoàn thiện flow Search: query rỗng → không gọi API (show EmptyView); lỗi mạng/timeout → toast + dừng shimmer.
+•	4: Gắn nút Back hoạt động; nhận hook Share/Open từ người 1 (chỉ truyền URL).
+•	1: Implement Share (ACTION_SEND, text/plain) & Open (ACTION_VIEW); trước khi gọi → check mạng, NO_NET → toast; URL rỗng → toast.
+•	A2: Viết README chính thức (setup API key/host, build/run, hành vi khi mất mạng); chuẩn hoá strings lỗi (‘Không có mạng’, ‘Hết thời gian chờ’).
 Ngày 6
-•	N1: Implement Share (ACTION_SEND).
-•	N4: Gắn Share button vào Detail, truyền URL.
-•	A3: Tạo nhánh Favorites, layout grid 2 cột + EmptyView.
-•	A2: Làm Toolbar chuẩn (Back + action slot).
+•	2: Polish Explore: spacing đồng nhất, scroll mượt; xử lý EmptyView rõ ràng.
+•	3: Polish Search: giữ UI đồng nhất Explore; kiểm tra nhiều keyword cơ bản.
+•	4: Kiểm tra flow Explore/Search → Detail với ảnh thật; onError của Glide → icon lỗi + toast.
+•	1: Bổ sung ảnh/GIF minh hoạ Share/Open vào README (gửi A2).
+•	7 (A3): Liên kết nút ‘♥’ từ Explore/Search → thêm vào danh sách favorites tạm (không DB).
+•	A2: Review toàn bộ UI sau khi nối API; fix lệch spacing/sai card nếu có.
 Ngày 7
-•	N1: Implement Open (ACTION_VIEW).
-•	N4: Gắn Open button vào Detail.
-•	A3: Thêm nút ♥ ở card Explore/Search (toggle UI).
-•	N2/N3: Chỉnh UI đồng bộ spacing, polish shimmer.
+•	2 & 3: Kiểm tra lỗi mạng thực tế (tắt Wi‑Fi/4G): Verify toast, shimmer dừng đúng lúc, không crash.
+•	4: Kiểm tra Detail với URL xấu/blank → toast + back; gắn action Share/Open đã hoàn thiện.
+•	1: Hoàn thiện NetworkUtils & các check nhỏ; dọn code Intent/Toast.
+•	7 (A3): Tạo tab/menu vào Favorites; hiển thị danh sách đã lưu; EmptyView khi trống.
+•	A1: Hỗ trợ team fix mapping lỗi nếu gặp (no_internet/timeout/http_error).
 Ngày 8
-•	N1: Viết helper check mạng → toast khi mất mạng.
-•	N2/N3: Test toast lỗi mạng khi gọi API.
-•	A3: Lưu danh sách yêu thích tạm (Singleton/ViewModel).
-•	A2: Review toàn bộ UI consistency (card, spacing, shimmer).
+•	2: Dọn code + tách nhỏ adapter/viewholder nếu cần; thêm comments hướng dẫn newbie.
+•	3: Dọn code + đảm bảo không gọi API khi query rỗng; test nhiều trường hợp nhập liệu.
+•	4: Dọn code + đảm bảo không rò rỉ (listener/context).
+•	1: Final test Share/Open: có mạng/mất mạng/URL rỗng.
+•	7 (A3): Test thêm/xoá khỏi Favorites; đảm bảo không phụ thuộc mạng.
+•	A2: Vòng review cuối về UI consistency (card, spacing, shimmer, empty).
 Ngày 9
-•	Cả team: Tích hợp toàn bộ flow Explore → Detail → Share/Open.
-•	A3: Hiển thị danh sách Favorites.
-•	N1: Thêm ảnh/GIF minh họa vào README.
-Ngày 10
-•	Cả team: Test mất mạng, null URL, empty result.
-•	Fix crash nhỏ, chỉnh toast + placeholder.
-Ngày 11
-•	Polish cuối: spacing, icons, text description.
-•	N1: Update README đầy đủ (API key, run app, screenshot).
-•	A2: Check accessibility cơ bản (contentDescription, tap area).
-Ngày 12
-•	A3: Test Favorites end-to-end.
-•	Cả team: Build APK demo, tag v0.1.
-•	Gửi bản demo + tài liệu.
+•	Cả team: Tích hợp toàn bộ flow End‑to‑End: Explore → Detail → Share/Open; Search → Detail → Share/Open; Favorites → Detail.
+•	Sửa lỗi nhỏ (toast message, placeholder, spacing).
+•	A2: Cập nhật README cuối (ảnh/GIF từ 1/2/3/4).
+•	A1: Kiểm tra timeout thực tế; chỉnh readTimeout nếu cần.
+Ngày 10 (buffer)
+•	Cả team: Chạy lại tất cả kịch bản (mạng tắt/bật, query rỗng, URL hỏng).
+•	Đóng PR còn lại; merge vào main; build APK demo, gắn tag v0.1.
+•	Chuẩn bị slide/demo ngắn (tuỳ nhóm).
