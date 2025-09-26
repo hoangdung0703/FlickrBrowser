@@ -9,6 +9,9 @@ import vn.edu.usth.flickrbrowser.BuildConfig;
 
 public class ApiClient {
     private static Retrofit retrofit;
+    public static Retrofit get() {
+        return getClient();
+    }
 
     public static Retrofit getClient() {
         if (retrofit != null) return retrofit;
@@ -36,3 +39,4 @@ public class ApiClient {
         return retrofit;
     }
 }
+
