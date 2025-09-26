@@ -19,4 +19,8 @@
     <color name="md_text_secondary">#4B5563</color>
     <color name="md_scrim">#80000000</color> <!-- 50% -->
 
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnSurface">#1A1A1A</color>
+    <color name="outline">#E0E0E0</color> <!-- viền mảnh -->
+
 </resources>
