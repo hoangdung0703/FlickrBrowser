@@ -7,6 +7,12 @@
 
     <dimen name="radius_s">6dp</dimen>
     <dimen name="radius_m">8dp</dimen>
+    <dimen name="radius_l">12dp</dimen>
+
     <dimen name="elev_s">2dp</dimen>
+    <dimen name="elev_m">4dp</dimen>
+
+    <!-- Tạo đường viền nhạt bao quanh -->
+    <dimen name="card_stroke">1dp</dimen>
 
 </resources>
