@@ -11,7 +11,7 @@ public class FlickrRepo {
         api().getRecent(p).enqueue(new Callback<ResponseBody>(){
             @Override public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r){
                 try{ String body = r.body()!=null? r.body().string(): (r.errorBody()!=null? r.errorBody().string(): "");
-                     if(r.isSuccessful()) cb.ok(body); else cb.err(new RuntimeException("HTTP "+r.code())); }
+                    if(r.isSuccessful()) cb.ok(body); else cb.err(new RuntimeException("HTTP "+r.code())); }
                 catch(Exception e){ cb.err(e); }
             }
             @Override public void onFailure(Call<ResponseBody> c, Throwable t){ cb.err(t); }
@@ -22,7 +22,7 @@ public class FlickrRepo {
         api().search(p).enqueue(new Callback<ResponseBody>(){
             @Override public void onResponse(Call<ResponseBody> c, Response<ResponseBody> r){
                 try{ String body = r.body()!=null? r.body().string(): (r.errorBody()!=null? r.errorBody().string(): "");
-                     if(r.isSuccessful()) cb.ok(body); else cb.err(new RuntimeException("HTTP "+r.code())); }
+                    if(r.isSuccessful()) cb.ok(body); else cb.err(new RuntimeException("HTTP "+r.code())); }
                 catch(Exception e){ cb.err(e); }
             }
             @Override public void onFailure(Call<ResponseBody> c, Throwable t){ cb.err(t); }
