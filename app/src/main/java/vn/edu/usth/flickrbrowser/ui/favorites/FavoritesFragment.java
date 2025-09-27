@@ -5,12 +5,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import vn.edu.usth.flickrbrowser.R;
 
@@ -33,10 +38,7 @@ public class FavoritesFragment extends Fragment {
         // 2-column grid
         rv.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
-        // (Day 1) no adapter yet — we just show EmptyView mock.
-        // If you already have a PhotoAdapter from Explore/Search, you can set it here.
-
-        // Optional: spacing between items (8–12dp)
+        //spacing
         final int space = getResources().getDimensionPixelSize(R.dimen.spacing_m);
         rv.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -46,9 +48,73 @@ public class FavoritesFragment extends Fragment {
             }
         });
 
-        // Day 1 requirement: force show EmptyView (mock)
-        empty.setVisibility(View.VISIBLE);
-        // When you wire real data later:
-        // empty.setVisibility(listIsEmpty ? View.VISIBLE : View.GONE);
+        //Mock list of items
+        List<String> mockList = generateMockList(20);
+
+        if (mockList.isEmpty()) {
+            empty.setVisibility(View.VISIBLE);
+        } else {
+            empty.setVisibility(View.GONE);
+            rv.setAdapter(new MockAdapter(mockList));
+        }
+
+    }
+
+    /**
+     * Helper method to generate a mock list of items
+     * @param count number of items to create
+     */
+    private List<String> generateMockList(int count) {
+        List<String> list = new ArrayList<>();
+        for (int i = 1; i <= count; i++) {
+            list.add("Mock item " + i);
+
+        }
+        return list;
+    }
+
+    //Adapter
+    public static class MockAdapter extends RecyclerView.Adapter<MockAdapter.MockVH> {
+        private final List<String> items;
+        private final boolean[] favorites;
+
+        public MockAdapter(List<String> items) {
+            this.items = items;
+            this.favorites = new boolean[items.size()];
+        }
+
+        @NonNull
+        @Override
+        public MockVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_favorite, parent, false);
+            return new MockVH(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull MockVH holder, int position) {
+            holder.tvTitle.setText(items.get(position));
+            holder.btnFavorite.setImageResource(favorites[position] ? R.drawable.baseline_favorite_24 : R.drawable.outline_favorite_24);
+
+            holder.btnFavorite.setOnClickListener(v -> {
+                favorites[position] = !favorites[position];
+                notifyItemChanged(position);
+            });
+        }
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+        public static class MockVH extends RecyclerView.ViewHolder {
+            TextView tvTitle;
+            ImageView btnFavorite;
+
+            public MockVH(@NonNull View itemView) {
+                super(itemView);
+                tvTitle = itemView.findViewById(R.id.tvTitle);
+                btnFavorite = itemView.findViewById(R.id.btnFavorite);
+            }
+        }
     }
 }
+
