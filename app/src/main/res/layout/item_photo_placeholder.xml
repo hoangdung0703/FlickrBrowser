@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="10dp"> <!-- No elevation for placeholder -->
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardElevation="@dimen/elev_s"> <!-- No elevation for placeholder -->
 
     <View
         android:layout_width="match_parent"

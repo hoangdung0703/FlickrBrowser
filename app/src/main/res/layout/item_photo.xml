@@ -13,6 +13,7 @@
         android:layout_height="266dp"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
+        android:clipToOutline="true"
         />
 
 </com.google.android.material.card.MaterialCardView>
