@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_theme_surface">
+
+    <!-- Grid list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFavorites"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="@dimen/spacing_m"
+        tools:listitem="@layout/item_favorite" />
+
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/emptyView"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_l"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/baseline_favorite_24"
+            app:tint="@color/md_theme_secondary"
+            android:alpha="0.65"
+            android:contentDescription="@string/empty_favorites_title" />
+
+        <TextView
+            style="@style/Text.Flickr.Section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/spacing_m"
+            android:text="@string/empty_favorites_title"
+            android:textColor="@color/md_theme_onSurface" />
+
+        <TextView
+            style="@style/Text.Flickr.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/spacing_s"
+            android:text="@string/empty_favorites_sub"
+            android:textColor="@color/md_text_secondary" />
+    </LinearLayout>
+</FrameLayout>
