@@ -11,7 +11,7 @@
     <color name="md_theme_onSecondaryContainer">#660036</color>
 
     <color name="md_theme_background">#FFFFFF</color>
-    <color name="md_theme_onBackground">#FFFFFF</color>
+    <color name="md_theme_onBackground">#111827</color>
     <color name="md_theme_surface">#FFFFFF</color>
     <color name="md_theme_onSurface">#111827</color>
 
