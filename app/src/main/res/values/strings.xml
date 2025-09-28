@@ -1,7 +1,13 @@
 <resources>
+    <!-- Favorites screen -->
     <string name="favorites_title">Favorites</string>
     <string name="empty_favorites_title">No favorites yet</string>
     <string name="empty_favorites_sub">Tap ♥ in Explore/Search to save here</string>
     <string name="cd_favorite">Add to favorites</string>
     <string name="cd_unfavorite">Remove from favorites</string>
+
+    <!-- Search/Explore screen -->
+    <string name="no_photos_found">No photos found</string>
+    <string name="text">No photos found</string>
 </resources>
+
