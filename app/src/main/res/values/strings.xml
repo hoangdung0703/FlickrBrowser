@@ -1,4 +1,12 @@
 <resources>
+    <!-- Tên ứng dụng -->
+    <string name="app_name">FlickrBrowser</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search photos</string>
+    <string name="search_empty_message">Type a keyword and press Search</string>
+    <string name="photo_content_desc">Photo item</string>
+
     <!-- Favorites screen -->
     <string name="favorites_title">Favorites</string>
     <string name="empty_favorites_title">No favorites yet</string>
@@ -8,6 +16,5 @@
 
     <!-- Search/Explore screen -->
     <string name="no_photos_found">No photos found</string>
-    <string name="text">No photos found</string>
+    <string name="search_no_photos_text">No photos found</string>
 </resources>
-
