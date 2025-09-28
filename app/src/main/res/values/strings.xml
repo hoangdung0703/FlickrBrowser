@@ -5,9 +5,19 @@
     <string name="empty_favorites_sub">Tap ♥ in Explore/Search to save here</string>
     <string name="cd_favorite">Add to favorites</string>
     <string name="cd_unfavorite">Remove from favorites</string>
+    <string name="about_version_label">App version</string>
+    <string name="readme_look">Xem README</string>
+    <string name="link_readme">Link to README</string>
+    <string name="photo_image">Ảnh Flickr</string>
+    <string name="photo_content_desc">Ảnh Flickr</string>
+    <string name="back_content_desc">Nút quay lại</string>
+    <string name="share_content_desc">Nút chia sẻ</string>
+    <string name="open_content_desc">Nút mở ảnh</string>
 
     <!-- Search/Explore screen -->
     <string name="no_photos_found">No photos found</string>
     <string name="text">No photos found</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
 
