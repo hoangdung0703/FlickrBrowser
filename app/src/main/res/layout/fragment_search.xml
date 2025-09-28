@@ -12,7 +12,7 @@
         android:style="?attr/materialToolbarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="Search"
+        android:title="@string/search_hint"
         android:titleTextColor="@color/md_theme_onBackground" />
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilSearch"
