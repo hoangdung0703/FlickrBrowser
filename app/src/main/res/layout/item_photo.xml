@@ -1,19 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/Widget.Flickr.Card"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp">
 
+    <!-- Ảnh chính -->
     <ImageView
-
         android:id="@+id/photo_image_view"
         android:layout_width="match_parent"
         android:layout_height="266dp"
-        android:contentDescription="@null"
         android:scaleType="centerCrop"
-        android:clipToOutline="true"
-        />
+        android:background="@drawable/rounded_image"
+        android:contentDescription="@string/photo_content_desc" />
 
-</com.google.android.material.card.MaterialCardView>
+    <!-- Nút Back -->
+    <ImageButton
+        android:id="@+id/button_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="12dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_revert"
+        android:contentDescription="@string/back_content_desc"
+        android:layout_gravity="top|start" />
+
+    <!-- Nút Share -->
+    <ImageButton
+        android:id="@+id/button_share"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="12dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_share"
+        android:contentDescription="@string/share_content_desc"
+        android:layout_gravity="top|end" />
+
+    <!-- Nút Open -->
+    <ImageButton
+        android:id="@+id/button_open"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="12dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_view"
+        android:contentDescription="@string/open_content_desc"
+        android:layout_gravity="bottom|end" />
+
+</FrameLayout>
