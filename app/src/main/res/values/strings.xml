@@ -1,4 +1,4 @@
 <resources>
-    <string name="no_photos_found">No photos found</string>
-    <string name="text">No photos found</string>
+    <string name ="empty_default">No data</string>
+    <string name ="empty_icon_desc">No icon</string>
 </resources>
