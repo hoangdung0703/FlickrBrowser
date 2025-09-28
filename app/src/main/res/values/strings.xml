@@ -1,14 +1,13 @@
 <resources>
+    <!-- Favorites screen -->
+    <string name="favorites_title">Favorites</string>
+    <string name="empty_favorites_title">No favorites yet</string>
+    <string name="empty_favorites_sub">Tap ♥ in Explore/Search to save here</string>
+    <string name="cd_favorite">Add to favorites</string>
+    <string name="cd_unfavorite">Remove from favorites</string>
 
-    <!-- Tên ứng dụng -->
-    <string name="app_name">FlickrBrowser</string>
-
-    <!-- Hint cho ô tìm kiếm -->
-    <string name="search_hint">Search photos</string>
-
-    <!-- Nội dung EmptyView ban đầu -->
-    <string name="search_empty_message">Type a keyword and press Search</string>
-
-    <!-- Content description ảnh (dùng cho ImageView trong item_photo.xml) -->
-    <string name="photo_content_desc">Photo item</string>
+    <!-- Search/Explore screen -->
+    <string name="no_photos_found">No photos found</string>
+    <string name="text">No photos found</string>
 </resources>
+
