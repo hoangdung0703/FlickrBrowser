@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +22,10 @@ import vn.edu.usth.flickrbrowser.R;
 
 public class FavoritesFragment extends Fragment {
 
-    public FavoritesFragment() { /* Required empty public constructor */ }
+    private FavoritesViewModel vm;
+    private MockAdapter adapter;
+
+    public FavoritesFragment() { }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -35,10 +39,10 @@ public class FavoritesFragment extends Fragment {
         RecyclerView rv = view.findViewById(R.id.rvFavorites);
         final View empty = view.findViewById(R.id.emptyView);
 
-        // 2-column grid
+        // Grid 2 columns
         rv.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
-        //spacing
+        // Spacing according to design system
         final int space = getResources().getDimensionPixelSize(R.dimen.spacing_m);
         rv.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -48,39 +52,44 @@ public class FavoritesFragment extends Fragment {
             }
         });
 
-        //Mock list of items
-        List<String> mockList = generateMockList(20);
+        // ViewModel (scope Activity để có thể share với Explore/Search sau này)
+        vm = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
 
-        if (mockList.isEmpty()) {
-            empty.setVisibility(View.VISIBLE);
-        } else {
-            empty.setVisibility(View.GONE);
-            rv.setAdapter(new MockAdapter(mockList));
-        }
+        // Adapter:  callback → ViewModel remove (unfavorite)
+        adapter = new MockAdapter(new ArrayList<>(), item -> vm.removeFavorite(item));
+        rv.setAdapter(adapter);
+
+        // Observe LiveData → update list & EmptyView
+        vm.getFavorites().observe(getViewLifecycleOwner(), list -> {
+            if (list == null || list.isEmpty()) {
+                empty.setVisibility(View.VISIBLE);
+                adapter.update(new ArrayList<>()); // clear UI
+            } else {
+                empty.setVisibility(View.GONE);
+                adapter.update(list);
+            }
+        });
 
     }
 
-    /**
-     * Helper method to generate a mock list of items
-     * @param count number of items to create
-     */
-    private List<String> generateMockList(int count) {
-        List<String> list = new ArrayList<>();
-        for (int i = 1; i <= count; i++) {
-            list.add("Mock item " + i);
 
-        }
-        return list;
-    }
-
-    //Adapter
+    // Adapter
     public static class MockAdapter extends RecyclerView.Adapter<MockAdapter.MockVH> {
-        private final List<String> items;
-        private final boolean[] favorites;
 
-        public MockAdapter(List<String> items) {
+        public interface OnFavoriteClick { void onClick(String item); }
+
+        private List<String> items;
+        private final OnFavoriteClick callback;
+
+        public MockAdapter(List<String> items, OnFavoriteClick callback) {
             this.items = items;
-            this.favorites = new boolean[items.size()];
+            this.callback = callback;
+        }
+
+        /** Update list */
+        public void update(List<String> newItems) {
+            this.items = (newItems != null) ? new ArrayList<>(newItems) : new ArrayList<>();
+            notifyDataSetChanged();
         }
 
         @NonNull
@@ -93,23 +102,31 @@ public class FavoritesFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull MockVH holder, int position) {
-            holder.tvTitle.setText(items.get(position));
-            holder.btnFavorite.setImageResource(favorites[position] ? R.drawable.baseline_favorite_24 : R.drawable.outline_favorite_24);
+            String item = items.get(position);
+            holder.tvTitle.setText(item);
 
+            // Màn Favorites: show heart icon
+            holder.btnFavorite.setImageResource(R.drawable.baseline_favorite_24);
+            holder.btnFavorite.setContentDescription(
+                    holder.itemView.getContext().getString(R.string.cd_unfavorite)
+            );
+
+            // Click heart icon → remove item
             holder.btnFavorite.setOnClickListener(v -> {
-                favorites[position] = !favorites[position];
-                notifyItemChanged(position);
+                if (callback != null) callback.onClick(item);
             });
         }
+
         @Override
         public int getItemCount() {
             return items.size();
         }
-        public static class MockVH extends RecyclerView.ViewHolder {
+
+        static class MockVH extends RecyclerView.ViewHolder {
             TextView tvTitle;
             ImageView btnFavorite;
 
-            public MockVH(@NonNull View itemView) {
+            MockVH(@NonNull View itemView) {
                 super(itemView);
                 tvTitle = itemView.findViewById(R.id.tvTitle);
                 btnFavorite = itemView.findViewById(R.id.btnFavorite);
@@ -117,4 +134,3 @@ public class FavoritesFragment extends Fragment {
         }
     }
 }
-
