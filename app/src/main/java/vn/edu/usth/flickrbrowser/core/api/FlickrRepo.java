@@ -20,6 +20,7 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
 public class FlickrRepo {
 
+    // Callback domain cho UI
     public interface CB {
         void ok(List<PhotoItem> items);
         void err(Throwable e);
@@ -30,24 +31,32 @@ public class FlickrRepo {
 
     private static FlickrApi API;
     private static FlickrApi api() {
-        if (API == null) API = ApiClient.getClient().create(FlickrApi.class);
+        if (API == null) {
+            // dùng ApiClient.getClient() như bạn đã triển khai
+            API = ApiClient.getClient().create(FlickrApi.class);
+        }
         return API;
     }
 
+    // Giữ request search đang chạy để có thể huỷ khi user gõ tiếp
     private static Call<ResponseBody> inFlightSearch;
 
     public static void cancelSearch() {
-        if (inFlightSearch != null && !inFlightSearch.isCanceled()) inFlightSearch.cancel();
+        if (inFlightSearch != null && !inFlightSearch.isCanceled()) {
+            inFlightSearch.cancel();
+        }
         inFlightSearch = null;
     }
 
+    // ---- getRecent ----
     public static void getRecent(int page, int perPage, CB cb) {
         Map<String, String> p = new HashMap<>();
         p.put("page", String.valueOf(Math.max(1, page)));
         p.put("per_page", String.valueOf(Math.max(1, perPage)));
 
         api().getRecent(p).enqueue(new Callback<ResponseBody>() {
-            @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
                 try {
                     String body = r.body() != null ? r.body().string()
                             : (r.errorBody() != null ? r.errorBody().string() : "");
@@ -63,13 +72,15 @@ public class FlickrRepo {
                 }
             }
 
-            @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d(TAG, "getRecent fail: " + t);
                 MAIN.post(() -> cb.err(t));
             }
         });
     }
 
+    // ---- search ----
     public static void search(String query, int page, int perPage, CB cb) {
         cancelSearch();
 
@@ -80,7 +91,8 @@ public class FlickrRepo {
 
         inFlightSearch = api().search(p);
         inFlightSearch.enqueue(new Callback<ResponseBody>() {
-            @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
                 try {
                     String body = r.body() != null ? r.body().string()
                             : (r.errorBody() != null ? r.errorBody().string() : "");
@@ -96,7 +108,8 @@ public class FlickrRepo {
                 }
             }
 
-            @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 if (call.isCanceled()) {
                     Log.d(TAG, "search canceled");
                 } else {
@@ -107,12 +120,13 @@ public class FlickrRepo {
         });
     }
 
+    // ---- Parser JSON -> List<PhotoItem> ----
     private static List<PhotoItem> parseToPhotos(String json) {
         List<PhotoItem> out = new ArrayList<>();
         try {
             JSONObject root = new JSONObject(json);
 
-            // Case 1: Flickr chuẩn
+            // Case 1: Flickr chuẩn (photos -> photo[])
             JSONObject photos = root.optJSONObject("photos");
             JSONArray arr = photos != null ? photos.optJSONArray("photo") : null;
             if (arr != null) {
@@ -130,7 +144,7 @@ public class FlickrRepo {
                 return out;
             }
 
-            // Case 2: Public feed fallback
+            // Case 2: Public feed fallback (items[])
             JSONArray items = root.optJSONArray("items");
             if (items != null) {
                 for (int i = 0; i < items.length(); i++) {
