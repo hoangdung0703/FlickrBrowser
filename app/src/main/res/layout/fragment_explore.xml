@@ -1,0 +1,31 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_theme_background">
+
+    <!-- RecyclerView Explore -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewExplore"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/spacing_m"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        tools:listitem="@layout/item_photo" />
+
+    <!-- Shimmer overlay khi Loading -->
+    <include
+        android:id="@+id/shimmerGrid"
+        layout="@layout/include_shimmer_grid"
+        android:visibility="gone" />
+
+    <!-- EmptyView khi không có dữ liệu -->
+    <include
+        android:id="@+id/emptyView"
+        layout="@layout/view_empty"
+        android:visibility="gone" />
+
+</FrameLayout>

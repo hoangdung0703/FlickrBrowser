@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -45,4 +45,15 @@
         android:layout_marginTop="@dimen/spacing_m"
         android:layout_weight="1"
         android:clipToPadding="false" />
-</LinearLayout>
+    <!-- Shimmer overlay -->
+    <include
+        android:id="@+id/shimmerGrid"
+        layout="@layout/include_shimmer_grid"
+        android:visibility="gone" />
+
+    <!-- EmptyView overlay -->
+    <include
+        android:id="@+id/emptyView"
+        layout="@layout/view_empty"
+        android:visibility="gone" />
+</FrameLayout>
