@@ -21,73 +21,71 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Nhận PhotoItem từ Intent (từ Explore/Search)
+        // Nhận PhotoItem từ Intent
         photoItem = getIntent().getParcelableExtra("PHOTO_ITEM");
 
-        // VALIDATION
+        // Nếu không có hoặc không hợp lệ thì fallback mock
         if (!isValidPhotoItem(photoItem)) {
-            Toast.makeText(this, "Invalid Image", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+            photoItem = createMockPhotoItem();
+            Toast.makeText(this, "Using mock data", Toast.LENGTH_SHORT).show();
         }
 
+        // Setup toolbar
         setupToolbar();
+
+        // Load ảnh
         loadImageWithGlide();
     }
 
-    /**
-     *VALIDATION TOÀN DIỆN
-     * Vì PhotoItem từ Explore/Search có thể có nhiều lỗi khác nhau
-     */
+    /** Kiểm tra PhotoItem hợp lệ */
     private boolean isValidPhotoItem(PhotoItem item) {
-        // Check if item is null
-        if (item == null) {
-            return false;
-        }
+        if (item == null) return false;
+        if (item.id == null || item.id.isEmpty()) return false;
+        if (item.server == null || item.server.isEmpty()) return false;
+        if (item.secret == null || item.secret.isEmpty()) return false;
 
-        // PhotoItem cần id, server, secret để tạo URL
-        if (item.id == null || item.id.isEmpty()) {
-            return false;
-        }
-        if (item.server == null || item.server.isEmpty()) {
-            return false;
-        }
-        if (item.secret == null || item.secret.isEmpty()) {
-            return false;
-        }
-
-        //Check URL được tạo ra
         String url = item.getFullUrl();
         return url != null && !url.isEmpty();
     }
 
-    /**
-     * Setup Toolbar
-     */
+    /** Mock PhotoItem nếu dữ liệu không có */
+    private PhotoItem createMockPhotoItem() {
+        PhotoItem mock = new PhotoItem();
+        mock.id = "53134234547";
+        mock.server = "65535";
+        mock.secret = "abc123def4";
+        mock.title = "Beautiful Sunset - Test Image";
+        return mock;
+    }
+
+    /** Setup Toolbar */
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null && photoItem.title != null) {
-            getSupportActionBar().setTitle(photoItem.title);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(photoItem.title != null ? photoItem.title : "");
         }
     }
-     // GLIDE PLACEHOLDER/ERROR
+
+    /** Load ảnh với Glide */
     private void loadImageWithGlide() {
         ImageView imageView = findViewById(R.id.imageViewDetail);
         String imageUrl = photoItem.getFullUrl();
 
-        // DEFENSE IN DEPTH: Check lần cuối trước khi glide
         if (imageUrl == null || imageUrl.isEmpty()) {
-            Toast.makeText(this, "Invalid Image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Ảnh không hợp lệ", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // GLIDE VỚI PLACEHOLDER/ERROR HOÀN CHỈNH
         Glide.with(this)
                 .load(imageUrl)
-                .placeholder(android.R.drawable.ic_menu_gallery)  // Ảnh tạm khi loading
-                .error(android.R.drawable.ic_dialog_alert)        // Ảnh lỗi khi fail
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_dialog_alert)
                 .into(imageView);
+
+        imageView.setContentDescription(photoItem.title != null ? photoItem.title : "Flickr photo");
     }
 }

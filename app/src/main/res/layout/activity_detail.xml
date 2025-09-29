@@ -5,9 +5,7 @@
     android:orientation="vertical"
     android:background="@color/md_theme_background">
 
-    <!-- Toolbar with Design System colors -->
-
-    <!-- Full-screen ImageView with proper spacing -->
+    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -15,6 +13,7 @@
         android:background="@color/md_theme_primary"
         android:theme="@style/ThemeOverlay.Material3.Dark" />
 
+    <!-- ImageView full screen -->
     <ImageView
         android:id="@+id/imageViewDetail"
         android:layout_width="match_parent"
