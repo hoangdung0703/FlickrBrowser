@@ -13,14 +13,14 @@
         android:background="@color/md_theme_primary"
         android:theme="@style/ThemeOverlay.Material3.Dark" />
 
-    <!-- ImageView full screen -->
+    <!-- Fullscreen Image -->
     <ImageView
         android:id="@+id/imageViewDetail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scaleType="centerCrop"
-        android:contentDescription="Flickr photo detail view"
+        android:contentDescription="@string/photo_detail_content_desc"
         android:padding="@dimen/spacing_s" />
 
 </LinearLayout>

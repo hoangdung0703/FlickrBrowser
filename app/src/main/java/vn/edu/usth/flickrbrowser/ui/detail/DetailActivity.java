@@ -21,23 +21,21 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Nhận PhotoItem từ Intent
+        // Nhận PhotoItem từ Explore/Search
         photoItem = getIntent().getParcelableExtra("PHOTO_ITEM");
 
-        // Nếu không có hoặc không hợp lệ thì fallback mock
+        // Ngày 3: Validate dữ liệu ảnh
         if (!isValidPhotoItem(photoItem)) {
-            photoItem = createMockPhotoItem();
-            Toast.makeText(this, "Using mock data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Ảnh không hợp lệ", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
-        // Setup toolbar
         setupToolbar();
-
-        // Load ảnh
         loadImageWithGlide();
     }
 
-    /** Kiểm tra PhotoItem hợp lệ */
+    /** Validation cơ bản PhotoItem */
     private boolean isValidPhotoItem(PhotoItem item) {
         if (item == null) return false;
         if (item.id == null || item.id.isEmpty()) return false;
@@ -48,28 +46,18 @@ public class DetailActivity extends AppCompatActivity {
         return url != null && !url.isEmpty();
     }
 
-    /** Mock PhotoItem nếu dữ liệu không có */
-    private PhotoItem createMockPhotoItem() {
-        PhotoItem mock = new PhotoItem();
-        mock.id = "53134234547";
-        mock.server = "65535";
-        mock.secret = "abc123def4";
-        mock.title = "Beautiful Sunset - Test Image";
-        return mock;
-    }
-
-    /** Setup Toolbar */
+    /** Toolbar cơ bản (D1–D2), D5 gắn nút back */
     private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // D5: Back
             getSupportActionBar().setTitle(photoItem.title != null ? photoItem.title : "");
         }
     }
 
-    /** Load ảnh với Glide */
+    /** Load ảnh với Glide + placeholder/error (D3) */
     private void loadImageWithGlide() {
         ImageView imageView = findViewById(R.id.imageViewDetail);
         String imageUrl = photoItem.getFullUrl();
@@ -82,10 +70,17 @@ public class DetailActivity extends AppCompatActivity {
 
         Glide.with(this)
                 .load(imageUrl)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-                .error(android.R.drawable.ic_dialog_alert)
+                .placeholder(android.R.drawable.ic_menu_gallery)  // Loading
+                .error(android.R.drawable.ic_dialog_alert)        // Lỗi
                 .into(imageView);
 
         imageView.setContentDescription(photoItem.title != null ? photoItem.title : "Flickr photo");
+    }
+
+    /** D5: xử lý back trên toolbar */
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }

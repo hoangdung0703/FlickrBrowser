@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_theme_background"
+    android:padding="@dimen/spacing_l">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:style="?attr/materialToolbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/search_hint"
+        android:titleTextColor="@color/md_theme_onBackground" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtQuery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/search_hint"
+            android:imeOptions="actionSearch"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/txtEmpty"
+        style="@style/Text.Flickr.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:textColor="@color/md_text_secondary"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPhotos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:layout_weight="1"
+        android:clipToPadding="false" />
+    <!-- Shimmer overlay -->
+    <include
+        android:id="@+id/shimmerGrid"
+        layout="@layout/include_shimmer_grid"
+        android:visibility="gone" />
+
+    <!-- EmptyView overlay -->
+    <include
+        android:id="@+id/emptyView"
+        layout="@layout/view_empty"
+        android:visibility="gone" />
+</FrameLayout>
