@@ -47,6 +47,7 @@ dependencies {
     implementation libs.activity
     implementation libs.constraintlayout
     implementation "com.facebook.shimmer:shimmer:0.5.0"
+    implementation libs.swiperefreshlayout
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

@@ -7,8 +7,10 @@
     <string name="search_empty_message">Type a keyword and press Search</string>
     <string name="photo_content_desc">Photo item</string>
 
-    <string name ="empty_default">No data</string>
-    <string name ="empty_icon_desc">No icon</string>
+    <!-- Empty state -->
+    <string name="empty_default">No data</string>
+    <string name="empty_icon_desc">No icon</string>
+
     <!-- Favorites screen -->
     <string name="favorites_title">Favorites</string>
     <string name="empty_favorites_title">No favorites yet</string>
@@ -20,4 +22,3 @@
     <string name="no_photos_found">No photos found</string>
     <string name="search_no_photos_text">No photos found</string>
 </resources>
-
