@@ -1,84 +1,86 @@
 package vn.edu.usth.flickrbrowser.ui.detail;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.github.chrisbanes.photoview.PhotoView;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.squareup.picasso.Picasso;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.bumptech.glide.Glide;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
 public class DetailActivity extends AppCompatActivity {
 
-    public static final String EXTRA_PHOTO = "extra_photo";
-
-    private PhotoView photoView;
-    private TextView title, owner;
-    private ChipGroup chipGroupTags;
-    private ImageButton btnFavorite, btnShare, btnDownload;
+    private PhotoItem photoItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        photoView = findViewById(R.id.photoView);
-        title = findViewById(R.id.photoTitle);
-        owner = findViewById(R.id.photoOwner);
-        chipGroupTags = findViewById(R.id.chipGroupTags);
-        btnFavorite = findViewById(R.id.btnFavorite);
-        btnShare = findViewById(R.id.btnShare);
-        btnDownload = findViewById(R.id.btnDownload);
+        // Nhận PhotoItem từ Explore/Search
+        photoItem = getIntent().getParcelableExtra("PHOTO_ITEM");
 
-        PhotoItem photo = (PhotoItem) getIntent().getSerializableExtra(EXTRA_PHOTO);
-        if (photo != null) {
-            bindPhoto(photo);
+        // Ngày 3: Validate dữ liệu ảnh
+        if (!isValidPhotoItem(photoItem)) {
+            Toast.makeText(this, "Ảnh không hợp lệ", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        setupToolbar();
+        loadImageWithGlide();
+    }
+
+    /** Validation cơ bản PhotoItem */
+    private boolean isValidPhotoItem(PhotoItem item) {
+        if (item == null) return false;
+        if (item.id == null || item.id.isEmpty()) return false;
+        if (item.server == null || item.server.isEmpty()) return false;
+        if (item.secret == null || item.secret.isEmpty()) return false;
+
+        String url = item.getFullUrl();
+        return url != null && !url.isEmpty();
+    }
+
+    /** Toolbar cơ bản (D1–D2), D5 gắn nút back */
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // D5: Back
+            getSupportActionBar().setTitle(photoItem.title != null ? photoItem.title : "");
         }
     }
 
-    private void bindPhoto(PhotoItem photo) {
-        // Load ảnh full size
-        Picasso.get()
-                .load(photo.getUrl_m())
-                .placeholder(R.drawable.placeholder)
-                .into(photoView);
+    /** Load ảnh với Glide + placeholder/error (D3) */
+    private void loadImageWithGlide() {
+        ImageView imageView = findViewById(R.id.imageViewDetail);
+        String imageUrl = photoItem.getFullUrl();
 
-        title.setText(photo.getTitle());
-        owner.setText("by " + photo.getOwner());
-
-        chipGroupTags.removeAllViews();
-        if (photo.getTags() != null) {
-            for (String tag : photo.getTags().split(" ")) {
-                Chip chip = new Chip(this);
-                chip.setText(tag);
-                chip.setOnClickListener(v -> {
-                    // TODO: trigger search by tag
-                });
-                chipGroupTags.addView(chip);
-            }
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            Toast.makeText(this, "Ảnh không hợp lệ", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
-        btnFavorite.setOnClickListener(v -> {
-            // TODO: save/remove from favorites
-        });
+        Glide.with(this)
+                .load(imageUrl)
+                .placeholder(android.R.drawable.ic_menu_gallery)  // Loading
+                .error(android.R.drawable.ic_dialog_alert)        // Lỗi
+                .into(imageView);
 
-        btnShare.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl_m());
-            shareIntent.setType("text/plain");
-            startActivity(Intent.createChooser(shareIntent, "Share via"));
-        });
+        imageView.setContentDescription(photoItem.title != null ? photoItem.title : "Flickr photo");
+    }
 
-        btnDownload.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(photo.getUrl_m()));
-            startActivity(browserIntent);
-        });
+    /** D5: xử lý back trên toolbar */
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }
