@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,12 +16,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import vn.edu.usth.flickrbrowser.R;
+import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
+import vn.edu.usth.flickrbrowser.ui.common.PhotosAdapter;
+import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
     private FragmentSearchBinding binding;
-
+    private PhotosAdapter adapter;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -31,6 +36,10 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        adapter = new PhotosAdapter();
+        binding.rvPhotos.setAdapter(adapter);
+
         // 1) AppBar title
         binding.topAppBar.setTitle("search");
 
@@ -61,10 +70,11 @@ public class SearchFragment extends Fragment {
         super.onDestroyView();
         binding = null;  // tránh leak
     }
-}
 
-//Biding sinh từ fragment_search.xml
-//GridLayoutManager(2) tạo lưới 2 cột
-//GridSpacingDecoration dùng @dimen/spacing_m -> px
-//mockIds lặp lại vài lần để nhìn đủ grid
-//txtEmpty để sẵn cho ngày 2(ẩn)
+    private void setState(@NonNull PhotoState state) {
+        if (state instanceof PhotoState.Loading) {
+            binding.shimmerGrid.getRoot().setVisibility(View.VISIBLE);
+            startShimmers(binding.shimmerGrid.getRoot());
+
+            binding.rvPhotos.setVisibility(View.GONE);
+            binding.emptyView.getRoot().setVisibility(View.GONE);
