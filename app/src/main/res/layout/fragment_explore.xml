@@ -1,31 +1,44 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_background">
+    tools:context=".ui.explore.ExploreFragment">
 
-    <!-- RecyclerView Explore -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewExplore"
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_view_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/spacing_m"
-        android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/item_photo" />
+        app:shimmer_duration="1000">
 
-    <!-- Shimmer overlay khi Loading -->
-    <include
-        android:id="@+id/shimmerGrid"
-        layout="@layout/include_shimmer_grid"
-        android:visibility="gone" />
+        <include layout="@layout/include_shimmer_grid" />
 
-    <!-- EmptyView khi không có dữ liệu -->
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewExplore"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="@dimen/spacing_m"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/item_photo" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <include
-        android:id="@+id/emptyView"
+        android:id="@+id/empty_view_root"
         layout="@layout/view_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:visibility="gone" />
 
-</FrameLayout>
+</RelativeLayout>
