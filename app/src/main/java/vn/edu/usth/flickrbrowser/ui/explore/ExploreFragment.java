@@ -24,7 +24,7 @@ public class ExploreFragment extends Fragment {
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inf,@Nullable ViewGroup parent,@Nullable Bundle b){
         View v=inf.inflate(R.layout.fragment_explore,parent,false);
-        swipe=v.findViewById(R.id.swipe); rv=v.findViewById(R.id.recycler);
+        swipe=v.findViewById(R.id.swipe); rv=v.findViewById(R.id.recyclerViewExplore);
 
         shimmerGrid = v.findViewById(R.id.shimmerGrid);
         emptyRoot= v.findViewById(R.id.emptyView);
