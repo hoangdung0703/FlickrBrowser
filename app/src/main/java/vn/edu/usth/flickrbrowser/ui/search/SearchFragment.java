@@ -19,7 +19,9 @@ import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
+
 import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
+
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
@@ -74,6 +76,7 @@ public class SearchFragment extends Fragment {
             binding.rvPhotos.setVisibility(View.GONE);
             binding.emptyView.getRoot().setVisibility(View.GONE);
 
+
         } else if (state instanceof PhotoState.Success) {
             List<PhotoItem> items = ((PhotoState.Success) state).getItems();
 
@@ -126,3 +129,4 @@ public class SearchFragment extends Fragment {
         }
     }
 }
+
