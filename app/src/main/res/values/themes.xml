@@ -19,6 +19,8 @@
         <!-- Thanh status & navigation -->
         <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:navigationBarColor">?attr/colorSurface</item>
+
+
     </style>
 
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- TODO: Remove the following "include" and "exclude" elements and complete
+         the feature so that it does what is desired. For details, see
+         https://developer.android.com/guide/topics/data/autobackup
+    <include domain="database" path="."/>
+    <include domain="sharedpref" path="."/>
+    -->
+    <exclude domain="database" path="device_requests.db"/>
+</full-backup-content>
