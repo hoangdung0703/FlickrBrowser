@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -9,7 +9,6 @@
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
-        style="@style/Widget.Material3.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/search_hint"
@@ -18,7 +17,9 @@
         android:id="@+id/tilSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_m">
+        android:layout_marginTop="@dimen/spacing_m"
+        app:endIconMode="clear_text"
+        app:startIconDrawable="@android:drawable/ic_menu_search">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtQuery"
@@ -26,7 +27,9 @@
             android:layout_height="wrap_content"
             android:hint="@string/search_hint"
             android:imeOptions="actionSearch"
-            android:singleLine="true" />
+            android:inputType="text|textNoSuggestions"
+            android:maxLines="1"
+            android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -38,22 +41,38 @@
         android:textColor="@color/md_text_secondary"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPhotos"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/spacing_m"
-        android:layout_weight="1"
-        android:clipToPadding="false" />
-    <!-- Shimmer overlay -->
-    <include
-        android:id="@+id/shimmerGrid"
-        layout="@layout/include_shimmer_grid"
-        android:visibility="gone" />
+        android:layout_weight="1">
 
-    <!-- EmptyView overlay -->
-    <include
-        android:id="@+id/emptyView"
-        layout="@layout/view_empty"
-        android:visibility="gone" />
-</FrameLayout>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPhotos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Shimmer overlay -->
+        <include
+            android:id="@+id/shimmerGrid"
+            layout="@layout/include_shimmer_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <!-- EmptyView overlay -->
+        <include
+            android:id="@+id/emptyView"
+            layout="@layout/view_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

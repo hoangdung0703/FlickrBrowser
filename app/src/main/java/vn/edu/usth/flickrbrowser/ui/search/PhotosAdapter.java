@@ -14,6 +14,11 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
 public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
     private final List<PhotoItem> data = new ArrayList<>();
+    public interface OnItemClick { void onClick(PhotoItem item); }
+    private final OnItemClick onItemClick;
+
+    public PhotosAdapter(){ this(null); }
+    public PhotosAdapter(OnItemClick cb){ this.onItemClick = cb; }
 
     public void submitList(List<PhotoItem> items) {
         data.clear();
@@ -35,6 +40,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
                 .placeholder(R.drawable.bg_skeleton_rounded) // tạm
                 .centerCrop()
                 .into(h.img);
+
     }
 
     @Override public int getItemCount() { return data.size(); }
