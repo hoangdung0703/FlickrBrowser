@@ -1,6 +1,6 @@
 package vn.edu.usth.flickrbrowser.core.model;
-
-public class PhotoItem {
+import java.io.Serializable;
+public class PhotoItem implements Serializable {
     public String id = "";
     public String server = "";
     public String secret = "";
