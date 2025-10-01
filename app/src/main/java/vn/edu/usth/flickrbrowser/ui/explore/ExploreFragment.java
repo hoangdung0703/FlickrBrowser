@@ -43,8 +43,13 @@ public class ExploreFragment extends Fragment {
     private void load(){ swipe.setRefreshing(true);
         FlickrRepo.getRecent(1,12,new FlickrRepo.CB(){
             @Override
-            public void ok(String json){ swipe.setRefreshing(false);
-                adapter.setData(parse(json));
+            public void ok(List<PhotoItem> items){ swipe.setRefreshing(false);
+
+                if (items == null || items.isEmpty()) {
+                    setState(new PhotoState.Empty());
+                } else {
+                    setState(new PhotoState.Success(items));
+                }
             }
             @Override
             public void err(Throwable t){

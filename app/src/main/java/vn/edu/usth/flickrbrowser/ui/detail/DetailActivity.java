@@ -14,6 +14,7 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
 public class DetailActivity extends AppCompatActivity {
 
+    public static final String EXTRA_PHOTO = "extra_photo";
     private PhotoItem photoItem;
 
     @Override
