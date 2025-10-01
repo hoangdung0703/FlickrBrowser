@@ -9,7 +9,7 @@
     tools:context=".ui.explore.ExploreFragment">
 
     <com.facebook.shimmer.ShimmerFrameLayout
-        android:id="@+id/shimmer_view_container"
+        android:id="@+id/shimmerGrid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:shimmer_duration="1000">
@@ -37,7 +37,7 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include
-        android:id="@+id/empty_view_root"
+        android:id="@+id/emptyView"
         layout="@layout/view_empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
