@@ -1,68 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/md_theme_background">
 
-
-    <!-- Metadata + actions -->
-    <LinearLayout
-        android:id="@+id/metadataContainer"
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/md_scrim"
-        android:padding="@dimen/spacing_m"
-        android:layout_gravity="bottom">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/md_theme_primary"
+        android:theme="@style/ThemeOverlay.Material3.Dark" />
 
-        <TextView
-            android:id="@+id/photoTitle"
-            style="@style/Text.Flickr.Title"
-            android:textColor="@color/md_theme_onBackground"
-            android:layout_marginBottom="@dimen/spacing_s" />
+    <!-- Fullscreen Image -->
+    <ImageView
+        android:id="@+id/imageViewDetail"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/photo_detail_content_desc"
+        android:padding="@dimen/spacing_s" />
 
-        <TextView
-            android:id="@+id/photoOwner"
-            style="@style/Text.Flickr.Caption"
-            android:textColor="@color/md_text_secondary"
-            android:layout_marginBottom="@dimen/spacing_s" />
-
-        <!-- Tags -->
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupTags"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:singleLine="true"
-            app:chipSpacingHorizontal="@dimen/spacing_s" />
-
-        <!-- Actions -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end"
-            android:layout_marginTop="@dimen/spacing_m">
-
-            <ImageButton
-                android:id="@+id/btnFavorite"
-                style="@style/Widget.Material3.Button.Icon"
-                android:src="@drawable/ic_empty_state"
-                android:contentDescription="@string/action_favorite" />
-
-            <ImageButton
-                android:id="@+id/btnShare"
-                style="@style/Widget.Material3.Button.Icon"
-                android:src="@android:drawable/ic_menu_share"
-                android:contentDescription="@string/action_share" />
-
-            <ImageButton
-                android:id="@+id/btnDownload"
-                style="@style/Widget.Material3.Button.Icon"
-                android:src="@android:drawable/stat_sys_download"
-                android:contentDescription="@string/action_download" />
-
-        </LinearLayout>
-    </LinearLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>
