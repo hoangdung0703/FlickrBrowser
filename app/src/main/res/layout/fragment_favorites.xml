@@ -30,10 +30,10 @@
         <ImageView
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:src="@drawable/baseline_favorite_24"
-            app:tint="@color/md_theme_secondary"
             android:alpha="0.65"
-            android:contentDescription="@string/empty_favorites_title" />
+            android:contentDescription="@string/empty_favorites_title"
+            android:src="@drawable/baseline_favorite_24"
+            app:tint="@color/md_theme_secondary" />
 
         <TextView
             style="@style/Text.Flickr.Section"
