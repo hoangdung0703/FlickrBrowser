@@ -22,6 +22,13 @@
     <string name="no_photos_found">No photos found</string>
     <string name="search_no_photos_text">No photos found</string>
 
+    <!-- Nav-->
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_about">About</string>
+
     <string name="photo_detail_content_desc">Description for the detailed photo</string>
 </resources>
 
