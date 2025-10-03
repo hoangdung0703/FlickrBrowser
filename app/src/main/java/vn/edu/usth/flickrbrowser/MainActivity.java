@@ -2,11 +2,16 @@ package vn.edu.usth.flickrbrowser;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+<<<<<<< HEAD
 import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 //import vn.edu.usth.flickrbrowser.ui.about.AboutFragment;
 import vn.edu.usth.flickrbrowser.ui.explore.ExploreFragment;
 import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesFragment;
+=======
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+>>>>>>> 59b58fc9e7e918848fb2dde30f5bed0a412df19a
 import vn.edu.usth.flickrbrowser.ui.search.SearchFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+<<<<<<< HEAD
         bottomNavigation = findViewById(R.id.bottom_navigation);
 
         // Khởi tạo fragments
@@ -60,6 +66,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Tab mặc định khi mở app
         bottomNavigation.setSelectedItemId(R.id.navigation_home);
+=======
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new SearchFragment())
+                    .commit();
+        }
+>>>>>>> 59b58fc9e7e918848fb2dde30f5bed0a412df19a
     }
 
     private void showFragment(Fragment fragment) {
