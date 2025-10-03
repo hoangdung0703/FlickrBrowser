@@ -7,6 +7,8 @@ import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+
 import org.json.*;
 import java.util.*;
 import vn.edu.usth.flickrbrowser.R;
@@ -39,8 +41,14 @@ public class ExploreFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View v,@Nullable Bundle b){
         super.onViewCreated(v,b); load();
+
     }
-    private void load(){ swipe.setRefreshing(true);
+    private void load(){
+        swipe.setRefreshing(true);
+        // tránh shimmer vĩnh viễn
+        setState(new PhotoState.Loading());
+        swipe.setRefreshing(true);
+
         FlickrRepo.getRecent(1,12,new FlickrRepo.CB(){
             @Override
             public void ok(List<PhotoItem> items){ swipe.setRefreshing(false);
