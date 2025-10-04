@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
 
+import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
 
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
@@ -27,6 +29,7 @@ import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 public class SearchFragment extends Fragment {
     private FragmentSearchBinding binding;
     private PhotosAdapter adapter;
+    private FavoritesViewModel favVM; // ViewModel for Favorites
 
     @Nullable
     @Override
@@ -38,7 +41,8 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        adapter = new PhotosAdapter();
+        favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class); // ViewModel for Favorites (scope activity)
+        adapter = new PhotosAdapter(favVM); // ViewModel for Favorites (need a parameter)
         binding.rvPhotos.setAdapter(adapter);
 
         // 1) AppBar title

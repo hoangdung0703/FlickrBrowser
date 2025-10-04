@@ -11,9 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
+import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 
 public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
     private final List<PhotoItem> data = new ArrayList<>();
+    private final FavoritesViewModel favVM;
+    public PhotosAdapter(FavoritesViewModel favVM) {
+        this.favVM = favVM;
+    }
 
     public void submitList(List<PhotoItem> items) {
         data.clear();
@@ -35,15 +40,32 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
                 .placeholder(R.drawable.bg_skeleton_rounded) // tạm
                 .centerCrop()
                 .into(h.img);
+
+        boolean isFav = favVM.isFavorite(it.id);
+        h.heart.setImageResource(isFav
+                ? R.drawable.baseline_favorite_24
+                : R.drawable.outline_favorite_24);
+
+        h.heart.setOnClickListener(v -> {
+            int adapterPos = h.getBindingAdapterPosition();
+            if (adapterPos == RecyclerView.NO_POSITION) return;
+
+            PhotoItem cur = data.get(adapterPos);
+            favVM.toggleFavorite(cur.id);
+            notifyItemChanged(adapterPos);
+        });
     }
 
-    @Override public int getItemCount() { return data.size(); }
+    @Override
+    public int getItemCount() { return data.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
         ImageView img;
+        ImageView heart;
         VH(@NonNull View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.imgPhoto);
+            heart = itemView.findViewById(R.id.btnFavorite);
         }
     }
 }
