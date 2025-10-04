@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="vn.edu.usth.flickrbrowser">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,6 +13,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FlickrBrowser">
+        <activity
+            android:name=".ic_share"
+            android:exported="true"
+            android:label="@string/title_activity_ic_share"
+            android:theme="@style/Theme.FlickrBrowser">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">

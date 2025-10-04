@@ -1,40 +1,28 @@
-<resources>
-    <style name="Text.Flickr.Title" parent="TextAppearance.Material3.TitleLarge"/>
-    <style name="Text.Flickr.Section" parent="TextAppearance.Material3.TitleMedium"/>
-    <style name="Text.Flickr.Body" parent="TextAppearance.Material3.BodyMedium"/>
-    <style name="Text.Flickr.Caption" parent="TextAppearance.Material3.BodySmall"/>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- App theme -->
+    <style name="Theme.Flickr" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
 
-    <style name="Widget.Flickr.Card" parent="Widget.Material3.CardView.Elevated">
-        <item name="cardCornerRadius">@dimen/radius_m</item>
-        <item name="cardUseCompatPadding">true</item>
-        <item name="cardElevation">@dimen/elev_s</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="strokeColor">@color/md_theme_outline</item>
-        <item name="strokeWidth">0dp</item>
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
     </style>
 
-
-    <!-- ShapeAppearance chung cho card -->
-    <style name="ShapeAppearance.App.Card" parent="ShapeAppearance.Material3.MediumComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">@dimen/radius_m</item>
+    <!-- Style chung cho button trong Detail -->
+    <style name="Widget.Flickr.Button" parent="Widget.Material3.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
     </style>
 
-    <!-- Style nền tảng cho Card -->
-    <style name="Widget.App.Card" parent="Widget.Material3.CardView.Filled">
-        <!-- Màu & viền -->
-        <item name="cardBackgroundColor">@color/colorSurface</item>
-        <item name="strokeColor">@color/outline</item>
-        <item name="strokeWidth">@dimen/card_stroke</item>
-
-        <!-- Bóng & shape -->
-        <item name="cardElevation">@dimen/elev_s</item>
-        <item name="shapeAppearance">@style/ShapeAppearance.App.Card</item>
-
-        <!-- Padding bên trong (nếu card có text/icon) -->
-        <item name="contentPadding">@dimen/spacing_s</item>
-
-
-    </style>
 </resources>

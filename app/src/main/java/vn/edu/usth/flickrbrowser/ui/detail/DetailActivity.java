@@ -1,84 +1,65 @@
+
 package vn.edu.usth.flickrbrowser.ui.detail;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.chrisbanes.photoview.PhotoView;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.squareup.picasso.Picasso;
-
 import vn.edu.usth.flickrbrowser.R;
-import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
+import vn.edu.usth.flickrbrowser.core.util.NetworkUtils;
 
 public class DetailActivity extends AppCompatActivity {
 
-    public static final String EXTRA_PHOTO = "extra_photo";
-
-    private PhotoView photoView;
-    private TextView title, owner;
-    private ChipGroup chipGroupTags;
-    private ImageButton btnFavorite, btnShare, btnDownload;
+    private String photoUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        photoView = findViewById(R.id.photoView);
-        title = findViewById(R.id.photoTitle);
-        owner = findViewById(R.id.photoOwner);
-        chipGroupTags = findViewById(R.id.chipGroupTags);
-        btnFavorite = findViewById(R.id.btnFavorite);
-        btnShare = findViewById(R.id.btnShare);
-        btnDownload = findViewById(R.id.btnDownload);
+        // Nhận URL từ Intent
+        photoUrl = getIntent().getStringExtra("photo_url");
 
-        PhotoItem photo = (PhotoItem) getIntent().getSerializableExtra(EXTRA_PHOTO);
-        if (photo != null) {
-            bindPhoto(photo);
-        }
-    }
+        // Gắn view
+        Button btnShare = findViewById(R.id.btn_share);
+        Button btnOpen = findViewById(R.id.btn_open);
+        Button btnBack = findViewById(R.id.btn_back);
 
-    private void bindPhoto(PhotoItem photo) {
-        // Load ảnh full size
-        Picasso.get()
-                .load(photo.getUrl_m())
-                .placeholder(R.drawable.placeholder)
-                .into(photoView);
-
-        title.setText(photo.getTitle());
-        owner.setText("by " + photo.getOwner());
-
-        chipGroupTags.removeAllViews();
-        if (photo.getTags() != null) {
-            for (String tag : photo.getTags().split(" ")) {
-                Chip chip = new Chip(this);
-                chip.setText(tag);
-                chip.setOnClickListener(v -> {
-                    // TODO: trigger search by tag
-                });
-                chipGroupTags.addView(chip);
-            }
-        }
-
-        btnFavorite.setOnClickListener(v -> {
-            // TODO: save/remove from favorites
-        });
-
+        // Xử lý Share
         btnShare.setOnClickListener(v -> {
+            if (!NetworkUtils.hasInternet(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (photoUrl == null || photoUrl.isEmpty()) {
+                Toast.makeText(this, "URL is empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl_m());
             shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, photoUrl);
             startActivity(Intent.createChooser(shareIntent, "Share via"));
         });
 
-        btnDownload.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(photo.getUrl_m()));
-            startActivity(browserIntent);
+        // Xử lý Open
+        btnOpen.setOnClickListener(v -> {
+            if (!NetworkUtils.hasInternet(this)) {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (photoUrl == null || photoUrl.isEmpty()) {
+                Toast.makeText(this, "URL is empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Intent openIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(photoUrl));
+            startActivity(openIntent);
         });
+
+        // Xử lý Back
+        btnBack.setOnClickListener(v -> finish());
     }
 }

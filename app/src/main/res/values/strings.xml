@@ -9,16 +9,35 @@
     <string name="readme_look">Xem README</string>
     <string name="link_readme">Link to README</string>
     <string name="photo_image">Ảnh Flickr</string>
-    <string name="photo_content_desc">Ảnh Flickr</string>
-    <string name="back_content_desc">Nút quay lại</string>
-    <string name="share_content_desc">Nút chia sẻ</string>
-    <string name="open_content_desc">Nút mở ảnh</string>
-    <string name="app_name">Flickr Browser</string>
 
+    <string name="app_name">Flickr Browser</string>
+    <string name="back">Back</string>
+    <string name="share">Share</string>
+    <string name="open">Open</string>
+    <string name="desc_image_preview">Preview of the selected image</string>
+    <string name="desc_btn_back">Go back to previous screen</string>
+    <string name="desc_btn_share">Share this image link</string>
+    <string name="desc_btn_open">Open this image in browser</string>
     <!-- Search/Explore screen -->
+    <string name="detail_image">Ảnh chi tiết</string>
+    <string name="back_button">Nút quay lại</string>
+    <string name="share_button">Nút chia sẻ</string>
+    <string name="open_button">Nút mở liên kết</string>
+    <string name="photo_content_desc">Photo in detail view</string>
+    <string name="back_content_desc">Back button</string>
+    <string name="share_content_desc">Share button</string>
+    <string name="open_content_desc">Open button</string>
+
+
+
+
+
+
+
     <string name="no_photos_found">No photos found</string>
     <string name="text">No photos found</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_ic_share">ic_share</string>
 </resources>
 

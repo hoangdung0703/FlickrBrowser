@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="@dimen/radius_m"
-    app:cardElevation="@dimen/elev_s"> <!-- No elevation for placeholder -->
+    android:layout_height="180dp"
+    android:background="#E0E0E0">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:background="#E0E0E0" /> <!-- Placeholder background -->
+    <!-- Icon placeholder ở giữa -->
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:src="@drawable/placeholder"
+        android:contentDescription="@string/detail_image" />
 
-</com.google.android.material.card.MaterialCardView>
+</FrameLayout>
