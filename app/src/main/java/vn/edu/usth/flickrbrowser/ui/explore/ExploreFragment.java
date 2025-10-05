@@ -1,4 +1,6 @@
 package vn.edu.usth.flickrbrowser.ui.explore;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.TextView;
@@ -14,6 +16,7 @@ import java.util.*;
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
+import vn.edu.usth.flickrbrowser.ui.detail.DetailActivity;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class ExploreFragment extends Fragment {
@@ -23,6 +26,12 @@ public class ExploreFragment extends Fragment {
     private ViewGroup shimmerGrid;
     private View emptyRoot;
     private TextView emptyText;
+
+
+    private int currentPage = 1;
+    private boolean isLoading = false;
+
+
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inf,@Nullable ViewGroup parent,@Nullable Bundle b){
         View v=inf.inflate(R.layout.fragment_explore,parent,false);
@@ -41,9 +50,37 @@ public class ExploreFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View v,@Nullable Bundle b){
         super.onViewCreated(v,b); load();
+        adapter.setOnPhotoClickListener(p -> {
+            // Create an Intent to open DetailActivity
+            Intent intent = new Intent(requireContext(), DetailActivity.class);
+
+            // Pass the clicked photo's information with the correct key
+            intent.putExtra("PHOTO_ITEM", p);
+
+            // Start the new activity
+            startActivity(intent);
+        });
+
+
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == adapter.getItemCount() - 1) {
+                    if (!isLoading) {
+                        loadMorePhotos();
+                    }
+                }
+            }
+        });
 
     }
+
     private void load(){
+
+        currentPage = 1; // Reset lại trang khi làm mới
+
         swipe.setRefreshing(true);
         // tránh shimmer vĩnh viễn
         setState(new PhotoState.Loading());
@@ -85,6 +122,34 @@ public class ExploreFragment extends Fragment {
                 out.add(p);
             }
         }catch(Exception ignore){}return out; }
+
+
+
+    private void loadMorePhotos() {
+        isLoading = true;
+        currentPage++;
+
+        FlickrRepo.getRecent(currentPage, 12, new FlickrRepo.CB() {
+            @Override
+            public void ok(List<PhotoItem> items) {
+                if (getView() != null && items != null && !items.isEmpty()) {
+                    adapter.addPhotos(items); // Chỉ thêm ảnh mới, không thay thế
+                }
+                isLoading = false;
+            }
+
+            @Override
+            public void err(Throwable t) {
+                if (getView() != null) {
+                    Toast.makeText(requireContext(), "Load more error", Toast.LENGTH_SHORT).show();
+                }
+                isLoading = false;
+                currentPage--; // Giảm số trang để thử lại lần sau
+            }
+        });
+    }
+
+
 
     private void setState(@NonNull PhotoState state) {
         if (state instanceof PhotoState.Loading){
