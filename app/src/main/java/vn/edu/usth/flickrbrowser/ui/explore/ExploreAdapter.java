@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,18 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
 public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
 
+    //  START: ADDITIONS FOR CLICK HANDLING
+    public interface OnPhotoClickListener {
+        void onPhotoClick(PhotoItem photo);
+    }
+
+    private OnPhotoClickListener listener;
+
+    public void setOnPhotoClickListener(OnPhotoClickListener listener) {
+        this.listener = listener;
+    }
+    //  END: ADDITIONS FOR CLICK HANDLING
+
     private final List<PhotoItem> data = new ArrayList<>();
 
     // Hàm cập nhật danh sách ảnh
@@ -27,6 +38,16 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
         data.clear();
         if (list != null) data.addAll(list);
         notifyDataSetChanged();
+    }
+
+    // Hàm thêm ảnh vào danh sách (cho infinite scroll)
+    public void addPhotos(List<PhotoItem> newPhotos) {
+        if (newPhotos == null || newPhotos.isEmpty()) {
+            return;
+        }
+        int currentSize = data.size();
+        data.addAll(newPhotos);
+        notifyItemRangeInserted(currentSize, newPhotos.size());
     }
 
     @NonNull
@@ -54,6 +75,13 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(h.img);
 
+        //  START: ADDITION FOR CLICK HANDLING
+        h.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onPhotoClick(p);
+            }
+        });
+        //  END: ADDITION FOR CLICK HANDLING
     }
 
     @Override
