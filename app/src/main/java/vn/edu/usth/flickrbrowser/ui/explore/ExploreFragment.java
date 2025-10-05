@@ -59,6 +59,7 @@ public class ExploreFragment extends Fragment {
         FlickrRepo.getRecent(1, 12, new FlickrRepo.CB() {
             @Override
             public void ok(List<PhotoItem> items) {
+                android.util.Log.d("EXPLORE_DEBUG", "Số ảnh nhận được: " + (items == null ? 0 : items.size()));
                 if (!isAdded()) return;
                 swipe.setRefreshing(false);
 
