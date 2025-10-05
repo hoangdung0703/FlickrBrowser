@@ -1,18 +1,24 @@
 package vn.edu.usth.flickrbrowser.core.api;
 
-import java.util.Map;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.FieldMap;
-import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.POST;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface FlickrApi {
-    @FormUrlEncoded
-    @POST("getRecentPhotos")
-    Call<ResponseBody> getRecent(@FieldMap Map<String, String> p);
 
-    @FormUrlEncoded
-    @POST("searchPhotos")
-    Call<ResponseBody> search(@FieldMap Map<String, String> p);
+    // Lấy ảnh mới nhất (Pexels: curated)
+    @GET("curated")
+    Call<ResponseBody> getRecent(
+            @Query("page") int page,
+            @Query("per_page") int perPage
+    );
+
+    // Tìm kiếm ảnh (Pexels: search)
+    @GET("search")
+    Call<ResponseBody> search(
+            @Query("query") String query,
+            @Query("page") int page,
+            @Query("per_page") int perPage
+    );
 }
