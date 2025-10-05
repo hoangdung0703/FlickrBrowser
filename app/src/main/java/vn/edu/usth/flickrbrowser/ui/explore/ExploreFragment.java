@@ -1,15 +1,15 @@
 package vn.edu.usth.flickrbrowser.ui.explore;
+
 import android.os.Bundle;
 import android.view.*;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-
-import org.json.*;
 import java.util.*;
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
@@ -17,41 +17,50 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class ExploreFragment extends Fragment {
+
     private SwipeRefreshLayout swipe;
     private RecyclerView rv;
     private ExploreAdapter adapter;
     private ViewGroup shimmerGrid;
     private View emptyRoot;
     private TextView emptyText;
-    @Nullable @Override
-    public View onCreateView(@NonNull LayoutInflater inf,@Nullable ViewGroup parent,@Nullable Bundle b){
-        View v=inf.inflate(R.layout.fragment_explore,parent,false);
-        swipe=v.findViewById(R.id.swipe); rv=v.findViewById(R.id.recyclerViewExplore);
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inf, @Nullable ViewGroup parent, @Nullable Bundle b) {
+        View v = inf.inflate(R.layout.fragment_explore, parent, false);
+
+        swipe = v.findViewById(R.id.swipe);
+        rv = v.findViewById(R.id.recyclerViewExplore);
         shimmerGrid = v.findViewById(R.id.shimmerGrid);
-        emptyRoot= v.findViewById(R.id.emptyView);
+        emptyRoot = v.findViewById(R.id.emptyView);
         emptyText = emptyRoot.findViewById(R.id.emptyText);
 
-        rv.setLayoutManager(new GridLayoutManager(requireContext(),2));
-        adapter=new ExploreAdapter();
+        rv.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+        adapter = new ExploreAdapter();
         rv.setAdapter(adapter);
+
         swipe.setOnRefreshListener(this::load);
         return v;
     }
+
     @Override
-    public void onViewCreated(@NonNull View v,@Nullable Bundle b){
-        super.onViewCreated(v,b); load();
-
+    public void onViewCreated(@NonNull View v, @Nullable Bundle b) {
+        super.onViewCreated(v, b);
+        load();
     }
-    private void load(){
-        swipe.setRefreshing(true);
-        // tránh shimmer vĩnh viễn
-        setState(new PhotoState.Loading());
-        swipe.setRefreshing(true);
 
-        FlickrRepo.getRecent(1,12,new FlickrRepo.CB(){
+    private void load() {
+        if (!isAdded()) return;
+        swipe.setRefreshing(true);
+        setState(new PhotoState.Loading());
+
+        // Gọi API (dùng Pexels hoặc fallback Flickr feed)
+        FlickrRepo.getRecent(1, 12, new FlickrRepo.CB() {
             @Override
-            public void ok(List<PhotoItem> items){ swipe.setRefreshing(false);
+            public void ok(List<PhotoItem> items) {
+                if (!isAdded()) return;
+                swipe.setRefreshing(false);
 
                 if (items == null || items.isEmpty()) {
                     setState(new PhotoState.Empty());
@@ -59,42 +68,25 @@ public class ExploreFragment extends Fragment {
                     setState(new PhotoState.Success(items));
                 }
             }
+
             @Override
-            public void err(Throwable t){
+            public void err(Throwable t) {
+                if (!isAdded()) return;
                 swipe.setRefreshing(false);
-                Toast.makeText(requireContext(),"Load error",Toast.LENGTH_SHORT).show();
+                setState(new PhotoState.Error(t.getMessage() != null ? t.getMessage() : "Lỗi tải dữ liệu"));
+                Toast.makeText(requireContext(), "Load error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-    private List<PhotoItem> parse(String j){
-        List<PhotoItem> out=new ArrayList<>();
-        try{
-        JSONObject root=new JSONObject(j);
-        JSONObject photos=root.optJSONObject("photos");
-        JSONArray arr= photos!=null? photos.optJSONArray("photo"):null;
-        if(arr==null)
-            return out;
-        for(int i=0;i<arr.length();i++){
-            JSONObject o=arr.getJSONObject(i);
-            PhotoItem p=new PhotoItem();
-            p.id=o.optString("id");
-            p.server=o.optString("server");
-            p.secret=o.optString("secret");
-            p.title=o.optString("title");
-            p.owner=o.optString("owner");
-            out.add(p);
-        }
-        }catch(Exception ignore){}return out; }
 
     private void setState(@NonNull PhotoState state) {
-        if (state instanceof PhotoState.Loading){
+        if (state instanceof PhotoState.Loading) {
             shimmerGrid.setVisibility(View.VISIBLE);
             startShimmers(shimmerGrid);
-
             rv.setVisibility(View.GONE);
             emptyRoot.setVisibility(View.GONE);
         }
-        else if (state instanceof PhotoState.Success){
+        else if (state instanceof PhotoState.Success) {
             List<PhotoItem> items = ((PhotoState.Success) state).getItems();
             stopShimmers(shimmerGrid);
             shimmerGrid.setVisibility(View.GONE);
@@ -106,46 +98,36 @@ public class ExploreFragment extends Fragment {
         else if (state instanceof PhotoState.Empty) {
             stopShimmers(shimmerGrid);
             shimmerGrid.setVisibility(View.GONE);
-
             rv.setVisibility(View.GONE);
             emptyRoot.setVisibility(View.VISIBLE);
             emptyText.setText(R.string.empty_default);
         }
-        else if ( state instanceof PhotoState.Error){
+        else if (state instanceof PhotoState.Error) {
             stopShimmers(shimmerGrid);
             shimmerGrid.setVisibility(View.GONE);
-
             rv.setVisibility(View.GONE);
-            emptyRoot.setVisibility(View.GONE);
-
-            String msg = ((PhotoState.Error) state).getMessage();
-            Toast.makeText(requireContext(),msg,Toast.LENGTH_SHORT).show();
+            emptyRoot.setVisibility(View.VISIBLE);
+            emptyText.setText(((PhotoState.Error) state).getMessage());
         }
     }
 
-    private void startShimmers(View root){
-        if (root instanceof com.facebook.shimmer.ShimmerFrameLayout){
-            ((com.facebook.shimmer.ShimmerFrameLayout)root).startShimmer();
-        }
+    private void startShimmers(View root) {
+        if (root instanceof com.facebook.shimmer.ShimmerFrameLayout)
+            ((com.facebook.shimmer.ShimmerFrameLayout) root).startShimmer();
 
-        if (root instanceof ViewGroup){
+        if (root instanceof ViewGroup) {
             ViewGroup vg = (ViewGroup) root;
-            for (int i = 0; i <vg.getChildCount(); i++){
-                startShimmers(vg.getChildAt(i));
-            }
+            for (int i = 0; i < vg.getChildCount(); i++) startShimmers(vg.getChildAt(i));
         }
     }
 
-    private void stopShimmers(View root){
-        if (root instanceof com.facebook.shimmer.ShimmerFrameLayout){
+    private void stopShimmers(View root) {
+        if (root instanceof com.facebook.shimmer.ShimmerFrameLayout)
             ((com.facebook.shimmer.ShimmerFrameLayout) root).stopShimmer();
-        }
 
-        if (root instanceof ViewGroup){
+        if (root instanceof ViewGroup) {
             ViewGroup vg = (ViewGroup) root;
-            for (int i = 0; i <vg.getChildCount(); i++){
-                stopShimmers(vg.getChildAt(i));
-            }
+            for (int i = 0; i < vg.getChildCount(); i++) stopShimmers(vg.getChildAt(i));
         }
     }
 }
