@@ -40,7 +40,7 @@ public class SearchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         adapter = new PhotosAdapter(item -> {
             android.content.Intent i = new android.content.Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTO, item);
+            i.putExtra("PHOTO_ITEM", item);
             startActivity(i);
         });
         binding.rvPhotos.setAdapter(adapter);
