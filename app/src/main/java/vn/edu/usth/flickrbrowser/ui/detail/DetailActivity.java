@@ -57,7 +57,7 @@ public class DetailActivity extends AppCompatActivity {
 
     /** Load ảnh với Glide + placeholder/error (D3) */
     private void loadImageWithGlide() {
-        ImageView imageView = findViewById(R.id.imageViewDetail);
+        ImageView imageView = findViewById(R.id.photoView);
         String imageUrl = photoItem.getFullUrl();
 
         if (imageUrl == null || imageUrl.isEmpty()) {
