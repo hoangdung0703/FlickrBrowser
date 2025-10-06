@@ -59,4 +59,19 @@ public class PhotoItem implements Serializable {
     private static boolean notEmpty(String s) {
         return s != null && !s.isEmpty();
     }
+
+    // ====== Getter cho các thuộc tính cơ bản ======
+    public String getTitle() {
+        return title != null ? title : "";
+    }
+
+    public String getOwner() {
+        return owner != null ? owner : "";
+    }
+
+    // Nếu API Pexels không có tags, để trống cho tương thích DetailActivity
+    public String getTags() {
+        return "";
+    }
 }
+
