@@ -21,8 +21,8 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        // Nhận PhotoItem từ Explore/Search
-        photoItem = getIntent().getParcelableExtra("PHOTO_ITEM");
+        // Nhận PhotoItem từ Explore/Search - CHANGED TO GET SERIALIZABLE
+        photoItem = (PhotoItem) getIntent().getSerializableExtra("PHOTO_ITEM");
 
         // Ngày 3: Validate dữ liệu ảnh
         if (!isValidPhotoItem(photoItem)) {
@@ -38,12 +38,10 @@ public class DetailActivity extends AppCompatActivity {
     /** Validation cơ bản PhotoItem */
     private boolean isValidPhotoItem(PhotoItem item) {
         if (item == null) return false;
-        if (item.id == null || item.id.isEmpty()) return false;
-        if (item.server == null || item.server.isEmpty()) return false;
-        if (item.secret == null || item.secret.isEmpty()) return false;
-
-        String url = item.getFullUrl();
-        return url != null && !url.isEmpty();
+        // FlickrRepo provides fullUrl directly. We should validate that.
+        // We can also check the ID as a basic sanity measure.
+        return item.getFullUrl() != null && !item.getFullUrl().isEmpty() &&
+               item.id != null && !item.id.isEmpty();
     }
 
     /** Toolbar cơ bản (D1–D2), D5 gắn nút back */
@@ -59,7 +57,7 @@ public class DetailActivity extends AppCompatActivity {
 
     /** Load ảnh với Glide + placeholder/error (D3) */
     private void loadImageWithGlide() {
-        ImageView imageView = findViewById(R.id.imageViewDetail);
+        ImageView imageView = findViewById(R.id.photoView);
         String imageUrl = photoItem.getFullUrl();
 
         if (imageUrl == null || imageUrl.isEmpty()) {

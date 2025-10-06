@@ -1,4 +1,6 @@
 package vn.edu.usth.flickrbrowser.ui.explore;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.TextView;
@@ -8,12 +10,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.*;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+
 import org.json.*;
 import java.util.*;
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
+import vn.edu.usth.flickrbrowser.ui.detail.DetailActivity;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class ExploreFragment extends Fragment {
@@ -24,6 +29,12 @@ public class ExploreFragment extends Fragment {
     private View emptyRoot;
     private TextView emptyText;
     private FavoritesViewModel favVM; // ViewModel for Favorites
+
+
+    private int currentPage = 1;
+    private boolean isLoading = false;
+
+
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inf,@Nullable ViewGroup parent,@Nullable Bundle b){
         View v=inf.inflate(R.layout.fragment_explore,parent,false);
@@ -43,12 +54,51 @@ public class ExploreFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View v,@Nullable Bundle b){
         super.onViewCreated(v,b); load();
+        adapter.setOnPhotoClickListener(p -> {
+            // Create an Intent to open DetailActivity
+            Intent intent = new Intent(requireContext(), DetailActivity.class);
+
+            // Pass the clicked photo's information with the correct key
+            intent.putExtra("PHOTO_ITEM", p);
+
+            // Start the new activity
+            startActivity(intent);
+        });
+
+
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == adapter.getItemCount() - 1) {
+                    if (!isLoading) {
+                        loadMorePhotos();
+                    }
+                }
+            }
+        });
+
     }
-    private void load(){ swipe.setRefreshing(true);
+
+    private void load(){
+
+        currentPage = 1; // Reset lại trang khi làm mới
+
+        swipe.setRefreshing(true);
+        // tránh shimmer vĩnh viễn
+        setState(new PhotoState.Loading());
+        swipe.setRefreshing(true);
+
         FlickrRepo.getRecent(1,12,new FlickrRepo.CB(){
             @Override
-            public void ok(String json){ swipe.setRefreshing(false);
-                adapter.setData(parse(json));
+            public void ok(List<PhotoItem> items){ swipe.setRefreshing(false);
+
+                if (items == null || items.isEmpty()) {
+                    setState(new PhotoState.Empty());
+                } else {
+                    setState(new PhotoState.Success(items));
+                }
             }
             @Override
             public void err(Throwable t){
@@ -60,22 +110,50 @@ public class ExploreFragment extends Fragment {
     private List<PhotoItem> parse(String j){
         List<PhotoItem> out=new ArrayList<>();
         try{
-        JSONObject root=new JSONObject(j);
-        JSONObject photos=root.optJSONObject("photos");
-        JSONArray arr= photos!=null? photos.optJSONArray("photo"):null;
-        if(arr==null)
-            return out;
-        for(int i=0;i<arr.length();i++){
-            JSONObject o=arr.getJSONObject(i);
-            PhotoItem p=new PhotoItem();
-            p.id=o.optString("id");
-            p.server=o.optString("server");
-            p.secret=o.optString("secret");
-            p.title=o.optString("title");
-            p.owner=o.optString("owner");
-            out.add(p);
-        }
+            JSONObject root=new JSONObject(j);
+            JSONObject photos=root.optJSONObject("photos");
+            JSONArray arr= photos!=null? photos.optJSONArray("photo"):null;
+            if(arr==null)
+                return out;
+            for(int i=0;i<arr.length();i++){
+                JSONObject o=arr.getJSONObject(i);
+                PhotoItem p=new PhotoItem();
+                p.id=o.optString("id");
+                p.server=o.optString("server");
+                p.secret=o.optString("secret");
+                p.title=o.optString("title");
+                p.owner=o.optString("owner");
+                out.add(p);
+            }
         }catch(Exception ignore){}return out; }
+
+
+
+    private void loadMorePhotos() {
+        isLoading = true;
+        currentPage++;
+
+        FlickrRepo.getRecent(currentPage, 12, new FlickrRepo.CB() {
+            @Override
+            public void ok(List<PhotoItem> items) {
+                if (getView() != null && items != null && !items.isEmpty()) {
+                    adapter.addPhotos(items); // Chỉ thêm ảnh mới, không thay thế
+                }
+                isLoading = false;
+            }
+
+            @Override
+            public void err(Throwable t) {
+                if (getView() != null) {
+                    Toast.makeText(requireContext(), "Load more error", Toast.LENGTH_SHORT).show();
+                }
+                isLoading = false;
+                currentPage--; // Giảm số trang để thử lại lần sau
+            }
+        });
+    }
+
+
 
     private void setState(@NonNull PhotoState state) {
         if (state instanceof PhotoState.Loading){
