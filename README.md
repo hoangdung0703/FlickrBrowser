@@ -1,4 +1,5 @@
 Flickr Mobile App
+
 A modern, native Android application for exploring, searching, and saving photos from Flickr. This project is built with a focus on a clean user interface, a robust architecture, and a seamless user experience, following the latest Material 3 design guidelines.
 
 ✨ Features
