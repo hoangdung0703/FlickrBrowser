@@ -1,9 +1,11 @@
 package vn.edu.usth.flickrbrowser.ui.detail;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -15,6 +17,8 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 public class DetailActivity extends AppCompatActivity {
 
     private PhotoItem photoItem;
+    private ImageView btnFavorite;
+    private boolean currentFav = false; // trạng thái cục bộ trong màn Detail
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +27,7 @@ public class DetailActivity extends AppCompatActivity {
 
         // Nhận PhotoItem từ Explore/Search - CHANGED TO GET SERIALIZABLE
         photoItem = (PhotoItem) getIntent().getSerializableExtra("PHOTO_ITEM");
+        currentFav = getIntent().getBooleanExtra("is_favorite", false);
 
         // Ngày 3: Validate dữ liệu ảnh
         if (!isValidPhotoItem(photoItem)) {
@@ -33,7 +38,35 @@ public class DetailActivity extends AppCompatActivity {
 
         setupToolbar();
         loadImageWithGlide();
+        setupFavoriteButton();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                setResultAndFinish();
+            }
+        });
     }
+    private void updateHeartIcon() {
+        if (btnFavorite == null) return;
+        btnFavorite.setImageResource(
+                currentFav ? R.drawable.baseline_favorite_24
+                        : R.drawable.outline_favorite_24
+        );
+    }
+    private void setupFavoriteButton() {
+        btnFavorite = findViewById(R.id.btnFavorite);
+        updateHeartIcon();
+
+        btnFavorite.setOnClickListener(v -> {
+            currentFav = !currentFav;           // toggle trạng thái cục bộ
+            updateHeartIcon();
+            Toast.makeText(this,
+                    currentFav ? "Added to Favorites" : "Removed from Favorites",
+                    Toast.LENGTH_SHORT).show();
+        });
+    }
+
 
     /** Validation cơ bản PhotoItem */
     private boolean isValidPhotoItem(PhotoItem item) {
@@ -75,10 +108,18 @@ public class DetailActivity extends AppCompatActivity {
         imageView.setContentDescription(photoItem.title != null ? photoItem.title : "Flickr photo");
     }
 
+    private void setResultAndFinish() {
+        Intent data = new Intent();
+        data.putExtra("photo_id", photoItem.id);
+        data.putExtra("is_favorite", currentFav);
+        setResult(RESULT_OK, data);
+        finish();
+    }
     /** D5: xử lý back trên toolbar */
     @Override
     public boolean onSupportNavigateUp() {
-        finish();
+        setResultAndFinish();
         return true;
     }
+
 }
