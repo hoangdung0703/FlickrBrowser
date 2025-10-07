@@ -1,5 +1,7 @@
 package vn.edu.usth.flickrbrowser.ui.favorites;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,6 +26,7 @@ import java.util.List;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
+import vn.edu.usth.flickrbrowser.ui.detail.DetailActivity;
 
 public class FavoritesFragment extends Fragment {
 
@@ -29,6 +34,22 @@ public class FavoritesFragment extends Fragment {
     private FavoritesAdapter adapter;
 
     public FavoritesFragment() { }
+
+    // Launcher để mở DetailActivity và nhận result quay về
+    private final ActivityResultLauncher<Intent> detailLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra("PHOTO_ITEM");
+                    boolean isFav = result.getData().getBooleanExtra("is_favorite", false);
+                    if (returned != null) {
+                        if (isFav) {
+                            vm.addFavorite(returned);    // đảm bảo có trong favorites
+                        } else {
+                            vm.removeFavorite(returned); // nếu đã bỏ tim trong Detail → xoá khỏi danh sách
+                        }
+                    }
+                }
+            });
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -55,18 +76,29 @@ public class FavoritesFragment extends Fragment {
             }
         });
 
-        // ViewModel (scope activity để chia sẻ với Explore/Search)
+        // ViewModel (scope Activity để chia sẻ với Explore/Search)
         vm = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
 
-        // Adapter (vẫn giữ tên và cách gọi cũ)
-        adapter = new FavoritesAdapter(new ArrayList<>(), item -> vm.removeFavorite(item));
+        // Adapter:
+        //  - click vào ♥: remove khỏi favorites (như cũ)
+        //  - click vào item: mở DetailActivity (mới thêm)
+        adapter = new FavoritesAdapter(
+                new ArrayList<>(),
+                item -> vm.removeFavorite(item),                      // click ♥
+                item -> {                                             // click item mở Detail
+                    Intent i = new Intent(requireContext(), DetailActivity.class);
+                    i.putExtra("PHOTO_ITEM", item);
+                    i.putExtra("is_favorite", true); // vì đang ở Favorites, mặc định đang ♥
+                    detailLauncher.launch(i);
+                }
+        );
         rv.setAdapter(adapter);
 
         // Observe LiveData → update list & EmptyView
         vm.getFavorites().observe(getViewLifecycleOwner(), list -> {
             if (list == null || list.isEmpty()) {
                 empty.setVisibility(View.VISIBLE);
-                adapter.update(new ArrayList<>());
+                adapter.update(new ArrayList<>()); // clear UI
             } else {
                 empty.setVisibility(View.GONE);
                 adapter.update(list);
@@ -74,17 +106,22 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
-    // Giữ nguyên cấu trúc adapter như bạn có, chỉ đổi String → PhotoItem
+    // Adapter — giữ nguyên cấu trúc, chỉ thêm callback onItemClick để mở Detail
     public static class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.VH> {
 
         public interface OnFavoriteClick { void onClick(PhotoItem item); }
+        public interface OnItemClick     { void onClick(PhotoItem item); }
 
         private List<PhotoItem> items;
-        private final OnFavoriteClick callback;
+        private final OnFavoriteClick favCallback;
+        private final OnItemClick itemClick; // mới thêm để mở Detail
 
-        public FavoritesAdapter(List<PhotoItem> items, OnFavoriteClick callback) {
-            this.items = items;
-            this.callback = callback;
+        public FavoritesAdapter(List<PhotoItem> items,
+                                OnFavoriteClick favCallback,
+                                OnItemClick itemClick) {
+            this.items = (items != null) ? new ArrayList<>(items) : new ArrayList<>();
+            this.favCallback = favCallback;
+            this.itemClick = itemClick;
         }
 
         public void update(List<PhotoItem> newItems) {
@@ -104,25 +141,35 @@ public class FavoritesFragment extends Fragment {
         public void onBindViewHolder(@NonNull VH holder, int position) {
             PhotoItem item = items.get(position);
 
-            // Hiển thị ảnh thay vì text
-            String url = item.getThumbUrl();
-            if (url == null || url.isEmpty()) url = item.getFullUrl();
+            // Hiển thị ảnh (nếu layout có imgPhoto)
+            if (holder.img != null) {
+                String url = item.getThumbUrl();
+                if (url == null || url.isEmpty()) url = item.getFullUrl();
 
-            Glide.with(holder.itemView.getContext())
-                    .load(url)
-                    .placeholder(R.drawable.bg_skeleton_rounded)
-                    .centerCrop()
-                    .into(holder.img);
+                Glide.with(holder.itemView.getContext())
+                        .load(url)
+                        .placeholder(R.drawable.bg_skeleton_rounded)
+                        .centerCrop()
+                        .into(holder.img);
+            }
 
-            holder.tvTitle.setText(item.title != null ? item.title : "(No title)");
-            holder.btnFavorite.setImageResource(R.drawable.baseline_favorite_24);
-            holder.btnFavorite.setContentDescription(
-                    holder.itemView.getContext().getString(R.string.cd_unfavorite)
-            );
+            if (holder.tvTitle != null) {
+                holder.tvTitle.setText(item.title != null ? item.title : "(No title)");
+            }
 
-            // Click ♥ → remove khỏi favorites
-            holder.btnFavorite.setOnClickListener(v -> {
-                if (callback != null) callback.onClick(item);
+            if (holder.btnFavorite != null) {
+                holder.btnFavorite.setImageResource(R.drawable.baseline_favorite_24);
+                holder.btnFavorite.setContentDescription(
+                        holder.itemView.getContext().getString(R.string.cd_unfavorite)
+                );
+                holder.btnFavorite.setOnClickListener(v -> {
+                    if (favCallback != null) favCallback.onClick(item);
+                });
+            }
+
+            // Click item → mở DetailActivity (dùng chung layout Detail)
+            holder.itemView.setOnClickListener(v -> {
+                if (itemClick != null) itemClick.onClick(item);
             });
         }
 
