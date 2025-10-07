@@ -8,17 +8,21 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
+import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 
 public class DetailActivity extends AppCompatActivity {
 
     private PhotoItem photoItem;
     private ImageView btnFavorite;
     private boolean currentFav = false; // trạng thái cục bộ trong màn Detail
+
+    private FavoritesViewModel favVM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,9 @@ public class DetailActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        favVM = new ViewModelProvider(this).get(FavoritesViewModel.class);
+        currentFav = favVM.isFavorite(photoItem.id);
 
         setupToolbar();
         loadImageWithGlide();
@@ -59,7 +66,14 @@ public class DetailActivity extends AppCompatActivity {
         updateHeartIcon();
 
         btnFavorite.setOnClickListener(v -> {
-            currentFav = !currentFav;           // toggle trạng thái cục bộ
+            currentFav = !currentFav; // toggle trạng thái cục bộ
+            // Cập nhật trạng thái trong ViewModel
+            if (currentFav) {
+                favVM.addFavorite(photoItem);
+            } else {
+                favVM.removeFavorite(photoItem);
+            }
+
             updateHeartIcon();
             Toast.makeText(this,
                     currentFav ? "Added to Favorites" : "Removed from Favorites",
