@@ -36,6 +36,13 @@
 
     <string name="photo_detail_content_desc">Description for the detailed photo</string>
     <string name="cd_info">Picture available\n</string>
+
+    <string name="about_app_icon">App icon</string>
+    <string name="about_version">Version 1.0</string>
+    <string name="about_title">About</string>
+    <string name="about_subtitle">A beautiful photo browser with Material Design</string>
+    <string name="features_title">Features</string>
+    <string name="features_subtitle">Explore, search, favorites"</string>
 </resources>
 
 
