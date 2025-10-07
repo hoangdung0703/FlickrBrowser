@@ -16,7 +16,6 @@ import java.util.List;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
-import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 
 public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
 
@@ -33,12 +32,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
     //  END: ADDITIONS FOR CLICK HANDLING
 
     private final List<PhotoItem> data = new ArrayList<>();
-
-    private final FavoritesViewModel favVM;
-
-    public ExploreAdapter(FavoritesViewModel favVM) {
-        this.favVM = favVM;
-    }
 
     // Hàm cập nhật danh sách ảnh
     public void setData(List<PhotoItem> list) {
@@ -89,20 +82,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
             }
         });
         //  END: ADDITION FOR CLICK HANDLING
-
-        // setting the heart icon
-        boolean isFav = favVM.isFavorite(p.id);
-        h.heart.setImageResource(isFav ? R.drawable.baseline_favorite_24 : R.drawable.outline_favorite_24); // using id as a key
-
-        // click ♥ -> toggle in ViewModel
-        h.heart.setOnClickListener(v -> {
-            int adapterPos = h.getBindingAdapterPosition();
-            if (adapterPos == RecyclerView.NO_POSITION) return;
-
-            PhotoItem item = data.get(adapterPos);
-            favVM.toggleFavorite(item.id);   // update viewmodel
-            notifyItemChanged(adapterPos);   // change icon
-        });
     }
 
     @Override
@@ -112,12 +91,9 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder {
         ImageView img;
-        ImageView heart; // add heart icon
         VH(@NonNull View v) {
             super(v);
             img = v.findViewById(R.id.imgPhoto);
-            heart = itemView.findViewById(R.id.btnFavorite);
         }
     }
 }
-

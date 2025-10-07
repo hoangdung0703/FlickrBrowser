@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.List;
@@ -20,14 +19,12 @@ import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
-import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
     private FragmentSearchBinding binding;
     private PhotosAdapter adapter;
-    private FavoritesViewModel favVM;
     private int page = 1;
     private final int perPage = 24;
     @Nullable
@@ -70,9 +67,6 @@ public class SearchFragment extends Fragment {
 
         // Initial empty state
         setState(new PhotoState.Empty());
-
-        favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class); // ViewModel for Favorites (scope activity)
-        adapter = new PhotosAdapter(favVM); // ViewModel for Favorites (need a parameter)
     }
 
     @Override

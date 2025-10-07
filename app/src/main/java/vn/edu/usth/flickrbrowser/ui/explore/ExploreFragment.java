@@ -7,7 +7,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.*;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -17,7 +16,6 @@ import java.util.*;
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
-import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 import vn.edu.usth.flickrbrowser.ui.detail.DetailActivity;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
@@ -28,7 +26,6 @@ public class ExploreFragment extends Fragment {
     private ViewGroup shimmerGrid;
     private View emptyRoot;
     private TextView emptyText;
-    private FavoritesViewModel favVM; // ViewModel for Favorites
 
 
     private int currentPage = 1;
@@ -45,8 +42,7 @@ public class ExploreFragment extends Fragment {
         emptyText = emptyRoot.findViewById(R.id.emptyText);
 
         rv.setLayoutManager(new GridLayoutManager(requireContext(),2));
-        favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class); // ViewModel for Favorites (scope activity)
-        adapter=new ExploreAdapter(favVM); // ViewModel for Favorites (need a parameter)
+        adapter=new ExploreAdapter();
         rv.setAdapter(adapter);
         swipe.setOnRefreshListener(this::load);
         return v;
