@@ -1,79 +1,70 @@
-Flickr Mobile App
+# 📸 Flickr Browser – Mobile Application
 
-A modern, native Android application for exploring, searching, and saving photos from Flickr. This project is built with a focus on a clean user interface, a robust architecture, and a seamless user experience, following the latest Material 3 design guidelines.
+A modern Android application for **exploring and discovering stunning photos** from Flickr, built with **Material Design 3**, **Java**, and **Android Jetpack** components.
 
-✨ Features
-Our application provides a set of features designed for photo enthusiasts:
+Developed by a student team from **University of Science and Technology of Hanoi (USTH)** as part of the *Mobile Application Development* course.
 
-Explore Curated Photos: The home screen displays the latest curated photos from Pexels in a beautiful two-column grid. It includes a smooth shimmer effect while loading, pull-to-refresh functionality, and an elegant empty state view if no photos are available.
+---
 
-Powerful Search: Users can search for photos using keywords. The search results are displayed in the same reusable grid, with support for loading states, empty results, and network error handling.
+## 🌟 Overview
 
-Detailed Photo View: Tapping on any photo opens a detail screen where the image is displayed in high resolution. From here, users can easily navigate back, share the photo, or open it in an external browser.
+**Flickr Browser** allows users to explore trending and curated photos directly from Flickr or Pexels APIs.  
+The app is designed to be fast, intuitive, and visually appealing — following the latest **Material 3** guidelines.
 
-Favorites Collection: Users can mark any photo as a favorite by tapping a heart icon. All favorite photos are saved locally and can be viewed on a dedicated Favorites screen, even without an internet connection.
+Users can:
+- Browse high-quality photos in a responsive **grid layout**
+- View full-size photo details with smooth transitions
+- Add favorite photos to a personal list
+- Search photos by keyword or tags
+- Share, download, or open photos in browser
+- Experience a unified light theme using the **Flickr Blue palette**
 
-Share & Open: Easily share a link to a photo with other apps or open it directly in a web browser. The app intelligently checks for network connectivity before performing these actions to prevent errors.
+---
 
-Robust Network Handling: The app gracefully handles network errors, such as a lack of internet or timeouts, by displaying informative toasts to the user instead of crashing.
+## 🧩 Features
 
-🛠️ Tech Stack & Architecture
-This project is built using modern Android development tools and practices.
+| Feature | Description |
+|----------|-------------|
+| 🏠 **Home** | Displays curated or recent photos from the Flickr/Pexels API. |
+| 🔍 **Search** | Allows searching by keyword or tags with real-time results. |
+| 🖼️ **Explore Grid** | Infinite scrolling grid with smooth image loading and skeleton shimmer. |
+| ❤️ **Favorites** | Save and manage your favorite photos locally. |
+| 📄 **Detail View** | View photo metadata (title, owner, tags) and perform actions (Share, Download, Open). |
+| ⚙️ **Design System** | Fully implemented with **Material Design 3** tokens, including colors, typography, and spacing. |
+| 🌐 **Offline Handling** | Graceful fallback when API or network fails. |
 
-Programming Language: Java
+---
 
-Architecture: MVVM (Model-View-ViewModel)
+## 🛠️ Tech Stack
 
-Asynchronous Programming: Asynchronous task handling for network calls using callbacks.
+| Category | Technology |
+|-----------|-------------|
+| **Language** | Java |
+| **Framework** | Android Jetpack |
+| **Architecture** | MVVM (Model-View-ViewModel) |
+| **Networking** | Volley / Retrofit |
+| **Image Loading** | Glide |
+| **UI Components** | Material 3 (Material Components for Android) |
+| **Data Handling** | LiveData, ViewModel, SharedPreferences |
+| **API Integration** | Flickr REST API (and optional Pexels API fallback) |
+| **Version Control** | Git & GitHub |
 
-UI Toolkit:
+---
 
-Material 3: For a modern and consistent design system across the app.
+## 🚀 Getting Started
 
-View Binding: For safe and easy access to UI components.
+### 1. Clone the repository
+```bash
+git clone https://github.com/hoangdung0703/FlickrBrowser.git
+cd FlickrBrowser
+```
+### 2. Open in Android Studio
+- Use Android Studio Flamingo (or newer)
+- Gradle version: 8.x
+- SDK target: Android 14 (API 34)
 
-RecyclerView: To efficiently display grids of photos.
-
-Networking:
-
-Retrofit & OkHttp: For making robust and efficient API calls to the Pexels service.
-
-ConnectivityManager: To check for internet availability before making network requests.
-
-Image Loading:
-
-Glide: For loading, caching, and displaying images smoothly, with support for placeholders and error states.
-
-🚀 Getting Started
-To build and run this project locally, you will need to have Android Studio installed. Follow these steps:
-
-1. Clone the repository
-git clone [https://github.com/your-organization/pexels-app.git](https://github.com/your-organization/pexels-app.git)
-cd pexels-app
-
-2. Set up the API Key
-The application uses the Pexels API to fetch photos. You will need to provide your own API key to build the project.
-
-Open the local.properties file in the root directory of the project. If the file does not exist, create it.
-
-Add your Pexels API key to the file as follows:
-
-PEXELS_API_KEY="YOUR_PEXELS_API_KEY_HERE"
-
-3. Build and Run the App
-Open the project in Android Studio, let Gradle sync the dependencies, and then press the "Run" button to install the app on an emulator or a physical device.
-
-🤝 Contribution
-This project was developed by a dedicated team of students from USTH (University of Science and Technology of Hanoi):
-
-Minh Đức
-
-Minh Hiếu
-
-Xuân Hiếu
-
-Quang Dũng
-
-Huỳnh Dũng
-
-Hoàng Dũng
+### 3. Set up API Keys
+- Add your Flickr API Key or Pexels API Key in:
+```bash
+app/src/main/java/vn/edu/usth/flickrbrowser/core/api/ApiConfig.java
+```
