@@ -186,7 +186,6 @@ public class FavoritesFragment extends Fragment {
             VH(@NonNull View itemView) {
                 super(itemView);
                 img = itemView.findViewById(R.id.imgPhoto);
-                tvTitle = itemView.findViewById(R.id.tvTitle);
                 btnFavorite = itemView.findViewById(R.id.btnFavorite);
             }
         }
