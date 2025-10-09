@@ -1,12 +1,17 @@
 package vn.edu.usth.flickrbrowser.ui.explore;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.*;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -17,6 +22,7 @@ import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.ui.detail.DetailActivity;
+import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class ExploreFragment extends Fragment {
@@ -30,6 +36,20 @@ public class ExploreFragment extends Fragment {
 
     private int currentPage = 1;
     private boolean isLoading = false;
+
+    private FavoritesViewModel favVM;
+
+    private final ActivityResultLauncher<Intent> detailLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra("PHOTO_ITEM");
+                    boolean isFav = result.getData().getBooleanExtra("is_favorite", false);
+                    if (returned != null) {
+                        if (isFav) favVM.addFavorite(returned);
+                        else favVM.removeFavorite(returned);
+                    }
+                }
+            });
 
 
     @Nullable @Override
@@ -50,6 +70,8 @@ public class ExploreFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View v,@Nullable Bundle b){
         super.onViewCreated(v,b); load();
+        favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
+        load();
         adapter.setOnPhotoClickListener(p -> {
             // Create an Intent to open DetailActivity
             Intent intent = new Intent(requireContext(), DetailActivity.class);
@@ -57,8 +79,8 @@ public class ExploreFragment extends Fragment {
             // Pass the clicked photo's information with the correct key
             intent.putExtra("PHOTO_ITEM", p);
 
-            // Start the new activity
-            startActivity(intent);
+            intent.putExtra("is_favorite", favVM.isFavorite(p.id));
+            detailLauncher.launch(intent);
         });
 
 
