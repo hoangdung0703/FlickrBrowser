@@ -12,9 +12,11 @@
         android:id="@+id/rvFavorites"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
         android:padding="@dimen/spacing_m"
-        tools:listitem="@layout/item_favorite" />
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        tools:listitem="@layout/item_photo" />
 
     <!-- Empty state -->
     <LinearLayout
