@@ -72,15 +72,20 @@ public class ExploreFragment extends Fragment {
         super.onViewCreated(v,b); load();
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
         load();
-        adapter.setOnPhotoClickListener(p -> {
-            // Create an Intent to open DetailActivity
-            Intent intent = new Intent(requireContext(), DetailActivity.class);
-
-            // Pass the clicked photo's information with the correct key
-            intent.putExtra("PHOTO_ITEM", p);
-
-            intent.putExtra("is_favorite", favVM.isFavorite(p.id));
-            detailLauncher.launch(intent);
+        adapter.setOnPhotoClickListener((p, position) -> {
+            try {
+                Intent intent = new Intent(requireContext(), DetailActivity.class);
+                // Truyền danh sách ảnh hiện tại
+                intent.putExtra(DetailActivity.EXTRA_PHOTOS, new ArrayList<>(adapter.getCurrentData()));
+                // Truyền vị trí ảnh được bấm
+                intent.putExtra(DetailActivity.EXTRA_START_INDEX, position);
+                // Truyền thông tin yêu thích (nếu cần)
+                intent.putExtra("is_favorite", favVM.isFavorite(p.id));
+                detailLauncher.launch(intent);
+            } catch (Exception e) {
+                Toast.makeText(requireContext(), "Error opening detail: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
         });
 
 
