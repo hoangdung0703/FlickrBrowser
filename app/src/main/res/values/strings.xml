@@ -2,10 +2,18 @@
     <!-- Tên ứng dụng -->
     <string name="app_name">FlickrBrowser</string>
 
+    <!-- Detail actions -->
+    <string name="cd_share">Share</string>
+    <string name="cd_download">Download</string>
+
     <!-- Search -->
     <string name="search_hint">Search photos</string>
     <string name="search_empty_message">Type a keyword and press Search</string>
     <string name="photo_content_desc">Photo item</string>
+
+    <!-- Empty state -->
+    <string name="empty_default">No data</string>
+    <string name="empty_icon_desc">No icon</string>
 
     <!-- Favorites screen -->
     <string name="favorites_title">Favorites</string>
@@ -17,4 +25,27 @@
     <!-- Search/Explore screen -->
     <string name="no_photos_found">No photos found</string>
     <string name="search_no_photos_text">No photos found</string>
+
+    <!-- Nav-->
+
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_about">About</string>
+
+    <string name="photo_detail_content_desc">Description for the detailed photo</string>
+    <string name="cd_info">Picture available\n</string>
+
+    <!-- Pagination / errors -->
+    <string name="load_more_failed">Failed to load more</string>
+
+    <!-- About screen -->
+    <string name="about_app_icon">App icon</string>
+    <string name="about_version">Version 1.0</string>
+    <string name="about_title">About this app</string>
+    <string name="about_subtitle">A simple Flickr photo browser.</string>
+    <string name="features_title">Features</string>
+    <string name="features_subtitle">Explore, search, and save favorites.</string>
 </resources>
