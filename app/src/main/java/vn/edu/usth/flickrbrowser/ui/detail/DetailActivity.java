@@ -1,84 +1,122 @@
 package vn.edu.usth.flickrbrowser.ui.detail;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.github.chrisbanes.photoview.PhotoView;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
-import com.squareup.picasso.Picasso;
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import com.bumptech.glide.Glide;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
 public class DetailActivity extends AppCompatActivity {
 
-    public static final String EXTRA_PHOTO = "extra_photo";
-
-    private PhotoView photoView;
-    private TextView title, owner;
-    private ChipGroup chipGroupTags;
-    private ImageButton btnFavorite, btnShare, btnDownload;
+    private PhotoItem photoItem;
+    private ImageView btnFavorite;
+    private boolean currentFav = false; // trạng thái tim hiện tại
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        photoView = findViewById(R.id.photoView);
-        title = findViewById(R.id.photoTitle);
-        owner = findViewById(R.id.photoOwner);
-        chipGroupTags = findViewById(R.id.chipGroupTags);
-        btnFavorite = findViewById(R.id.btnFavorite);
-        btnShare = findViewById(R.id.btnShare);
-        btnDownload = findViewById(R.id.btnDownload);
+        // Nhận PhotoItem từ Explore/Search
+        photoItem = (PhotoItem) getIntent().getSerializableExtra("PHOTO_ITEM");
+        currentFav = getIntent().getBooleanExtra("is_favorite", false);
 
-        PhotoItem photo = (PhotoItem) getIntent().getSerializableExtra(EXTRA_PHOTO);
-        if (photo != null) {
-            bindPhoto(photo);
+        if (!isValidPhotoItem(photoItem)) {
+            Toast.makeText(this, "Ảnh không hợp lệ", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        setupToolbar();
+        loadImageWithGlide();
+        setupFavoriteButton();
+
+        // Back gesture / system back → trả result
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                setResultAndFinish();
+            }
+        });
+    }
+
+    private void updateHeartIcon() {
+        if (btnFavorite == null) return;
+        btnFavorite.setImageResource(
+                currentFav ? R.drawable.baseline_favorite_24
+                        : R.drawable.outline_favorite_24
+        );
+    }
+
+    private void setupFavoriteButton() {
+        btnFavorite = findViewById(R.id.btnFavorite);
+        updateHeartIcon();
+
+        btnFavorite.setOnClickListener(v -> {
+            currentFav = !currentFav; // toggle
+            updateHeartIcon();
+            Toast.makeText(this,
+                    currentFav ? "Added to Favorites" : "Removed from Favorites",
+                    Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private boolean isValidPhotoItem(PhotoItem item) {
+        if (item == null) return false;
+        return item.getFullUrl() != null && !item.getFullUrl().isEmpty()
+                && item.id != null && !item.id.isEmpty();
+    }
+
+    private void setupToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(photoItem.title != null ? photoItem.title : "");
         }
     }
 
-    private void bindPhoto(PhotoItem photo) {
-        // Load ảnh full size
-        Picasso.get()
-                .load(photo.getUrl_m())
-                .placeholder(R.drawable.placeholder)
-                .into(photoView);
+    private void loadImageWithGlide() {
+        ImageView imageView = findViewById(R.id.photoView);
+        String imageUrl = photoItem.getFullUrl();
 
-        title.setText(photo.getTitle());
-        owner.setText("by " + photo.getOwner());
-
-        chipGroupTags.removeAllViews();
-        if (photo.getTags() != null) {
-            for (String tag : photo.getTags().split(" ")) {
-                Chip chip = new Chip(this);
-                chip.setText(tag);
-                chip.setOnClickListener(v -> {
-                    // TODO: trigger search by tag
-                });
-                chipGroupTags.addView(chip);
-            }
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            Toast.makeText(this, "Ảnh không hợp lệ", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
-        btnFavorite.setOnClickListener(v -> {
-            // TODO: save/remove from favorites
-        });
+        Glide.with(this)
+                .load(imageUrl)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_dialog_alert)
+                .centerCrop()
+                .into(imageView);
 
-        btnShare.setOnClickListener(v -> {
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, photo.getUrl_m());
-            shareIntent.setType("text/plain");
-            startActivity(Intent.createChooser(shareIntent, "Share via"));
-        });
+        imageView.setContentDescription(photoItem.title != null ? photoItem.title : "Flickr photo");
+    }
 
-        btnDownload.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(photo.getUrl_m()));
-            startActivity(browserIntent);
-        });
+    private void setResultAndFinish() {
+        Intent data = new Intent();
+        data.putExtra("PHOTO_ITEM", photoItem);      // gửi lại full object để add/remove dễ dàng
+        data.putExtra("photo_id", photoItem.id);
+        data.putExtra("is_favorite", currentFav);
+        setResult(RESULT_OK, data);
+        finish();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        setResultAndFinish();
+        return true;
     }
 }

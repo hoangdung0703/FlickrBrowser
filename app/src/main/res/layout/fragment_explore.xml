@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.explore.ExploreFragment">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewExplore"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="@dimen/spacing_m"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            tools:listitem="@layout/item_photo" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <!-- Shimmer overlay khi Loading (DUY NHẤT) -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerGrid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:shimmer_duration="1000"
+        android:visibility="gone">
+
+        <include layout="@layout/include_shimmer_grid" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <!-- EmptyView khi không có dữ liệu -->
+    <include
+        android:id="@+id/emptyView"
+        layout="@layout/view_empty"
+        android:visibility="gone" />
+
+</RelativeLayout>

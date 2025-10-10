@@ -1,63 +1,79 @@
 package vn.edu.usth.flickrbrowser.ui.favorites;
 
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoritesViewModel extends ViewModel {
+import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
-    // LiveData for Fragment observe → UI update
-    private final MutableLiveData<List<String>> favorites = new MutableLiveData<>(new ArrayList<>());
+public class FavoritesViewModel extends AndroidViewModel {
 
-    public LiveData<List<String>> getFavorites() {
+    private final MutableLiveData<List<PhotoItem>> favorites = new MutableLiveData<>(new ArrayList<>());
+
+    public FavoritesViewModel(@NonNull Application application) {
+        super(application);
+    }
+
+    public LiveData<List<PhotoItem>> getFavorites() {
         return favorites;
     }
 
-    /** Add item into favorites (if it is empty) */
-    public void addFavorite(String item) {
-        List<String> cur = new ArrayList<>(getSafe());
-        if (!cur.contains(item)) {
+    public void addFavorite(PhotoItem item) {
+        if (item == null || item.id == null) return;
+        List<PhotoItem> cur = new ArrayList<>(getSafe());
+        boolean exists = false;
+        for (PhotoItem p : cur) {
+            if (p.id.equals(item.id)) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
             cur.add(item);
             favorites.setValue(cur);
         }
     }
 
-    /** Delete item from favorites */
-    public void removeFavorite(String item) {
-        List<String> cur = new ArrayList<>(getSafe());
-        if (cur.remove(item)) {
-            favorites.setValue(cur);
-        }
+    public void removeFavorite(PhotoItem item) {
+        if (item == null || item.id == null) return;
+        List<PhotoItem> cur = new ArrayList<>(getSafe());
+        cur.removeIf(p -> p.id.equals(item.id));
+        favorites.setValue(cur);
     }
 
-    /** Toggle item from favorites */
-    public void toggleFavorite(String item) {
-        List<String> cur = new ArrayList<>(getSafe());
-        if (cur.contains(item)) {
-            cur.remove(item);
+    public void toggleFavorite(PhotoItem item) {
+        if (item == null || item.id == null) return;
+        List<PhotoItem> cur = new ArrayList<>(getSafe());
+        boolean exists = false;
+        for (PhotoItem p : cur) {
+            if (p.id.equals(item.id)) {
+                exists = true;
+                break;
+            }
+        }
+        if (exists) {
+            cur.removeIf(p -> p.id.equals(item.id));
         } else {
             cur.add(item);
         }
         favorites.setValue(cur);
     }
 
-    /** Check if item is favorite */
-    public boolean isFavorite(String item) {
-        return getSafe().contains(item);
+    public boolean isFavorite(String id) {
+        if (id == null) return false;
+        for (PhotoItem p : getSafe()) {
+            if (p.id.equals(id)) return true;
+        }
+        return false;
     }
 
-    /** Seed mock data */
-    public void seedMock(int count) {
-        List<String> mock = new ArrayList<>();
-        for (int i = 1; i <= count; i++) mock.add("Mock item " + i);
-        favorites.setValue(mock);
-    }
-
-    private List<String> getSafe() {
-        List<String> val = favorites.getValue();
+    private List<PhotoItem> getSafe() {
+        List<PhotoItem> val = favorites.getValue();
         return (val != null) ? val : new ArrayList<>();
     }
 }

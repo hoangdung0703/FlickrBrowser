@@ -9,9 +9,6 @@ import vn.edu.usth.flickrbrowser.BuildConfig;
 
 public class ApiClient {
     private static Retrofit retrofit;
-    public static Retrofit get() {
-        return getClient();
-    }
 
     public static Retrofit getClient() {
         if (retrofit != null) return retrofit;
@@ -22,8 +19,7 @@ public class ApiClient {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request req = chain.request().newBuilder()
-                            .addHeader("x-rapidapi-key", BuildConfig.RAPIDAPI_KEY)
-                            .addHeader("x-rapidapi-host", BuildConfig.RAPIDAPI_HOST)
+                            .addHeader("Authorization", BuildConfig.PEXELS_API_KEY)
                             .build();
                     return chain.proceed(req);
                 })
@@ -31,7 +27,7 @@ public class ApiClient {
                 .build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.RAPIDAPI_BASE_URL) // nhớ có dấu '/' ở cuối trong gradle.properties
+                .baseUrl(BuildConfig.PEXELS_BASE_URL)  // https://api.pexels.com/v1/
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
@@ -39,4 +35,3 @@ public class ApiClient {
         return retrofit;
     }
 }
-
