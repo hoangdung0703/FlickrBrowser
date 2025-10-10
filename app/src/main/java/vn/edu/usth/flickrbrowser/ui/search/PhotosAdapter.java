@@ -26,6 +26,14 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
         notifyDataSetChanged(); // đủ dùng lúc này; sau có thể đổi sang DiffUtil
     }
 
+    // Append more items for pagination
+    public void addMore(List<PhotoItem> items) {
+        if (items == null || items.isEmpty()) return;
+        int start = data.size();
+        data.addAll(items);
+        notifyItemRangeInserted(start, items.size());
+    }
+
     @NonNull @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
@@ -40,7 +48,9 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
                 .placeholder(R.drawable.bg_skeleton_rounded) // tạm
                 .centerCrop()
                 .into(h.img);
-
+        if (onItemClick != null) {
+            h.itemView.setOnClickListener(v -> onItemClick.onClick(it));
+        }
     }
 
     @Override public int getItemCount() { return data.size(); }
