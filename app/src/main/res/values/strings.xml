@@ -44,6 +44,10 @@
     <string name="about_subtitle">A beautiful photo browser with Material Design</string>
     <string name="features_title">Features</string>
     <string name="features_subtitle">Explore, search, favorites"</string>
+    <string name="favorite">favorite</string>
+    <string name="share">share</string>
+    <string name="download">download</string>
+    <string name="info">info</string>
 </resources>
 
 

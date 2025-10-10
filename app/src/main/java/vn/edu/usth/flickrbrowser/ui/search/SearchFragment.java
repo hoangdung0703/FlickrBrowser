@@ -60,7 +60,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
-        adapter = new PhotosAdapter(item -> {
+        adapter = new PhotosAdapter((item,position) -> {
             android.content.Intent i = new android.content.Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
             i.putExtra("PHOTO_ITEM", item);
             i.putExtra("is_favorite", favVM.isFavorite(item.id));
