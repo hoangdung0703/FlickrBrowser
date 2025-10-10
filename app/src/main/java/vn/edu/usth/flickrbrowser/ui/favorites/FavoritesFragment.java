@@ -153,10 +153,6 @@ public class FavoritesFragment extends Fragment {
                         .into(holder.img);
             }
 
-            if (holder.tvTitle != null) {
-                holder.tvTitle.setText(item.title != null ? item.title : "(No title)");
-            }
-
             if (holder.btnFavorite != null) {
                 holder.btnFavorite.setImageResource(R.drawable.baseline_favorite_24);
                 holder.btnFavorite.setContentDescription(
@@ -180,9 +176,7 @@ public class FavoritesFragment extends Fragment {
 
         static class VH extends RecyclerView.ViewHolder {
             ImageView img;
-            TextView tvTitle;
             ImageView btnFavorite;
-
             VH(@NonNull View itemView) {
                 super(itemView);
                 img = itemView.findViewById(R.id.imgPhoto);
