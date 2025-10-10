@@ -1,7 +1,5 @@
 package vn.edu.usth.flickrbrowser.ui.search;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +7,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.List;
@@ -25,8 +20,6 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
 import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
-import vn.edu.usth.flickrbrowser.ui.detail.DetailActivity;
-import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
@@ -34,20 +27,9 @@ public class SearchFragment extends Fragment {
     private PhotosAdapter adapter;
     private int page = 1;
     private final int perPage = 24;
-    private FavoritesViewModel favVM;
-
-    private final ActivityResultLauncher<Intent> detailLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra("PHOTO_ITEM");
-                    boolean isFav = result.getData().getBooleanExtra("is_favorite", false);
-                    if (returned != null) {
-                        if (isFav) favVM.addFavorite(returned);
-                        else favVM.removeFavorite(returned);
-                    }
-                }
-            });
-
+    private boolean isLoading = false;
+    private boolean endReached = false;
+    private String currentQuery = "";
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -59,12 +41,21 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
-        adapter = new PhotosAdapter((item,position) -> {
-            android.content.Intent i = new android.content.Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+        adapter = new PhotosAdapter((item, position) -> {
+            android.content.Intent i =
+                    new android.content.Intent(requireContext(),
+                            vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+
+            // Gửi danh sách đang hiển thị + vị trí bấm
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS,
+                    adapter.getCurrentData());
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX,
+                    position);
+
+            // (Tuỳ chọn) fallback cho DetailActivity cũ
             i.putExtra("PHOTO_ITEM", item);
-            i.putExtra("is_favorite", favVM.isFavorite(item.id));
-            detailLauncher.launch(i);
+
+            startActivity(i);
         });
         binding.rvPhotos.setAdapter(adapter);
 
@@ -73,11 +64,33 @@ public class SearchFragment extends Fragment {
 
         // 2) RecyclerView grid 2 cột
         int span = 2;
-        binding.rvPhotos.setLayoutManager(new GridLayoutManager(getContext(), span));
+        GridLayoutManager glm = new GridLayoutManager(getContext(), span);
+        binding.rvPhotos.setLayoutManager(glm);
 
         // 3) Spacing theo token
         int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_m);
         binding.rvPhotos.addItemDecoration(new GridSpacingDecoration(span, spacingPx, true));
+
+        // 4) Infinite scroll listener
+        final int visibleThreshold = 6; // tải thêm khi còn cách đáy N item
+        binding.rvPhotos.addOnScrollListener(new androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull androidx.recyclerview.widget.RecyclerView rv, int dx, int dy) {
+                super.onScrolled(rv, dx, dy);
+                if (dy <= 0) return; // chỉ quan tâm scroll xuống
+                int total = glm.getItemCount();
+                int lastVisible = glm.findLastVisibleItemPosition();
+                if (!isLoading && !endReached && !currentQuery.isEmpty() && lastVisible >= total - visibleThreshold) {
+                    loadMore();
+                }
+            }
+        });
+
+        // 5) Pull-to-refresh ( fix loi keo lên xoay mãi)
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            String q = binding.edtQuery.getText() != null ? binding.edtQuery.getText().toString() : "";
+            doSearch(q, true);
+        });
 
         // Search action on keyboard
         binding.edtQuery.setOnEditorActionListener((v, actionId, ev) -> {
@@ -134,23 +147,75 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void doSearch(String query) {
+    private void doSearch(String query) { doSearch(query, false); }
+
+    private void doSearch(String query, boolean fromSwipeRefresh) {
+        // Reset pagination state
+        currentQuery = query == null ? "" : query.trim();
+        page = 1;
+        endReached = false;
+        isLoading = true;
+
         // Cancel any in-flight before starting
         FlickrRepo.cancelSearch();
-        setState(new PhotoState.Loading());
-        FlickrRepo.search(query, page, perPage, new FlickrRepo.CB() {
+        if (!fromSwipeRefresh) {
+            // chỉ show shimmer khi không phải pull-to-refresh
+            setState(new PhotoState.Loading());
+        } else {
+            // khi refresh, giữ nguyên list hiển thị
+            if (binding.shimmerGrid != null) {
+                stopShimmers(binding.shimmerGrid.getRoot());
+                binding.shimmerGrid.getRoot().setVisibility(View.GONE);
+            }
+            binding.rvPhotos.setVisibility(View.VISIBLE);
+            if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
+        }
+        FlickrRepo.search(currentQuery, page, perPage, new FlickrRepo.CB() {
             @Override
             public void ok(List<PhotoItem> items) {
+                isLoading = false;
+                if (binding != null) binding.swipeRefresh.setRefreshing(false);
                 if (items == null || items.isEmpty()) {
                     setState(new PhotoState.Empty());
+                    endReached = true;
                 } else {
                     setState(new PhotoState.Success(items));
+                    // đánh dấu nếu đã hết trang (nếu kết quả ít hơn perPage)
+                    if (items.size() < perPage) endReached = true;
                 }
             }
 
             @Override
             public void err(Throwable e) {
+                isLoading = false;
+                if (binding != null) binding.swipeRefresh.setRefreshing(false);
                 setState(new PhotoState.Error("Search failed"));
+            }
+        });
+    }
+
+    private void loadMore() {
+        if (isLoading || endReached || currentQuery.isEmpty()) return;
+        isLoading = true;
+
+        // Không show shimmer full-screen khi load-more, chỉ append
+        FlickrRepo.search(currentQuery, page + 1, perPage, new FlickrRepo.CB() {
+            @Override
+            public void ok(List<PhotoItem> items) {
+                isLoading = false;
+                if (items == null || items.isEmpty()) {
+                    endReached = true;
+                    return;
+                }
+                adapter.addMore(items);
+                page++;
+                if (items.size() < perPage) endReached = true;
+            }
+
+            @Override
+            public void err(Throwable e) {
+                isLoading = false;
+                Toast.makeText(requireContext(), R.string.load_more_failed, Toast.LENGTH_SHORT).show();
             }
         });
     }
