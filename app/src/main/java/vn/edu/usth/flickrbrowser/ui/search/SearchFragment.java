@@ -41,9 +41,20 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        adapter = new PhotosAdapter(item -> {
-            android.content.Intent i = new android.content.Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+        adapter = new PhotosAdapter((item, position) -> {
+            android.content.Intent i =
+                    new android.content.Intent(requireContext(),
+                            vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+
+            // Gửi danh sách đang hiển thị + vị trí bấm
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS,
+                    adapter.getCurrentData());
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX,
+                    position);
+
+            // (Tuỳ chọn) fallback cho DetailActivity cũ
             i.putExtra("PHOTO_ITEM", item);
+
             startActivity(i);
         });
         binding.rvPhotos.setAdapter(adapter);
