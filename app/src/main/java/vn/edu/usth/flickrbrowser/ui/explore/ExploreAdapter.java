@@ -19,39 +19,32 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
 public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
 
-    //  START: ADDITIONS FOR CLICK HANDLING
-    public interface OnPhotoClickListener {
-        void onPhotoClick(PhotoItem photo);
-    }
-
+    /** Callback click item để Fragment mở DetailActivity */
+    public interface OnPhotoClickListener { void onPhotoClick(PhotoItem photo, int position); }
     private OnPhotoClickListener listener;
 
-    public void setOnPhotoClickListener(OnPhotoClickListener listener) {
-        this.listener = listener;
-    }
-    //  END: ADDITIONS FOR CLICK HANDLING
+    public void setOnPhotoClickListener(OnPhotoClickListener l) { this.listener = l; }
 
+    /** Dữ liệu */
     private final List<PhotoItem> data = new ArrayList<>();
+    public List<PhotoItem> getCurrentData() { return new ArrayList<>(data); }
 
-    // Hàm cập nhật danh sách ảnh
+    /** Thay toàn bộ danh sách */
     public void setData(List<PhotoItem> list) {
         data.clear();
         if (list != null) data.addAll(list);
         notifyDataSetChanged();
     }
 
-    // Hàm thêm ảnh vào danh sách (cho infinite scroll)
+    /** Thêm trang mới (paging) */
     public void addPhotos(List<PhotoItem> newPhotos) {
-        if (newPhotos == null || newPhotos.isEmpty()) {
-            return;
-        }
-        int currentSize = data.size();
+        if (newPhotos == null || newPhotos.isEmpty()) return;
+        int start = data.size();
         data.addAll(newPhotos);
-        notifyItemRangeInserted(currentSize, newPhotos.size());
+        notifyItemRangeInserted(start, newPhotos.size());
     }
 
-    @NonNull
-    @Override
+    @NonNull @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_photo, parent, false);
@@ -60,39 +53,37 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
 
     @Override
     public void onBindViewHolder(@NonNull VH h, int pos) {
-        PhotoItem p = data.get(pos);
+        final PhotoItem p = data.get(pos);
 
-        // Lấy URL ảnh thumbnail (Pexels trả về medium/large)
-        String url = p.getThumbUrl();
-        if (url == null || url.isEmpty()) {
-            url = p.getFullUrl();
+        // Chọn URL an toàn cho Pexels/Flickr
+        String url = (p.getThumbUrl() != null && !p.getThumbUrl().isEmpty())
+                ? p.getThumbUrl() : p.getFullUrl();
+
+        try {
+            Glide.with(h.img.getContext())
+                    .load(url)
+                    .placeholder(R.drawable.placeholder_grey)
+                    .error(R.drawable.placeholder_grey)
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(h.img);
+        } catch (Throwable t) {
+            // tránh crash do context/activity đã destroy
+            h.img.setImageResource(R.drawable.placeholder_grey);
         }
 
-        // Load ảnh với Glide
-        Glide.with(h.img.getContext())
-                .load(url)
-                .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(h.img);
-
-        //  START: ADDITION FOR CLICK HANDLING
         h.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onPhotoClick(p);
-            }
+            if (listener != null) listener.onPhotoClick(p, h.getBindingAdapterPosition());
         });
-        //  END: ADDITION FOR CLICK HANDLING
     }
 
-    @Override
-    public int getItemCount() {
-        return data.size();
-    }
+    @Override public int getItemCount() { return data.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        ImageView img;
+        final ImageView img;
         VH(@NonNull View v) {
             super(v);
+            // YÊU CẦU: item_photo.xml phải có ImageView id=imgPhoto
             img = v.findViewById(R.id.imgPhoto);
         }
     }

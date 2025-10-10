@@ -17,6 +17,8 @@ public class PhotoItem implements Serializable {
     public String owner = "";
     public String thumbUrl = "";
     public String fullUrl = "";
+    public String pageUrl = ""; // link trang ảnh trên Pexels
+
 
     // ====== Lấy ảnh thumbnail ======
     public String getThumbUrl() {
@@ -73,5 +75,20 @@ public class PhotoItem implements Serializable {
     public String getTags() {
         return "";
     }
+
+    // ====== Lấy link trang nguồn (Pexels/Flickr đều hỗ trợ) ======
+    public String getPageUrl() {
+        // Nếu có sẵn từ API (Pexels: field "url")
+        if (pageUrl != null && !pageUrl.isEmpty()) {
+            return pageUrl;
+        }
+        // Nếu là Flickr
+        if (okFlickr()) {
+            return "https://www.flickr.com/photos/" + owner + "/" + id;
+        }
+        // Fallback
+        return getFullUrl();
+    }
+
 }
 
