@@ -1,5 +1,7 @@
 package vn.edu.usth.flickrbrowser.ui.favorites;
 
+import static android.content.ContentValues.TAG;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -38,6 +40,7 @@ public class FavoritesFragment extends Fragment {
     // Launcher để mở DetailActivity và nhận result quay về
     private final ActivityResultLauncher<Intent> detailLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                try {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra("PHOTO_ITEM");
                     boolean isFav = result.getData().getBooleanExtra("is_favorite", false);
@@ -48,6 +51,10 @@ public class FavoritesFragment extends Fragment {
                             vm.removeFavorite(returned); // nếu đã bỏ tim trong Detail → xoá khỏi danh sách
                         }
                     }
+                }
+
+                } catch (Exception e) {
+                    android.widget.Toast.makeText(requireContext(), "Error when update Favorite", android.widget.Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -84,25 +91,33 @@ public class FavoritesFragment extends Fragment {
         //  - click vào item: mở DetailActivity (mới thêm)
         adapter = new FavoritesAdapter(
                 new ArrayList<>(),
-                item -> vm.removeFavorite(item),          // click ♥
-                (item, position) -> {                                // click item mở Detail
-                    Intent i = new Intent(requireContext(), DetailActivity.class);
-                    i.putExtra(DetailActivity.EXTRA_PHOTOS, new ArrayList<>(adapter.getCurrentData()));
-                    i.putExtra(DetailActivity.EXTRA_START_INDEX, position);
-                    i.putExtra("is_favorite", true); // vì đang ở Favorites, mặc định đang ♥
-                    detailLauncher.launch(i);
+                item -> vm.removeFavorite(item),
+                (item, position) -> {
+                    try {
+                        Intent i = new Intent(requireContext(), DetailActivity.class);
+                        i.putExtra(DetailActivity.EXTRA_PHOTOS, new ArrayList<>(adapter.getCurrentData()));
+                        i.putExtra(DetailActivity.EXTRA_START_INDEX, position);
+                        i.putExtra("is_favorite", true);
+                        detailLauncher.launch(i);
+                    } catch (Exception e) {
+                        android.widget.Toast.makeText(requireContext(), "Error opening detail", android.widget.Toast.LENGTH_SHORT).show();
+                    }
                 }
         );
         rv.setAdapter(adapter);
 
         // Observe LiveData → update list & EmptyView
         vm.getFavorites().observe(getViewLifecycleOwner(), list -> {
-            if (list == null || list.isEmpty()) {
-                empty.setVisibility(View.VISIBLE);
-                adapter.update(new ArrayList<>()); // clear UI
-            } else {
-                empty.setVisibility(View.GONE);
-                adapter.update(list);
+            try {
+                if (list == null || list.isEmpty()) {
+                    empty.setVisibility(View.VISIBLE);
+                    adapter.update(new ArrayList<>()); // clear UI
+                } else {
+                    empty.setVisibility(View.GONE);
+                    adapter.update(list);
+                }
+            } catch (Exception e) {
+                android.widget.Toast.makeText(requireContext(), "Error displaying favorites", android.widget.Toast.LENGTH_SHORT).show();
             }
         });
 
