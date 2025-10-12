@@ -12,18 +12,33 @@ import java.util.List;
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
+// PhotosAdapter.java
 public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
     private final List<PhotoItem> data = new ArrayList<>();
-    public interface OnItemClick { void onClick(PhotoItem item); }
+
+    // Đổi callback: trả cả item + vị trí
+    public interface OnItemClick { void onClick(PhotoItem item, int position); }
     private final OnItemClick onItemClick;
 
-    public PhotosAdapter(){ this(null); }
-    public PhotosAdapter(OnItemClick cb){ this.onItemClick = cb; }
+    public PhotosAdapter() { this(null); }
+    public PhotosAdapter(OnItemClick cb) { this.onItemClick = cb; }
 
     public void submitList(List<PhotoItem> items) {
         data.clear();
         if (items != null) data.addAll(items);
-        notifyDataSetChanged(); // đủ dùng lúc này; sau có thể đổi sang DiffUtil
+        notifyDataSetChanged();
+    }
+
+    public void addMore(List<PhotoItem> items) {
+        if (items == null || items.isEmpty()) return;
+        int start = data.size();
+        data.addAll(items);
+        notifyItemRangeInserted(start, items.size());
+    }
+
+    //  Cho Fragment lấy danh sách hiện tại để gửi sang DetailActivity
+    public ArrayList<PhotoItem> getCurrentData() {
+        return new ArrayList<>(data);
     }
 
     @NonNull @Override
@@ -37,10 +52,18 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.VH> {
         PhotoItem it = data.get(pos);
         Glide.with(h.img.getContext())
                 .load(it.getThumbUrl())
-                .placeholder(R.drawable.bg_skeleton_rounded) // tạm
+                .placeholder(R.drawable.bg_skeleton_rounded)
                 .centerCrop()
                 .into(h.img);
 
+        if (onItemClick != null) {
+            h.itemView.setOnClickListener(v -> {
+                int p = h.getBindingAdapterPosition();
+                if (p != RecyclerView.NO_POSITION) {
+                    onItemClick.onClick(data.get(p), p);
+                }
+            });
+        }
     }
 
     @Override public int getItemCount() { return data.size(); }
