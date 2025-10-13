@@ -59,7 +59,7 @@ public class ExploreFragment extends Fragment {
 
         shimmerGrid = v.findViewById(R.id.shimmerGrid);
         emptyRoot= v.findViewById(R.id.emptyView);
-        emptyText = emptyRoot.findViewById(R.id.emptyText);
+
 
         rv.setLayoutManager(new GridLayoutManager(requireContext(),2));
         adapter=new ExploreAdapter();

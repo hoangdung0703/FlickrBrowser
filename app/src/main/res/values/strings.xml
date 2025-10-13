@@ -53,4 +53,5 @@
     <string name="share">share</string>
     <string name="download">download</string>
     <string name="info">info</string>
+    <string name="no_photos_yet">Search for Images</string>
 </resources>
