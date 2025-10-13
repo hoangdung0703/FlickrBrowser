@@ -57,11 +57,13 @@ public class FlickrRepo {
         perPage = Math.max(1, perPage);
 
         api().getRecent(page, perPage).enqueue(new Callback<ResponseBody>() {
-            @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
                 try {
                     String body = r.body() != null ? r.body().string()
                             : (r.errorBody() != null ? r.errorBody().string() : "");
                     Log.d(TAG, "getRecent code=" + r.code() + " body=" + body);
+
                     if (r.isSuccessful()) {
                         List<PhotoItem> out = parseToPhotos(body);
                         if (!out.isEmpty()) {
@@ -70,16 +72,17 @@ public class FlickrRepo {
                             getRecentFallback(cb);
                         }
                     } else {
-                        getRecentFallback(cb);
+                        postError(cb, "Server returned error: " + r.code(), null);
                     }
                 } catch (Exception e) {
-                    getRecentFallback(cb);
+                    postError(cb, "Unexpected error while parsing data.", e);
                 }
             }
 
-            @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.d(TAG, "getRecent fail: " + t);
-                getRecentFallback(cb);
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(TAG, "getRecent failed: ", t);
+                postError(cb, "Failed to load photos. Please check your connection.", t);
             }
         });
     }
@@ -108,14 +111,14 @@ public class FlickrRepo {
                     List<PhotoItem> out = parseToPhotos(response.toString());
                     MAIN.post(() -> cb.ok(out));
                 } else {
-                    throw new IOException("HTTP " + code + " - " + conn.getResponseMessage());
+                    postError(cb, "Server returned HTTP " + code, null);
                 }
             } catch (java.net.SocketTimeoutException e) {
-                postError(cb, "Mạng quá yếu hoặc server không phản hồi.", e);
+                postError(cb, "Server not responding. Please try again later.", e);
             } catch (java.net.UnknownHostException e) {
-                postError(cb, "Không có kết nối Internet.", e);
+                postError(cb, "No internet connection. Please check your network.", e);
             } catch (Exception e) {
-                postError(cb, "Đã xảy ra lỗi khi tải dữ liệu dự phòng.", e);
+                postError(cb, "Error while loading fallback data.", e);
             } finally {
                 if (conn != null) conn.disconnect();
             }
@@ -139,11 +142,13 @@ public class FlickrRepo {
 
         inFlightSearch = api().search(q, page, perPage);
         inFlightSearch.enqueue(new Callback<ResponseBody>() {
-            @Override public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> r) {
                 try {
                     String body = r.body() != null ? r.body().string()
                             : (r.errorBody() != null ? r.errorBody().string() : "");
                     Log.d(TAG, "search code=" + r.code() + " body=" + body);
+
                     if (r.isSuccessful()) {
                         List<PhotoItem> out = parseToPhotos(body);
                         if (!out.isEmpty()) {
@@ -151,25 +156,28 @@ public class FlickrRepo {
                         } else if (!q.isEmpty()) {
                             searchFallback(q, cb);
                         } else {
-                            MAIN.post(() -> cb.ok(out));
+                            postError(cb, "No results found.", null);
                         }
                     } else {
-                        if (!q.isEmpty()) searchFallback(q, cb); else MAIN.post(() -> cb.err(new RuntimeException("HTTP " + r.code())));
+                        postError(cb, "Server returned error: " + r.code(), null);
                     }
                 } catch (Exception e) {
-                    if (!q.isEmpty()) searchFallback(q, cb); else MAIN.post(() -> cb.err(e));
+                    postError(cb, "Unexpected error while searching.", e);
                 }
             }
 
-            @Override public void onFailure(Call<ResponseBody> call, Throwable t) {
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 if (!call.isCanceled()) {
-                    if (!q.isEmpty()) searchFallback(q, cb); else MAIN.post(() -> cb.err(t));
+                    postError(cb, "Failed to search. Please check your connection.", t);
                 }
             }
         });
     }
 
-    // Fallback search qua Flickr feed (dùng tags)
+    // --------------------------------------
+    // Fallback search via Flickr feed
+    // --------------------------------------
     private static void searchFallback(String query, CB cb) {
         new Thread(() -> {
             HttpURLConnection conn = null;
@@ -195,14 +203,14 @@ public class FlickrRepo {
                     List<PhotoItem> photos = parseToPhotos(response.toString());
                     MAIN.post(() -> cb.ok(photos));
                 } else {
-                    throw new IOException("HTTP " + code + " - " + conn.getResponseMessage());
+                    postError(cb, "Server returned HTTP " + code, null);
                 }
             } catch (java.net.SocketTimeoutException e) {
-                postError(cb, "Mạng quá yếu hoặc server không phản hồi.", e);
+                postError(cb, "Server not responding. Please try again later.", e);
             } catch (java.net.UnknownHostException e) {
-                postError(cb, "Không có kết nối Internet.", e);
+                postError(cb, "No internet connection. Please check your network.", e);
             } catch (Exception e) {
-                postError(cb, "Đã xảy ra lỗi khi tìm kiếm dữ liệu dự phòng.", e);
+                postError(cb, "Error while loading fallback data.", e);
             } finally {
                 if (conn != null) conn.disconnect();
             }
@@ -210,7 +218,7 @@ public class FlickrRepo {
     }
 
     // --------------------------------------
-    // Parser: ưu tiên Pexels, fallback Flickr feed
+    // Parser: prefer Pexels → fallback Flickr
     // --------------------------------------
     private static List<PhotoItem> parseToPhotos(String json) {
         List<PhotoItem> out = new ArrayList<>();
@@ -225,24 +233,23 @@ public class FlickrRepo {
                     if (o == null) continue;
 
                     PhotoItem p = new PhotoItem();
-                    p.id    = String.valueOf(o.optLong("id"));
-                    p.title = o.optString("alt", "");                     // mô tả ảnh
-                    p.owner = o.optString("photographer", "");            // tác giả
+                    p.id = String.valueOf(o.optLong("id"));
+                    p.title = o.optString("alt", "");
+                    p.owner = o.optString("photographer", "");
 
                     JSONObject src = o.optJSONObject("src");
                     String thumb = src != null ? src.optString("medium", "") : "";
-                    String full  = src != null ? src.optString("large2x",
-                            src.optString("large", "")) : "";
+                    String full = src != null ? src.optString("large2x", src.optString("large", "")) : "";
 
                     p.thumbUrl = thumb;
-                    p.fullUrl  = full.isEmpty() ? thumb : full;
+                    p.fullUrl = full.isEmpty() ? thumb : full;
 
                     out.add(p);
                 }
                 return out;
             }
 
-            // ===== Flickr public feed fallback =====
+            // ===== Flickr fallback =====
             JSONArray items = root.optJSONArray("items");
             if (items != null) {
                 for (int i = 0; i < items.length(); i++) {
@@ -264,16 +271,16 @@ public class FlickrRepo {
                         p.id = "fallback_" + Math.abs(url.hashCode());
                     }
 
-                    p.title    = o.optString("title", "");
-                    p.owner    = o.optString("author", "");
+                    p.title = o.optString("title", "");
+                    p.owner = o.optString("author", "");
                     p.thumbUrl = url;
-                    p.fullUrl  = url.replace("_m.jpg", "_b.jpg");
+                    p.fullUrl = url.replace("_m.jpg", "_b.jpg");
 
                     out.add(p);
                 }
             }
-        } catch (Exception ignore) {
-            // nuốt lỗi parse, trả về list hiện có
+        } catch (Exception e) {
+            Log.e(TAG, "JSON parse error", e);
         }
         return out;
     }

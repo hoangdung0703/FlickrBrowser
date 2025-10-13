@@ -53,4 +53,9 @@
     <string name="share">share</string>
     <string name="download">download</string>
     <string name="info">info</string>
+
+    <string name="search_failed">Search failed. Please try again.</string>
+    <string name="load_failed">Load failed. Please try again.</string>
+    <string name="no_connection">No internet connection. Please try again.</string>
+
 </resources>
