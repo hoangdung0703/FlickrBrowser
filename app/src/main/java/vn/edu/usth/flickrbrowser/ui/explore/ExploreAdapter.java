@@ -20,31 +20,41 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
 
     /** Callback click item để Fragment mở DetailActivity */
-    public interface OnPhotoClickListener { void onPhotoClick(PhotoItem photo, int position); }
+    public interface OnPhotoClickListener {
+        void onPhotoClick(PhotoItem photo, int position);
+    }
+
     private OnPhotoClickListener listener;
 
-    public void setOnPhotoClickListener(OnPhotoClickListener l) { this.listener = l; }
+    public void setOnPhotoClickListener(OnPhotoClickListener l) {
+        this.listener = l;
+    }
 
-    /** Dữ liệu */
+    /** Danh sách dữ liệu */
     private final List<PhotoItem> data = new ArrayList<>();
-    public List<PhotoItem> getCurrentData() { return new ArrayList<>(data); }
 
-    /** Thay toàn bộ danh sách */
+    /** Lấy toàn bộ dữ liệu hiện tại (dùng cho DetailActivity) */
+    public ArrayList<PhotoItem> getCurrentData() {
+        return new ArrayList<>(data);
+    }
+
+    /** Thay toàn bộ danh sách ảnh (dành cho load đầu hoặc refresh) */
     public void setData(List<PhotoItem> list) {
         data.clear();
-        if (list != null) data.addAll(list);
+        if (list != null && !list.isEmpty()) data.addAll(list);
         notifyDataSetChanged();
     }
 
-    /** Thêm trang mới (paging) */
-    public void addPhotos(List<PhotoItem> newPhotos) {
-        if (newPhotos == null || newPhotos.isEmpty()) return;
+    /** Thêm dữ liệu cho phân trang (loadMore) */
+    public void addMore(List<PhotoItem> more) {
+        if (more == null || more.isEmpty()) return;
         int start = data.size();
-        data.addAll(newPhotos);
-        notifyItemRangeInserted(start, newPhotos.size());
+        data.addAll(more);
+        notifyItemRangeInserted(start, more.size());
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_photo, parent, false);
@@ -55,9 +65,10 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int pos) {
         final PhotoItem p = data.get(pos);
 
-        // Chọn URL an toàn cho Pexels/Flickr
+        // Ưu tiên ảnh nhỏ (thumbUrl) để tải nhanh
         String url = (p.getThumbUrl() != null && !p.getThumbUrl().isEmpty())
-                ? p.getThumbUrl() : p.getFullUrl();
+                ? p.getThumbUrl()
+                : p.getFullUrl();
 
         try {
             Glide.with(h.img.getContext())
@@ -68,22 +79,28 @@ public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(h.img);
         } catch (Throwable t) {
-            // tránh crash do context/activity đã destroy
+            // tránh crash khi context đã bị destroy
             h.img.setImageResource(R.drawable.placeholder_grey);
         }
 
+        // Xử lý click vào ảnh
         h.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onPhotoClick(p, h.getBindingAdapterPosition());
+            if (listener != null)
+                listener.onPhotoClick(p, h.getBindingAdapterPosition());
         });
     }
 
-    @Override public int getItemCount() { return data.size(); }
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
 
     static class VH extends RecyclerView.ViewHolder {
         final ImageView img;
+
         VH(@NonNull View v) {
             super(v);
-            // YÊU CẦU: item_photo.xml phải có ImageView id=imgPhoto
+            // item_photo.xml phải có ImageView id = imgPhoto
             img = v.findViewById(R.id.imgPhoto);
         }
     }
