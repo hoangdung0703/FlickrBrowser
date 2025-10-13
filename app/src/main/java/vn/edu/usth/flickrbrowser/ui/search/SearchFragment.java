@@ -1,5 +1,7 @@
 package vn.edu.usth.flickrbrowser.ui.search;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,9 +9,12 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.List;
@@ -19,17 +24,33 @@ import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
+import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
+import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
+
     private FragmentSearchBinding binding;
     private PhotosAdapter adapter;
+    private FavoritesViewModel favVM;
 
     private int page = 1;
     private final int perPage = 24;
     private boolean isLoading = false;
     private boolean endReached = false;
     private String currentQuery = "";
+
+    private final ActivityResultLauncher<Intent> detailLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra("PHOTO_ITEM");
+                    boolean isFav = result.getData().getBooleanExtra("is_favorite", false);
+                    if (returned != null) {
+                        if (isFav) favVM.addFavorite(returned);
+                        else favVM.removeFavorite(returned);
+                    }
+                }
+            });
 
     @Nullable
     @Override
@@ -42,16 +63,16 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
+
         adapter = new PhotosAdapter((item, position) -> {
-            android.content.Intent i =
-                    new android.content.Intent(requireContext(),
-                            vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS,
-                    adapter.getCurrentData());
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX,
-                    position);
-            i.putExtra("PHOTO_ITEM", item); // fallback
-            startActivity(i);
+            Intent i = new Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS, adapter.getCurrentData());
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX, position);
+            // Fallback + flag favorite
+            i.putExtra("PHOTO_ITEM", item);
+            i.putExtra("is_favorite", favVM.isFavorite(item.id));
+            detailLauncher.launch(i);
         });
         binding.rvPhotos.setAdapter(adapter);
 
@@ -89,7 +110,7 @@ public class SearchFragment extends Fragment {
             doSearch(q, true);
         });
 
-        // Ime action = search
+        // IME action = Search
         binding.edtQuery.setOnEditorActionListener((v, actionId, ev) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 doSearch(v.getText() != null ? v.getText().toString() : "");
@@ -117,8 +138,7 @@ public class SearchFragment extends Fragment {
 
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
-        }
-        else if (state instanceof PhotoState.Success) {
+        } else if (state instanceof PhotoState.Success) {
             List<PhotoItem> items = ((PhotoState.Success) state).getItems();
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
@@ -126,15 +146,13 @@ public class SearchFragment extends Fragment {
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
             binding.rvPhotos.setVisibility(View.VISIBLE);
             adapter.submitList(items);
-        }
-        else if (state instanceof PhotoState.Empty) {
+        } else if (state instanceof PhotoState.Empty) {
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
 
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.VISIBLE);
-        }
-        else if (state instanceof PhotoState.Error) {
+        } else if (state instanceof PhotoState.Error) {
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
 
@@ -142,7 +160,9 @@ public class SearchFragment extends Fragment {
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
 
             String msg = ((PhotoState.Error) state).getMessage();
-            Toast.makeText(requireContext(), (msg == null || msg.isEmpty()) ? getString(R.string.search_failed) : msg, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(),
+                    (msg == null || msg.isEmpty()) ? getString(R.string.search_failed) : msg,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -159,7 +179,7 @@ public class SearchFragment extends Fragment {
             isLoading = false;
             endReached = true;
             page = 1;
-            if (binding != null) binding.swipeRefresh.setRefreshing(false);
+            binding.swipeRefresh.setRefreshing(false);
             adapter.submitList(java.util.Collections.emptyList());
             setState(new PhotoState.Empty());
             return;
@@ -187,7 +207,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void ok(List<PhotoItem> items) {
                 isLoading = false;
-                if (binding != null) binding.swipeRefresh.setRefreshing(false);
+                binding.swipeRefresh.setRefreshing(false);
 
                 if (items == null || items.isEmpty()) {
                     setState(new PhotoState.Empty());
@@ -201,7 +221,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void err(Throwable e) {
                 isLoading = false;
-                if (binding != null) binding.swipeRefresh.setRefreshing(false);
+                binding.swipeRefresh.setRefreshing(false);
                 String msg = (e != null && e.getMessage() != null && !e.getMessage().isEmpty())
                         ? e.getMessage()
                         : getString(R.string.search_failed);
