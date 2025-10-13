@@ -1,5 +1,7 @@
 package vn.edu.usth.flickrbrowser.ui.search;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,9 +9,12 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import java.util.List;
@@ -19,17 +24,33 @@ import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
+import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
     private FragmentSearchBinding binding;
     private PhotosAdapter adapter;
+    private FavoritesViewModel favVM;
     private int page = 1;
     private final int perPage = 24;
     private boolean isLoading = false;
     private boolean endReached = false;
     private String currentQuery = "";
+
+
+    private final ActivityResultLauncher<Intent> detailLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra("PHOTO_ITEM");
+                    boolean isFav = result.getData().getBooleanExtra("is_favorite", false);
+                    if (returned != null) {
+                        if (isFav) favVM.addFavorite(returned);
+                        else favVM.removeFavorite(returned);
+                    }
+                }
+            });
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -41,6 +62,7 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
         adapter = new PhotosAdapter((item, position) -> {
             android.content.Intent i =
                     new android.content.Intent(requireContext(),
@@ -54,8 +76,9 @@ public class SearchFragment extends Fragment {
 
             // (Tuỳ chọn) fallback cho DetailActivity cũ
             i.putExtra("PHOTO_ITEM", item);
+            i.putExtra("is_favorite", favVM.isFavorite(item.id));
 
-            startActivity(i);
+            detailLauncher.launch(i);
         });
         binding.rvPhotos.setAdapter(adapter);
 
