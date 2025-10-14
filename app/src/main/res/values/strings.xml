@@ -57,5 +57,7 @@
     <string name="search_failed">Search failed. Please try again.</string>
     <string name="load_failed">Load failed. Please try again.</string>
     <string name="no_connection">No internet connection. Please try again.</string>
+    <string name="no_photos_yet">Search photos\n</string>
+    <string name="nav_noti">Notifications</string>
 
 </resources>
