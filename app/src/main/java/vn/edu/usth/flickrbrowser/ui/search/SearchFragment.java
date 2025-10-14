@@ -46,6 +46,7 @@ public class SearchFragment extends Fragment {
     private boolean endReached = false;
     private String currentQuery = "";
 
+
     private final ActivityResultLauncher<Intent> detailLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
@@ -71,13 +72,17 @@ public class SearchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState); // Thêm dòng này
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
-
         adapter = new PhotosAdapter((item, position) -> {
-            Intent i = new Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS, adapter.getCurrentData());
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX, position);
-            i.putExtra("PHOTO_ITEM", item);
-            i.putExtra("is_favorite", favVM.isFavorite(item.id));
+            android.content.Intent i =
+                    new android.content.Intent(requireContext(),
+                            vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+
+            // Gửi danh sách đang hiển thị + vị trí bấm
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS,
+                    adapter.getCurrentData());
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX,
+                    position);
+
             detailLauncher.launch(i);
         });
         binding.rvPhotos.setAdapter(adapter);
@@ -198,7 +203,7 @@ public class SearchFragment extends Fragment {
             endReached = true;
             page = 1;
             binding.swipeRefresh.setRefreshing(false);
-            adapter.submitList(new ArrayList<>());
+            adapter.submitList(java.util.Collections.emptyList());
             setState(new PhotoState.Empty());
             return;
         }
@@ -297,4 +302,3 @@ public class SearchFragment extends Fragment {
         }
     }
 }
-

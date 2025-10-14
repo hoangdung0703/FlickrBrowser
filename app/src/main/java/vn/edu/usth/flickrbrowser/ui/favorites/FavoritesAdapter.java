@@ -66,16 +66,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.VH> 
                     .into(holder.img);
         }
 
-        if (holder.btnFavorite != null) {
-            holder.btnFavorite.setImageResource(R.drawable.baseline_favorite_24);
-            holder.btnFavorite.setContentDescription(
-                    holder.itemView.getContext().getString(R.string.cd_unfavorite)
-            );
-            holder.btnFavorite.setOnClickListener(v -> {
-                if (favCallback != null) favCallback.onClick(item);
-            });
-        }
-
         // Click item → mở DetailActivity (dùng chung layout Detail)
         holder.itemView.setOnClickListener(v -> {
             if (itemClick != null) itemClick.onClick(item, position);
