@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/signInFragment">
+
+    <!-- Màn hình Đăng nhập -->
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="vn.edu.usth.flickrbrowser.ui.auth.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in">
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_main_nav"
+            app:destination="@id/navigation_explore"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Màn hình Đăng ký -->
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="vn.edu.usth.flickrbrowser.ui.auth.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/action_signUpFragment_to_main_nav"
+            app:destination="@id/navigation_explore"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!--
+    THAY ĐỔI QUAN TRỌNG:
+    ID của các fragment chính phải khớp với ID trong bottom_nav_menu.xml
+    Và phải có action để đi từ mỗi fragment đến các fragment khác.
+    -->
+
+    <!-- Màn hình Home (Search) -->
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="vn.edu.usth.flickrbrowser.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search">
+        <action android:id="@+id/action_global_navigation_explore" app:destination="@id/navigation_explore" />
+        <action android:id="@+id/action_global_navigation_favorites" app:destination="@id/navigation_favorites" />
+        <action android:id="@+id/action_global_navigation_about" app:destination="@id/navigation_about" />
+    </fragment>
+
+    <!-- Màn hình Explore -->
+    <fragment
+        android:id="@+id/navigation_explore"
+        android:name="vn.edu.usth.flickrbrowser.ui.explore.ExploreFragment"
+        android:label="fragment_explore"
+        tools:layout="@layout/fragment_explore">
+        <action android:id="@+id/action_global_navigation_home" app:destination="@id/navigation_home" />
+        <action android:id="@+id/action_global_navigation_favorites" app:destination="@id/navigation_favorites" />
+        <action android:id="@+id/action_global_navigation_about" app:destination="@id/navigation_about" />
+    </fragment>
+
+    <!-- Màn hình Favorites -->
+    <fragment
+        android:id="@+id/navigation_favorites"
+        android:name="vn.edu.usth.flickrbrowser.ui.favorites.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites">
+        <action android:id="@+id/action_global_navigation_home" app:destination="@id/navigation_home" />
+        <action android:id="@+id/action_global_navigation_explore" app:destination="@id/navigation_explore" />
+        <action android:id="@+id/action_global_navigation_about" app:destination="@id/navigation_about" />
+    </fragment>
+
+    <!-- Màn hình About -->
+    <fragment
+        android:id="@+id/navigation_about"
+        android:name="vn.edu.usth.flickrbrowser.ui.about.AboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about">
+        <action android:id="@+id/action_global_navigation_home" app:destination="@id/navigation_home" />
+        <action android:id="@+id/action_global_navigation_explore" app:destination="@id/navigation_explore" />
+        <action android:id="@+id/action_global_navigation_favorites" app:destination="@id/navigation_favorites" />
+    </fragment>
+
+</navigation>
+
