@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Random;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -81,6 +82,15 @@ public class ExploreFragment extends Fragment {
         adapter = new ExploreAdapter();
         rv.setAdapter(adapter);
 
+        /** 👇 Added: cho loading item chiếm đủ 2 cột để ProgressBar nằm giữa */
+        glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int viewType = adapter.getItemViewType(position);
+                return (viewType == ExploreAdapter.TYPE_LOADING) ? 2 : 1;
+            }
+        });
+
         // Pull-to-refresh
         swipe.setOnRefreshListener(this::refresh);
 
@@ -92,7 +102,7 @@ public class ExploreFragment extends Fragment {
                 if (dy <= 0) return;
                 int total = adapter.getItemCount();
                 int last = glm.findLastVisibleItemPosition();
-                if (!isLoading && last >= total - 4) {
+                if (!isLoading && last >= total - 8) {
                     loadMorePhotos();
                 }
             }
@@ -125,7 +135,9 @@ public class ExploreFragment extends Fragment {
 
     // Pull-to-refresh / load lần đầu
     private void refresh() {
-        currentPage = 1;
+        int newPage = new Random().nextInt(10) + 1; // ví dụ 10 trang
+        if (newPage == currentPage) newPage = (newPage % 10) + 1;
+        currentPage = newPage;
         isLoading = true;
 
         swipe.setRefreshing(true);
@@ -168,6 +180,8 @@ public class ExploreFragment extends Fragment {
         if (isLoading) return;
         isLoading = true;
         int nextPage = currentPage + 1;
+        adapter.addLoadingFooter();
+
 
         // ✅ Check mạng cho load-more
         if (!NetUtils.hasNetwork(requireContext())) {
@@ -179,6 +193,7 @@ public class ExploreFragment extends Fragment {
         FlickrRepo.getRecent(nextPage, PER_PAGE, new FlickrRepo.CB() {
             @Override
             public void ok(List<PhotoItem> items) {
+                adapter.removeLoadingFooter();
                 isLoading = false;
                 if (items != null && !items.isEmpty()) {
                     adapter.addMore(items);
@@ -188,6 +203,7 @@ public class ExploreFragment extends Fragment {
 
             @Override
             public void err(Throwable t) {
+                adapter.removeLoadingFooter();
                 isLoading = false;
                 String msg = (t != null && t.getMessage() != null && !t.getMessage().isEmpty())
                         ? t.getMessage()
