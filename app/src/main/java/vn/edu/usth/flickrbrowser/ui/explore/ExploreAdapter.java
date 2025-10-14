@@ -43,11 +43,15 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return new ArrayList<>(data);
     }
 
+    /** Lấy toàn bộ dữ liệu hiện tại (dùng cho DetailActivity) */
+    public ArrayList<PhotoItem> getCurrentData() {
+        return new ArrayList<>(data);
+    }
+
     /** Thay toàn bộ danh sách ảnh (dành cho load đầu hoặc refresh) */
     public void setData(List<PhotoItem> list) {
         data.clear();
         if (list != null && !list.isEmpty()) data.addAll(list);
-        isLoading = false;
         notifyDataSetChanged();
     }
 
@@ -57,32 +61,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int start = data.size();
         data.addAll(more);
         notifyItemRangeInserted(start, more.size());
-    }
-    // ====== Thêm và xóa loading footer ======
-    public void addLoadingFooter() {
-        if (!isLoading) {
-            isLoading = true;
-            data.add(null); // placeholder
-            notifyItemInserted(data.size() - 1);
-        }
-    }
-
-    public void removeLoadingFooter() {
-        if (isLoading && data.size() > 0) {
-            isLoading = false;
-            int position = data.size() - 1;
-            data.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-    // ====== Phân biệt loại view ======
-    @Override
-    public int getItemViewType(int position) {
-        if (isLoading && position == data.size() - 1) {
-            return TYPE_LOADING;
-        } else {
-            return TYPE_PHOTO;
-        }
     }
 
     @NonNull
@@ -101,9 +79,7 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
-        if (getItemViewType(pos) == TYPE_LOADING) return;
-        VH h = (VH) holder;
+    public void onBindViewHolder(@NonNull VH h, int pos) {
         final PhotoItem p = data.get(pos);
 
         // Ưu tiên ảnh nhỏ (thumbUrl) để tải nhanh
@@ -143,15 +119,6 @@ public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(v);
             // item_photo.xml phải có ImageView id = imgPhoto
             img = v.findViewById(R.id.imgPhoto);
-        }
-    }
-    // ViewHolder cho footer loading
-    static class LoadingVH extends RecyclerView.ViewHolder {
-        final ProgressBar progressBar;
-
-        LoadingVH(@NonNull View v) {
-            super(v);
-            progressBar = v.findViewById(R.id.progressBar);
         }
     }
 }

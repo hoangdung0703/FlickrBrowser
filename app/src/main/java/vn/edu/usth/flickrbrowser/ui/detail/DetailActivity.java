@@ -1,5 +1,7 @@
 package vn.edu.usth.flickrbrowser.ui.detail;
 
+import static android.app.ProgressDialog.show;
+
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +38,7 @@ public class DetailActivity extends AppCompatActivity {
     // ===== Keys trả kết quả cho màn trước (giống bản cũ)
     public static final String RESULT_PHOTO = "PHOTO_ITEM";
     public static final String RESULT_IS_FAVORITE = "is_favorite";
+    public static final String ACTION_FAV_CHANGED = "vn.edu.usth.flickrbrowser.FAVORITE_CHANGED";
 
     // ===== Lưu local “đã tim” để không mất khi quay lại
     private static final String PREFS = "favorites_prefs";
@@ -249,8 +252,40 @@ public class DetailActivity extends AppCompatActivity {
             nowFav = true;
         }
         persistFavIds();              // lưu ngay để không “mất tim” khi quay lại
-        updateFavIcon(p);             // đổi icon
-        Toast.makeText(this, nowFav ? "Added to Favorites" : "Removed from Favorites", Toast.LENGTH_SHORT).show();
+        updateFavIcon(p);            // đổi icon
+        try {
+            android.view.LayoutInflater inflater = getLayoutInflater();
+            android.view.View layout = inflater.inflate(R.layout.toast_favorites, null);
+
+            android.widget.ImageView imgIcon = layout.findViewById(R.id.imgIcon);
+            android.widget.TextView tvMessage = layout.findViewById(R.id.tvMessage);
+
+            if (nowFav) {
+                imgIcon.setImageResource(R.drawable.baseline_favorite_24);
+                tvMessage.setText("Added to Favorites");
+            } else {
+                imgIcon.setImageResource(R.drawable.outline_favorite_24);
+                tvMessage.setText("Removed from Favorites");
+            }
+
+            android.widget.Toast toast = new android.widget.Toast(getApplicationContext());
+            toast.setDuration(android.widget.Toast.LENGTH_SHORT);
+            toast.setView(layout);
+            toast.show();
+        } catch (Exception e) {
+            Toast.makeText(
+                    this,
+                    nowFav ? "Added to Favorites" : "Removed from Favorites",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+        try {
+            Intent bc = new Intent(ACTION_FAV_CHANGED);
+            bc.setPackage(getPackageName());
+            bc.putExtra(RESULT_PHOTO, p);
+            bc.putExtra(RESULT_IS_FAVORITE, nowFav);
+            sendBroadcast(bc);
+        } catch (Exception ignored) {}
     }
 
     private void updateMetaAndFavorite(PhotoItem cur) {
@@ -289,6 +324,16 @@ public class DetailActivity extends AppCompatActivity {
             Set<String> saved = sp.getStringSet(PREF_FAV_IDS, null);
             if (saved != null) favIds.addAll(saved);
         } catch (Exception ignored) { }
+    }
+
+    private void broadcastFavoriteChanged(@NonNull PhotoItem p, boolean nowFav) {
+        try {
+            Intent intent = new Intent(ACTION_FAV_CHANGED);
+            intent.setPackage(getPackageName());
+            intent.putExtra(RESULT_PHOTO, p);
+            intent.putExtra(RESULT_IS_FAVORITE, nowFav);
+            sendBroadcast(intent);
+        } catch (Exception ignored) {}
     }
 
     // ====== Trả kết quả giống file cũ (để màn trước có thể cập nhật ngay)

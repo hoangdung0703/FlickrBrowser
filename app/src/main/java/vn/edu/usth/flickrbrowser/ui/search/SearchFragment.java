@@ -33,12 +33,12 @@ public class SearchFragment extends Fragment {
     private FragmentSearchBinding binding;
     private PhotosAdapter adapter;
     private FavoritesViewModel favVM;
-
     private int page = 1;
     private final int perPage = 24;
     private boolean isLoading = false;
     private boolean endReached = false;
     private String currentQuery = "";
+
 
     private final ActivityResultLauncher<Intent> detailLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -64,6 +64,16 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
+        adapter = new PhotosAdapter((item, position) -> {
+            android.content.Intent i =
+                    new android.content.Intent(requireContext(),
+                            vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+
+            // Gửi danh sách đang hiển thị + vị trí bấm
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS,
+                    adapter.getCurrentData());
+            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX,
+                    position);
 
         adapter = new PhotosAdapter((item, position) -> {
             Intent i = new Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
@@ -72,6 +82,7 @@ public class SearchFragment extends Fragment {
             // Fallback + flag favorite
             i.putExtra("PHOTO_ITEM", item);
             i.putExtra("is_favorite", favVM.isFavorite(item.id));
+
             detailLauncher.launch(i);
         });
         binding.rvPhotos.setAdapter(adapter);

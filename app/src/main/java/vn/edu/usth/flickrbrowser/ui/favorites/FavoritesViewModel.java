@@ -80,6 +80,16 @@ public class FavoritesViewModel extends AndroidViewModel {
         return false;
     }
 
+    public void refresh() {
+        String json = prefs.getString(KEY_FAVORITES, null);
+        List<PhotoItem> list = null;
+        if (json != null && !json.isEmpty()) {
+            list = gson.fromJson(json, listType);
+        }
+        if (list == null) list = new ArrayList<>();
+        favorites.setValue(list);
+    }
+
     private List<PhotoItem> getSafe() {
         List<PhotoItem> val = favorites.getValue();
         return (val != null) ? val : new ArrayList<>();
@@ -99,4 +109,5 @@ public class FavoritesViewModel extends AndroidViewModel {
             }
         }
     }
+
 }
