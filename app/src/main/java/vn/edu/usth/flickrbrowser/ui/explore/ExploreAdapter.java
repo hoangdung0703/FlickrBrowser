@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,134 +17,91 @@ import java.util.List;
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 
-// Changed to handle multiple view types
-public class ExploreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    // View Types
-    private static final int VIEW_TYPE_ITEM = 0;
-    private static final int VIEW_TYPE_LOADING = 1;
+public class ExploreAdapter extends RecyclerView.Adapter<ExploreAdapter.VH> {
 
     /** Callback click item để Fragment mở DetailActivity */
-    public interface OnPhotoClickListener { void onPhotoClick(PhotoItem photo, int position); }
+    public interface OnPhotoClickListener {
+        void onPhotoClick(PhotoItem photo, int position);
+    }
+
     private OnPhotoClickListener listener;
 
-    public void setOnPhotoClickListener(OnPhotoClickListener l) { this.listener = l; }
+    public void setOnPhotoClickListener(OnPhotoClickListener l) {
+        this.listener = l;
+    }
 
-    /** Dữ liệu */
+    /** Danh sách dữ liệu */
     private final List<PhotoItem> data = new ArrayList<>();
-    private boolean isLoadingAdded = false; // Flag to check if loading footer is added
 
-    public List<PhotoItem> getCurrentData() { return new ArrayList<>(data); }
+    /** Lấy toàn bộ dữ liệu hiện tại (dùng cho DetailActivity) */
+    public ArrayList<PhotoItem> getCurrentData() {
+        return new ArrayList<>(data);
+    }
 
-    /** Thay toàn bộ danh sách */
+    /** Thay toàn bộ danh sách ảnh (dành cho load đầu hoặc refresh) */
     public void setData(List<PhotoItem> list) {
         data.clear();
-        if (list != null) data.addAll(list);
+        if (list != null && !list.isEmpty()) data.addAll(list);
         notifyDataSetChanged();
     }
 
-    /** Thêm trang mới (paging) */
-    public void addPhotos(List<PhotoItem> newPhotos) {
-        if (newPhotos == null || newPhotos.isEmpty()) return;
+    /** Thêm dữ liệu cho phân trang (loadMore) */
+    public void addMore(List<PhotoItem> more) {
+        if (more == null || more.isEmpty()) return;
         int start = data.size();
-        data.addAll(newPhotos);
-        notifyItemRangeInserted(start, newPhotos.size());
-    }
-
-    // --- Helper methods for loading footer ---
-
-    public void addLoadingFooter() {
-        if (!isLoadingAdded) {
-            isLoadingAdded = true;
-            // Add a null item to represent the loading footer
-            data.add(null);
-            notifyItemInserted(data.size() - 1);
-        }
-    }
-
-    public void removeLoadingFooter() {
-        if (isLoadingAdded) {
-            isLoadingAdded = false;
-            int position = data.size() - 1;
-            if (position >= 0) {
-                // Ensure the item is indeed a loader (null) before removing
-                if (data.get(position) == null) {
-                    data.remove(position);
-                    notifyItemRemoved(position);
-                }
-            }
-        }
-    }
-
-    // --- Overridden methods for multiple view types ---
-
-    @Override
-    public int getItemViewType(int position) {
-        // If the item at the last position is null, it's the loading footer
-        return (data.get(position) == null) ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
+        data.addAll(more);
+        notifyItemRangeInserted(start, more.size());
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == VIEW_TYPE_ITEM) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_photo, parent, false);
-            return new PhotoVH(v);
-        } else { // VIEW_TYPE_LOADING
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_loading, parent, false);
-            return new LoadingVH(v);
-        }
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_photo, parent, false);
+        return new VH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int pos) {
-        if (holder.getItemViewType() == VIEW_TYPE_ITEM) {
-            PhotoVH h = (PhotoVH) holder;
-            final PhotoItem p = data.get(pos);
+    public void onBindViewHolder(@NonNull VH h, int pos) {
+        final PhotoItem p = data.get(pos);
 
-            String url = (p.getThumbUrl() != null && !p.getThumbUrl().isEmpty())
-                    ? p.getThumbUrl() : p.getFullUrl();
+        // Ưu tiên ảnh nhỏ (thumbUrl) để tải nhanh
+        String url = (p.getThumbUrl() != null && !p.getThumbUrl().isEmpty())
+                ? p.getThumbUrl()
+                : p.getFullUrl();
 
-            try {
-                Glide.with(h.img.getContext())
-                        .load(url)
-                        .placeholder(R.drawable.placeholder_grey)
-                        .error(R.drawable.placeholder_grey)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(h.img);
-            } catch (Throwable t) {
-                h.img.setImageResource(R.drawable.placeholder_grey);
-            }
-
-            h.itemView.setOnClickListener(v -> {
-                if (listener != null) listener.onPhotoClick(p, h.getBindingAdapterPosition());
-            });
+        try {
+            Glide.with(h.img.getContext())
+                    .load(url)
+                    .placeholder(R.drawable.placeholder_grey)
+                    .error(R.drawable.placeholder_grey)
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(h.img);
+        } catch (Throwable t) {
+            // tránh crash khi context đã bị destroy
+            h.img.setImageResource(R.drawable.placeholder_grey);
         }
-        // No binding needed for LoadingVH, it's just a progress bar
+
+        // Xử lý click vào ảnh
+        h.itemView.setOnClickListener(v -> {
+            if (listener != null)
+                listener.onPhotoClick(p, h.getBindingAdapterPosition());
+        });
     }
 
     @Override
-    public int getItemCount() { return data.size(); }
+    public int getItemCount() {
+        return data.size();
+    }
 
-    // --- ViewHolders ---
-
-    // Renamed from VH for clarity
-    static class PhotoVH extends RecyclerView.ViewHolder {
+    static class VH extends RecyclerView.ViewHolder {
         final ImageView img;
-        PhotoVH(@NonNull View v) {
-            super(v);
-            img = v.findViewById(R.id.imgPhoto);
-        }
-    }
 
-    // New ViewHolder for the loading item
-    static class LoadingVH extends RecyclerView.ViewHolder {
-        LoadingVH(@NonNull View v) {
+        VH(@NonNull View v) {
             super(v);
-            // We don't need a reference to the progress bar itself, just the view
+            // item_photo.xml phải có ImageView id = imgPhoto
+            img = v.findViewById(R.id.imgPhoto);
         }
     }
 }
