@@ -27,20 +27,7 @@
             tools:src="@drawable/baseline_image_not_supported_24"/>
 
         <!-- Nút tim overlay góc phải -->
-        <ImageButton
-            android:id="@+id/btnFavorite"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_margin="@dimen/spacing_s"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:contentDescription="@string/cd_favorite"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/outline_favorite_24"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/md_theme_secondary" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>
