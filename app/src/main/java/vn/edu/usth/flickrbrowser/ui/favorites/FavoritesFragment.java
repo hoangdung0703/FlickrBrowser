@@ -60,6 +60,10 @@ public class FavoritesFragment extends Fragment {
                 } catch (Exception e) {
                     android.widget.Toast.makeText(requireContext(), "Error when update Favorite", android.widget.Toast.LENGTH_SHORT).show();
                 }
+
+                } catch (Exception e) {
+                    android.widget.Toast.makeText(requireContext(), "Error when update Favorite", android.widget.Toast.LENGTH_SHORT).show();
+                }
             });
 
     private final android.content.BroadcastReceiver favReceiver = new android.content.BroadcastReceiver() {
