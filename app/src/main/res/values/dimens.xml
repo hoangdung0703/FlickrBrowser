@@ -14,5 +14,6 @@
 
     <!-- Tạo đường viền nhạt bao quanh -->
     <dimen name="card_stroke">1dp</dimen>
+    <dimen name="chip_stroke_width">1dp</dimen>
 
 </resources>

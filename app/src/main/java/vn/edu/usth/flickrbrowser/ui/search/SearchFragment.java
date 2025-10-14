@@ -16,7 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import vn.edu.usth.flickrbrowser.R;
@@ -25,7 +28,6 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
 import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
-import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
 import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
@@ -33,6 +35,11 @@ public class SearchFragment extends Fragment {
     private FragmentSearchBinding binding;
     private PhotosAdapter adapter;
     private FavoritesViewModel favVM;
+
+    // THÊM CÁC BIẾN MỚI
+    private RecyclerView rvSuggestions;
+    private SuggestionAdapter suggestionAdapter;
+
     private int page = 1;
     private final int perPage = 24;
     private boolean isLoading = false;
@@ -63,6 +70,7 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState); // Thêm dòng này
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
         adapter = new PhotosAdapter((item, position) -> {
             android.content.Intent i =
@@ -75,35 +83,23 @@ public class SearchFragment extends Fragment {
             i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX,
                     position);
 
-        adapter = new PhotosAdapter((item, position) -> {
-            Intent i = new Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS, adapter.getCurrentData());
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX, position);
-            // Fallback + flag favorite
-            i.putExtra("PHOTO_ITEM", item);
-            i.putExtra("is_favorite", favVM.isFavorite(item.id));
-
             detailLauncher.launch(i);
         });
         binding.rvPhotos.setAdapter(adapter);
 
-        // AppBar title
         binding.topAppBar.setTitle(R.string.search_hint);
 
-        // Grid 2 cột
         int span = 2;
         GridLayoutManager glm = new GridLayoutManager(getContext(), span);
         binding.rvPhotos.setLayoutManager(glm);
 
-        // Spacing
         int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_m);
         binding.rvPhotos.addItemDecoration(new GridSpacingDecoration(span, spacingPx, true));
 
-        // Infinite scroll
         final int visibleThreshold = 6;
-        binding.rvPhotos.addOnScrollListener(new androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+        binding.rvPhotos.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull androidx.recyclerview.widget.RecyclerView rv, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                 super.onScrolled(rv, dx, dy);
                 if (dy <= 0) return;
                 int total = glm.getItemCount();
@@ -115,13 +111,11 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // Pull-to-refresh: giữ list, không show shimmer full
         binding.swipeRefresh.setOnRefreshListener(() -> {
             String q = binding.edtQuery.getText() != null ? binding.edtQuery.getText().toString() : "";
             doSearch(q, true);
         });
 
-        // IME action = Search
         binding.edtQuery.setOnEditorActionListener((v, actionId, ev) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 doSearch(v.getText() != null ? v.getText().toString() : "");
@@ -130,14 +124,39 @@ public class SearchFragment extends Fragment {
             return false;
         });
 
-        // Trạng thái ban đầu
+        // THÊM PHẦN KHỞI TẠO SUGGESTIONS
+        rvSuggestions = view.findViewById(R.id.rv_suggestions);
+        setupSuggestions();
+
         setState(new PhotoState.Empty());
     }
+
+    // THÊM HÀM MỚI NÀY
+    private void setupSuggestions() {
+        List<Suggestion> suggestionList = new ArrayList<>();
+        suggestionList.add(new Suggestion("Hanoi"));
+        suggestionList.add(new Suggestion("Sai Gon"));
+        suggestionList.add(new Suggestion("Thanh Hoa"));
+        suggestionList.add(new Suggestion("France"));
+        suggestionList.add(new Suggestion("Japan"));
+        suggestionList.add(new Suggestion("Cats"));
+        suggestionList.add(new Suggestion("Nature"));
+
+
+        suggestionAdapter = new SuggestionAdapter(suggestionList, query -> {
+            binding.edtQuery.setText(query);
+            doSearch(query);
+        });
+
+        rvSuggestions.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        rvSuggestions.setAdapter(suggestionAdapter);
+    }
+
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // tránh leak
+        binding = null;
     }
 
     private void setState(@NonNull PhotoState state) {
@@ -146,30 +165,25 @@ public class SearchFragment extends Fragment {
         if (state instanceof PhotoState.Loading) {
             binding.shimmerGrid.getRoot().setVisibility(View.VISIBLE);
             startShimmers(binding.shimmerGrid.getRoot());
-
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
         } else if (state instanceof PhotoState.Success) {
             List<PhotoItem> items = ((PhotoState.Success) state).getItems();
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
-
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
             binding.rvPhotos.setVisibility(View.VISIBLE);
             adapter.submitList(items);
         } else if (state instanceof PhotoState.Empty) {
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
-
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.VISIBLE);
         } else if (state instanceof PhotoState.Error) {
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
-
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
-
             String msg = ((PhotoState.Error) state).getMessage();
             Toast.makeText(requireContext(),
                     (msg == null || msg.isEmpty()) ? getString(R.string.search_failed) : msg,
@@ -182,10 +196,8 @@ public class SearchFragment extends Fragment {
     private void doSearch(String query, boolean fromSwipeRefresh) {
         if (binding == null) return;
 
-        // Chuẩn hoá query
         currentQuery = query == null ? "" : query.trim();
 
-        // Nếu rỗng → không gọi API, show Empty luôn
         if (currentQuery.isEmpty()) {
             isLoading = false;
             endReached = true;
@@ -196,18 +208,14 @@ public class SearchFragment extends Fragment {
             return;
         }
 
-        // Reset phân trang
         page = 1;
         endReached = false;
         isLoading = true;
-
-        // Huỷ in-flight
         FlickrRepo.cancelSearch();
 
         if (!fromSwipeRefresh) {
             setState(new PhotoState.Loading());
         } else {
-            // Refresh: giữ list, tắt shimmer
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
             binding.rvPhotos.setVisibility(View.VISIBLE);
