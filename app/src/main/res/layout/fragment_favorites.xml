@@ -7,50 +7,62 @@
     android:layout_height="match_parent"
     android:background="@color/md_theme_surface">
 
-    <!-- Grid list -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFavorites"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeFavorites"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/spacing_m"
-        android:clipToPadding="false"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/item_photo" />
+        android:layout_height="match_parent">
 
-    <!-- Empty state -->
-    <LinearLayout
-        android:id="@+id/emptyView"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="@dimen/spacing_l"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:visibility="visible">
+        <!-- ✅ SwipeRefreshLayout has exactly ONE child -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:alpha="0.65"
-            android:contentDescription="@string/empty_favorites_title"
-            android:src="@drawable/baseline_favorite_24"
-            app:tint="@color/md_theme_secondary" />
+            <!-- Grid list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFavorites"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/spacing_m"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_favorite" />
 
-        <TextView
-            style="@style/Text.Flickr.Section"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/spacing_m"
-            android:text="@string/empty_favorites_title"
-            android:textColor="@color/md_theme_onSurface" />
+            <!-- Empty state (overlay) -->
+            <LinearLayout
+                android:id="@+id/emptyView"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="@dimen/spacing_l"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:visibility="visible">
 
-        <TextView
-            style="@style/Text.Flickr.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/spacing_s"
-            android:text="@string/empty_favorites_sub"
-            android:textColor="@color/md_text_secondary" />
-    </LinearLayout>
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:alpha="0.65"
+                    android:contentDescription="@string/empty_favorites_title"
+                    android:src="@drawable/baseline_favorite_24"
+                    app:tint="@color/md_theme_secondary" />
+
+                <TextView
+                    style="@style/Text.Flickr.Section"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/spacing_m"
+                    android:text="@string/empty_favorites_title"
+                    android:textColor="@color/md_theme_onSurface" />
+
+                <TextView
+                    style="@style/Text.Flickr.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/spacing_s"
+                    android:text="@string/empty_favorites_sub"
+                    android:textColor="@color/md_text_secondary" />
+            </LinearLayout>
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>
