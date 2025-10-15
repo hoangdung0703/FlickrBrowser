@@ -16,7 +16,6 @@ public class NotificationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Chỉ cần inflate layout là đủ
         return inflater.inflate(R.layout.fragment_notification, container, false);
     }
 }

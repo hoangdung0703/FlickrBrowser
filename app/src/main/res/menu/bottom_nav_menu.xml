@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 1. THÊM ITEM HOME MỚI Ở ĐẦU TIÊN -->
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_home_new"
         android:icon="@drawable/ic_home"
         android:title="@string/nav_home" />
+
+    <!-- 2. SỬA ITEM CŨ THÀNH SEARCH -->
+    <item
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/nav_search" />
 
     <item
         android:id="@+id/navigation_explore"
@@ -11,17 +19,18 @@
         android:title="@string/nav_explore" />
 
     <item
-        android:id="@+id/navigation_favorites"
-        android:icon="@drawable/ic_favorites"
-        android:title="@string/nav_favorites" />
-
-    <item
         android:id="@+id/navigation_notification"
         android:icon="@drawable/ic_notifications"
         android:title="@string/nav_noti" />
+
+    <item
+        android:id="@+id/navigation_favorites"
+        android:icon="@drawable/ic_favorites"
+        android:title="@string/nav_favorites" />
 
     <item
         android:id="@+id/navigation_about"
         android:icon="@drawable/ic_about"
         android:title="@string/nav_about" />
 </menu>
+

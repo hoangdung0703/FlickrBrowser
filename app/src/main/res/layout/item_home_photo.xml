@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Phần thông tin tác giả -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ownerAvatar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                tools:src="@tools:sample/avatars" />
+
+            <TextView
+                android:id="@+id/ownerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                tools:text="Photographer Name" />
+
+        </LinearLayout>
+
+        <!-- Ảnh chính -->
+        <ImageView
+            android:id="@+id/photoImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:src="@tools:sample/backgrounds/scenic"
+            tools:maxHeight="400dp"
+            android:contentDescription="Main photo"/>
+
+        <!--
+        ============================================================
+        THAY ĐỔI Ở ĐÂY: Sửa lại cách bố trí các nút tương tác
+        ============================================================
+        -->
+
+        <!-- Tiêu đề ảnh -->
+        <TextView
+            android:id="@+id/photoTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"
+            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            tools:text="Honoring Hispanic Heritage Month"/>
+
+        <!-- Hàng nút tương tác (Tim, Bình luận, Chia sẻ) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="8dp">
+
+            <!-- Nút Favorite (Tim) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFavorite"
+                style="@style/Widget.Material3.Button.TextButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                app:icon="@drawable/outline_favorite_24"
+                app:iconTint="?attr/colorOnSurfaceVariant"
+                tools:text="295"
+                android:textColor="?attr/colorOnSurfaceVariant"/>
+
+            <!-- Nút Comment (chưa làm chức năng, chỉ để hiển thị) -->
+
+            <!-- Nút Share (Chia sẻ) ở góc phải -->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnComment"
+                style="@style/Widget.Material3.Button.TextButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="87dp"
+                android:layout_toEndOf="@id/btnFavorite"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:icon="@drawable/ic_comment"
+                app:iconTint="?attr/colorOnSurfaceVariant"
+                tools:text="13" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShare"
+                style="@style/Widget.Material3.Button.TextButton.Icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="-36dp"
+                app:icon="@drawable/ic_share"
+                app:iconTint="?attr/colorOnSurfaceVariant" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+
