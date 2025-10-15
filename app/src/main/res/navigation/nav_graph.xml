@@ -5,17 +5,17 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/authFragment">
 
-    <!-- 1. THÊM AUTH FRAGMENT VÀ ĐẶT LÀM ĐIỂM BẮT ĐẦU -->
+    <!-- ========== LUỒNG XÁC THỰC ========== -->
+
+    <!-- 1️⃣ Màn hình Auth kiểm tra login -->
     <fragment
         android:id="@+id/authFragment"
         android:name="vn.edu.usth.flickrbrowser.ui.auth.AuthFragment"
         android:label="fragment_auth"
-        tools:layout="@layout/fragment_auth" >
+        tools:layout="@layout/fragment_auth">
         <action
             android:id="@+id/action_authFragment_to_signInFragment"
-            app:destination="@id/signInFragment"
-            app:popUpTo="@id/authFragment"
-            app:popUpToInclusive="true" />
+            app:destination="@id/signInFragment" />
         <action
             android:id="@+id/action_authFragment_to_main_nav"
             app:destination="@id/navigation_home_new"
@@ -23,26 +23,34 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- 2️⃣ Màn hình Đăng nhập -->
     <fragment
         android:id="@+id/signInFragment"
         android:name="vn.edu.usth.flickrbrowser.ui.auth.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in">
-        <action
-            android:id="@+id/action_signInFragment_to_signUpFragment"
-            app:destination="@id/signUpFragment" />
+
+        <!-- Đăng nhập → Home -->
         <action
             android:id="@+id/action_signInFragment_to_main_nav"
             app:destination="@id/navigation_home_new"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+
+        <!-- Chuyển sang Sign Up -->
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
     </fragment>
 
+    <!-- 3️⃣ Màn hình Đăng ký -->
     <fragment
         android:id="@+id/signUpFragment"
         android:name="vn.edu.usth.flickrbrowser.ui.auth.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up">
+
+        <!-- Đăng ký xong → Home -->
         <action
             android:id="@+id/action_signUpFragment_to_main_nav"
             app:destination="@id/navigation_home_new"
@@ -50,7 +58,8 @@
             app:popUpToInclusive="true" />
     </fragment>
 
-    <!-- Các fragment còn lại của bạn không thay đổi -->
+    <!-- ========== LUỒNG APP CHÍNH ========== -->
+
     <fragment
         android:id="@+id/navigation_home_new"
         android:name="vn.edu.usth.flickrbrowser.ui.home.HomeFragment"
@@ -85,6 +94,13 @@
         android:id="@+id/navigation_about"
         android:name="vn.edu.usth.flickrbrowser.ui.about.AboutFragment"
         android:label="fragment_about"
-        tools:layout="@layout/fragment_about" />
+        tools:layout="@layout/fragment_about">
+        <!-- Logout → quay về SignIn -->
+        <action
+            android:id="@+id/action_about_to_signIn"
+            app:destination="@id/signInFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 </navigation>
