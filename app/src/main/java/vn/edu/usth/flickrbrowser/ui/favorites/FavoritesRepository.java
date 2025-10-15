@@ -1,4 +1,4 @@
-package vn.edu.usth.flickrbrowser.data;
+package vn.edu.usth.flickrbrowser.ui.favorites;
 
 import android.content.Context;
 import android.content.SharedPreferences;
