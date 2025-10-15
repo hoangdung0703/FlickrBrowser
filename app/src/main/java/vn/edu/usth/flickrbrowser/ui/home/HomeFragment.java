@@ -116,12 +116,21 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFavoriteClick(PhotoItem photo) {
                 boolean isCurrentlyFavorite = favVM.isFavorite(photo.id);
-                if (isCurrentlyFavorite) {
-                    favVM.removeFavorite(photo);
-                } else {
-                    favVM.addFavorite(photo);
-                }
-                adapter.updateFavoriteStatus(photo, !isCurrentlyFavorite);
+                boolean willBeFavorite = !isCurrentlyFavorite;
+
+                // 1) Cập nhật VM + UI như bạn đang làm
+                if (isCurrentlyFavorite) favVM.removeFavorite(photo);
+                else                     favVM.addFavorite(photo);
+                adapter.updateFavoriteStatus(photo, willBeFavorite);
+
+                // 2) PHÁT BROADCAST để Detail (và màn khác) nhận ngay
+                try {
+                    Intent i = new Intent(DetailActivity.ACTION_FAV_CHANGED);
+                    i.setPackage(requireContext().getPackageName());   // giới hạn nội bộ app
+                    i.putExtra(DetailActivity.RESULT_PHOTO, photo);
+                    i.putExtra(DetailActivity.RESULT_IS_FAVORITE, willBeFavorite);
+                    requireContext().sendBroadcast(i);
+                } catch (Exception ignored) {}
             }
             @Override
             public void onShareClick(PhotoItem photo) {
