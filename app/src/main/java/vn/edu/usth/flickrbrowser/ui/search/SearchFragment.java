@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
@@ -25,20 +26,18 @@ import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
 import vn.edu.usth.flickrbrowser.databinding.FragmentSearchBinding;
 import vn.edu.usth.flickrbrowser.ui.common.GridSpacingDecoration;
 import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
-import vn.edu.usth.flickrbrowser.ui.search.PhotosAdapter;
-import vn.edu.usth.flickrbrowser.ui.state.PhotoState;
 
 public class SearchFragment extends Fragment {
 
     private FragmentSearchBinding binding;
     private PhotosAdapter adapter;
     private FavoritesViewModel favVM;
+
     private int page = 1;
     private final int perPage = 24;
     private boolean isLoading = false;
     private boolean endReached = false;
     private String currentQuery = "";
-
 
     private final ActivityResultLauncher<Intent> detailLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -63,26 +62,18 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        // ViewModel dùng chung với các tab khác
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
-        adapter = new PhotosAdapter((item, position) -> {
-            android.content.Intent i =
-                    new android.content.Intent(requireContext(),
-                            vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
 
-            // Gửi danh sách đang hiển thị + vị trí bấm
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS,
-                    adapter.getCurrentData());
-            i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX,
-                    position);
-
+        // Adapter: click item -> mở DetailActivity
         adapter = new PhotosAdapter((item, position) -> {
             Intent i = new Intent(requireContext(), vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.class);
+            // Gửi list hiện tại + index bấm để Detail có thể swipe
             i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_PHOTOS, adapter.getCurrentData());
             i.putExtra(vn.edu.usth.flickrbrowser.ui.detail.DetailActivity.EXTRA_START_INDEX, position);
-            // Fallback + flag favorite
+            // Fallback + cờ favorite
             i.putExtra("PHOTO_ITEM", item);
             i.putExtra("is_favorite", favVM.isFavorite(item.id));
-
             detailLauncher.launch(i);
         });
         binding.rvPhotos.setAdapter(adapter);
@@ -101,9 +92,9 @@ public class SearchFragment extends Fragment {
 
         // Infinite scroll
         final int visibleThreshold = 6;
-        binding.rvPhotos.addOnScrollListener(new androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+        binding.rvPhotos.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull androidx.recyclerview.widget.RecyclerView rv, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
                 super.onScrolled(rv, dx, dy);
                 if (dy <= 0) return;
                 int total = glm.getItemCount();
@@ -115,7 +106,7 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // Pull-to-refresh: giữ list, không show shimmer full
+        // Pull-to-refresh: giữ list, không show shimmer
         binding.swipeRefresh.setOnRefreshListener(() -> {
             String q = binding.edtQuery.getText() != null ? binding.edtQuery.getText().toString() : "";
             doSearch(q, true);
@@ -131,7 +122,7 @@ public class SearchFragment extends Fragment {
         });
 
         // Trạng thái ban đầu
-        setState(new PhotoState.Empty());
+        setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Empty());
     }
 
     @Override
@@ -140,37 +131,37 @@ public class SearchFragment extends Fragment {
         binding = null; // tránh leak
     }
 
-    private void setState(@NonNull PhotoState state) {
+    private void setState(@NonNull vn.edu.usth.flickrbrowser.ui.state.PhotoState state) {
         if (binding == null) return;
 
-        if (state instanceof PhotoState.Loading) {
+        if (state instanceof vn.edu.usth.flickrbrowser.ui.state.PhotoState.Loading) {
             binding.shimmerGrid.getRoot().setVisibility(View.VISIBLE);
             startShimmers(binding.shimmerGrid.getRoot());
 
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
-        } else if (state instanceof PhotoState.Success) {
-            List<PhotoItem> items = ((PhotoState.Success) state).getItems();
+        } else if (state instanceof vn.edu.usth.flickrbrowser.ui.state.PhotoState.Success) {
+            List<PhotoItem> items = ((vn.edu.usth.flickrbrowser.ui.state.PhotoState.Success) state).getItems();
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
 
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
             binding.rvPhotos.setVisibility(View.VISIBLE);
             adapter.submitList(items);
-        } else if (state instanceof PhotoState.Empty) {
+        } else if (state instanceof vn.edu.usth.flickrbrowser.ui.state.PhotoState.Empty) {
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
 
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.VISIBLE);
-        } else if (state instanceof PhotoState.Error) {
+        } else if (state instanceof vn.edu.usth.flickrbrowser.ui.state.PhotoState.Error) {
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
 
             binding.rvPhotos.setVisibility(View.GONE);
             if (binding.emptyView != null) binding.emptyView.getRoot().setVisibility(View.GONE);
 
-            String msg = ((PhotoState.Error) state).getMessage();
+            String msg = ((vn.edu.usth.flickrbrowser.ui.state.PhotoState.Error) state).getMessage();
             Toast.makeText(requireContext(),
                     (msg == null || msg.isEmpty()) ? getString(R.string.search_failed) : msg,
                     Toast.LENGTH_SHORT).show();
@@ -182,17 +173,15 @@ public class SearchFragment extends Fragment {
     private void doSearch(String query, boolean fromSwipeRefresh) {
         if (binding == null) return;
 
-        // Chuẩn hoá query
         currentQuery = query == null ? "" : query.trim();
 
-        // Nếu rỗng → không gọi API, show Empty luôn
         if (currentQuery.isEmpty()) {
             isLoading = false;
             endReached = true;
             page = 1;
             binding.swipeRefresh.setRefreshing(false);
             adapter.submitList(java.util.Collections.emptyList());
-            setState(new PhotoState.Empty());
+            setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Empty());
             return;
         }
 
@@ -205,7 +194,7 @@ public class SearchFragment extends Fragment {
         FlickrRepo.cancelSearch();
 
         if (!fromSwipeRefresh) {
-            setState(new PhotoState.Loading());
+            setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Loading());
         } else {
             // Refresh: giữ list, tắt shimmer
             stopShimmers(binding.shimmerGrid.getRoot());
@@ -221,10 +210,10 @@ public class SearchFragment extends Fragment {
                 binding.swipeRefresh.setRefreshing(false);
 
                 if (items == null || items.isEmpty()) {
-                    setState(new PhotoState.Empty());
+                    setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Empty());
                     endReached = true;
                 } else {
-                    setState(new PhotoState.Success(items));
+                    setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Success(items));
                     if (items.size() < perPage) endReached = true;
                 }
             }
@@ -236,7 +225,7 @@ public class SearchFragment extends Fragment {
                 String msg = (e != null && e.getMessage() != null && !e.getMessage().isEmpty())
                         ? e.getMessage()
                         : getString(R.string.search_failed);
-                setState(new PhotoState.Error(msg));
+                setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Error(msg));
             }
         });
     }
