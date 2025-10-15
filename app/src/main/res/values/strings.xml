@@ -26,6 +26,8 @@
     <string name="no_photos_found">No photos found</string>
     <string name="search_no_photos_text">No photos found</string>
 
+
+
     <!-- Nav-->
 
 
@@ -59,5 +61,23 @@
     <string name="no_connection">No internet connection. Please try again.</string>
     <string name="no_photos_yet">Search photos\n</string>
     <string name="nav_noti">Notifications</string>
+    <string name="nav_search">Search</string>
 
+    <string name="about_version_format">Version %1$s</string>
+    <string name="about_welcome_format">Welcome, %1$s</string>
+    <string name="logout">Log out</string>
+    <string name="logged_out_success">Logged out successfully</string>
+    <string name="logged_out_failed">Log out failed</string>
+    <string name="about_welcome_guest">Welcome</string>
+    <string name="version_fmt">Version %1$s</string>
+    <string name="guest">Guest</string>
+    <string name="welcome_fmt">Welcome, %1$s</string>
+    <string name="logged_out">Logged out successfully.</string>
+    <string name="logout_failed">Logout failed. Please try again.</string>
+
+    <string name="error_email_required">Enter Email</string>
+    <string name="error_password_required">Enter Password</string>
+    <string name="error_fix_inputs">Please fix the highlighted fields</string>
+    <string name="login_success">Login Successful</string>
+    <string name="login_failed">Authentication Failed.</string>
 </resources>
