@@ -3,9 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/signInFragment">
+    app:startDestination="@id/authFragment">
 
-    <!-- Global: dùng cho logout -->
+    <!-- Auth (màn hình gateway) -->
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="vn.edu.usth.flickrbrowser.ui.auth.AuthFragment"
+        android:label="fragment_auth"
+        tools:layout="@layout/fragment_auth">
+        <action
+            android:id="@+id/action_authFragment_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:popUpTo="@id/authFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_authFragment_to_main_nav"
+            app:destination="@id/navigation_home_new"
+            app:popUpTo="@id/authFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- (Tuỳ chọn) Global action dùng cho logout -->
     <action
         android:id="@+id/action_global_go_to_signIn"
         app:destination="@id/signInFragment"
@@ -18,15 +36,13 @@
         android:name="vn.edu.usth.flickrbrowser.ui.auth.SignInFragment"
         android:label="fragment_sign_in"
         tools:layout="@layout/fragment_sign_in">
-
         <action
             android:id="@+id/action_signInFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
-
-        <!-- Login thành công -> HOME, clear back stack -->
+        <!-- Đăng nhập xong -> Home, clear back stack -->
         <action
             android:id="@+id/action_signInFragment_to_main_nav"
-            app:destination="@id/navigation_home"
+            app:destination="@id/navigation_home_new"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
@@ -37,18 +53,24 @@
         android:name="vn.edu.usth.flickrbrowser.ui.auth.SignUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up">
-
-        <!-- Đăng ký xong -> HOME, clear back stack -->
+        <!-- Đăng ký xong -> Home, clear back stack -->
         <action
             android:id="@+id/action_signUpFragment_to_main_nav"
-            app:destination="@id/navigation_home"
+            app:destination="@id/navigation_home_new"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
 
-    <!-- Home (Search) -->
+    <!-- Home -->
     <fragment
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_home_new"
+        android:name="vn.edu.usth.flickrbrowser.ui.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
+    <!-- Search -->
+    <fragment
+        android:id="@+id/navigation_search"
         android:name="vn.edu.usth.flickrbrowser.ui.search.SearchFragment"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
@@ -80,7 +102,6 @@
         android:name="vn.edu.usth.flickrbrowser.ui.about.AboutFragment"
         android:label="fragment_about"
         tools:layout="@layout/fragment_about">
-
         <!-- Logout từ About -> Sign In, clear back stack -->
         <action
             android:id="@+id/action_about_to_signIn"

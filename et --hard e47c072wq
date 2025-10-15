@@ -1,0 +1,74 @@
+[33m9b05bfe[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/design-system[m[33m)[m HEAD@{0}: pull origin main: Merge made by the 'ort' strategy.
+[33me47c072[m HEAD@{1}: commit: add suggestion
+[33mf28ce67[m HEAD@{2}: commit (merge): Remove duplicate FavoritesFragment
+[33mc06c49f[m[33m ([m[1;31morigin/feature/design-system[m[33m)[m HEAD@{3}: pull: Merge made by the 'ort' strategy.
+[33maebae11[m HEAD@{4}: commit: add suggestion search
+[33meff9f22[m HEAD@{5}: commit: Add notification tab
+[33m6fdc108[m HEAD@{6}: pull: Merge made by the 'ort' strategy.
+[33m3fb55bd[m HEAD@{7}: commit: Stop tracking google-services.json
+[33mbb7d6e0[m HEAD@{8}: commit (merge): Create login and register gate
+[33m2b9e607[m HEAD@{9}: commit: update search layout
+[33mc707423[m HEAD@{10}: commit (merge): add viewpager2 fix detail, add effect,search still error
+[33m68978c6[m HEAD@{11}: commit: add viewpager2 fix detail, add effect
+[33m44c2b38[m HEAD@{12}: pull origin main: Merge made by the 'ort' strategy.
+[33mb3ed072[m HEAD@{13}: commit (merge): fix string
+[33m9ff1f05[m HEAD@{14}: checkout: moving from test-favorites to feature/design-system
+[33m1182065[m[33m ([m[1;32mtest-favorites[m[33m)[m HEAD@{15}: commit: Sua layout itemphoto
+[33m423ef03[m HEAD@{16}: checkout: moving from feature/design-system to test-favorites
+[33m9ff1f05[m HEAD@{17}: commit: add detail bar (icon for fav, share, download and infor)
+[33m27a00cc[m HEAD@{18}: pull origin main: Merge made by the 'ort' strategy.
+[33m8deb751[m HEAD@{19}: commit (merge): Lưu truoc khi thay doi
+[33me7de319[m HEAD@{20}: reset: moving to HEAD
+[33me7de319[m HEAD@{21}: checkout: moving from feature/design-system to feature/design-system
+[33me7de319[m HEAD@{22}: commit: tryin fix api not success yet
+[33mb885b5d[m HEAD@{23}: checkout: moving from feature/design-system to feature/design-system
+[33mb885b5d[m HEAD@{24}: commit: thêm bottom nav bar
+[33mdcea1a7[m HEAD@{25}: commit (merge): Add bottom nav bar
+[33maf622e4[m HEAD@{26}: commit: Add bottom nav bar
+[33m7db08bc[m HEAD@{27}: checkout: moving from main to feature/design-system
+[33m8e22b6a[m[33m ([m[1;32mmain[m[33m)[m HEAD@{28}: checkout: moving from feature/design-system to main
+[33m7db08bc[m HEAD@{29}: commit: Fix loi va tao dc khung
+[33mcb85586[m HEAD@{30}: commit (merge): Merge branch 'main' of https://github.com/hoangdung0703/FlickrBrowser into feature/design-system
+[33m22356ee[m HEAD@{31}: commit: Thay doi trc khi keo ve
+[33m67bb673[m HEAD@{32}: checkout: moving from feature/design-system to feature/design-system
+[33m67bb673[m HEAD@{33}: commit: fix: conflict tiep
+[33mb4edd24[m HEAD@{34}: checkout: moving from feature/design-system to feature/design-system
+[33mb4edd24[m HEAD@{35}: pull origin feature/design-system: Fast-forward
+[33m576245e[m HEAD@{36}: checkout: moving from feature/design-system to feature/design-system
+[33m576245e[m HEAD@{37}: commit: fix: conflict, còn file DetailActivity XHieu can sua lai
+[33mfe8d2b5[m HEAD@{38}: commit (merge): Merge remote-tracking branch 'origin/main' into feature/design-system
+[33m501b458[m HEAD@{39}: checkout: moving from feature/design-system to feature/design-system
+[33m501b458[m HEAD@{40}: rebase (finish): returning to refs/heads/feature/design-system
+[33m501b458[m HEAD@{41}: rebase (continue): feat(ui): add EmpEmptyView + ShimmerSkeleton + PhotoState
+[33m1e112b5[m HEAD@{42}: rebase (continue): WIP: lưu thay đổi tạm trước khi switch branch
+[33m75f0f7e[m HEAD@{43}: rebase (continue): Feature/search (#14) (#17) Merge feature/search vào main - thêm UI search với AppBar, RecyclerView, TextInput
+[33m6976245[m HEAD@{44}: rebase (continue): Day 1's task feature/ favorite (#9)
+[33m1cddd99[m HEAD@{45}: rebase (pick): feat(api-service): completed interface and logJSON (#11)
+[33m2bf0df1[m HEAD@{46}: rebase (start): checkout origin/feature/design-system
+[33mc9575fd[m HEAD@{47}: reset: moving to HEAD
+[33mc9575fd[m HEAD@{48}: checkout: moving from feature/design-system to feature/design-system
+[33mc9575fd[m HEAD@{49}: commit: feat(ui): add EmpEmptyView + ShimmerSkeleton + PhotoState
+[33m78c2a07[m HEAD@{50}: rebase (finish): returning to refs/heads/feature/design-system
+[33m78c2a07[m HEAD@{51}: rebase (continue): WIP: lưu thay đổi tạm trước khi switch branch
+[33m84017a1[m HEAD@{52}: rebase (start): checkout origin/main
+[33m2bf0df1[m HEAD@{53}: checkout: moving from feature/design-system to feature/design-system
+[33m2bf0df1[m HEAD@{54}: reset: moving to HEAD
+[33m2bf0df1[m HEAD@{55}: checkout: moving from feature/design-system to feature/design-system
+[33m2bf0df1[m HEAD@{56}: checkout: moving from feature/design-system to feature/design-system
+[33m2bf0df1[m HEAD@{57}: checkout: moving from feature/design-system to feature/design-system
+[33m2bf0df1[m HEAD@{58}: rebase (finish): returning to refs/heads/feature/design-system
+[33m2bf0df1[m HEAD@{59}: rebase (continue): WIP: lưu thay đổi tạm trước khi switch branch
+[33md0a1b5e[m[33m ([m[1;32mfeature/explore-grid[m[33m)[m HEAD@{60}: rebase (start): checkout origin/main
+[33md10deb3[m HEAD@{61}: checkout: moving from feature/design-system to feature/design-system
+[33md10deb3[m HEAD@{62}: checkout: moving from feature/explore-grid to feature/design-system
+[33md0a1b5e[m[33m ([m[1;32mfeature/explore-grid[m[33m)[m HEAD@{63}: reset: moving to d0a1b5e5be1b7d217f74595e6e06dc60db5a2e0b
+[33md0a1b5e[m[33m ([m[1;32mfeature/explore-grid[m[33m)[m HEAD@{64}: checkout: moving from feature/design-system to feature/explore-grid
+[33md10deb3[m HEAD@{65}: commit: WIP: lưu thay đổi tạm trước khi switch branch
+[33m23b8e52[m HEAD@{66}: commit: feat(ui): add Material3 style(shape, stroke) and update dimens with colors
+[33m9d55742[m HEAD@{67}: commit: feat(ui): setup base design system (colors,dimens,styles,themes,card style)
+[33m8e22b6a[m[33m ([m[1;32mmain[m[33m)[m HEAD@{68}: checkout: moving from main to feature/design-system
+[33m8e22b6a[m[33m ([m[1;32mmain[m[33m)[m HEAD@{69}: checkout: moving from main to main
+[33m8e22b6a[m[33m ([m[1;32mmain[m[33m)[m HEAD@{70}: reset: moving to origin/main
+[33m8e22b6a[m[33m ([m[1;32mmain[m[33m)[m HEAD@{71}: checkout: moving from feature/design-system to main
+[33m8e22b6a[m[33m ([m[1;32mmain[m[33m)[m HEAD@{72}: checkout: moving from main to feature/design-system
+[33m8e22b6a[m[33m ([m[1;32mmain[m[33m)[m HEAD@{73}: clone: from https://github.com/hoangdung0703/FlickrBrowser.git
