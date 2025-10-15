@@ -143,7 +143,7 @@ public class ExploreFragment extends Fragment {
         swipe.setRefreshing(true);
         setState(new PhotoState.Loading());
 
-        // ✅ Pre-check mạng: mất mạng -> show đúng thông báo
+        //  Pre-check mạng: mất mạng -> show đúng thông báo
         if (!NetUtils.hasNetwork(requireContext())) {
             isLoading = false;
             swipe.setRefreshing(false);
