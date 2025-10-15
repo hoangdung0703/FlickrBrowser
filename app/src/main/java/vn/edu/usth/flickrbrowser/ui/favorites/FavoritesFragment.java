@@ -42,25 +42,7 @@ public class FavoritesFragment extends Fragment {
     private FavoritesViewModel vm;
     private FavoritesAdapter adapter;
 
-    // Mở DetailActivity và nhận result quay về
-    private final ActivityResultLauncher<Intent> detailLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                try {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra(RESULT_PHOTO);
-                        boolean isFav = result.getData().getBooleanExtra(RESULT_IS_FAVORITE, false);
-                        if (returned != null) {
-                            if (isFav) vm.addFavorite(returned);
-                            else vm.removeFavorite(returned);
-                        }
-                    }
-                } catch (Exception e) {
-                    android.widget.Toast.makeText(requireContext(),
-                            "Error when updating favorites", android.widget.Toast.LENGTH_SHORT).show();
-                }
-            });
-
-    // Receiver nhận sự kiện tim/un-tim từ DetailActivity
+    // Receiver duy nhất để đồng bộ tim từ các màn khác (Home/Detail)
     private final BroadcastReceiver favReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
             if (intent == null || !ACTION_FAV_CHANGED.equals(intent.getAction())) return;
@@ -69,14 +51,33 @@ public class FavoritesFragment extends Fragment {
                 boolean isFav = intent.getBooleanExtra(RESULT_IS_FAVORITE, false);
                 if (item == null || item.id == null) return;
 
+                // Cập nhật vào ViewModel (single source) -> UI sẽ được observe và update
                 if (isFav) vm.addFavorite(item);
-                else vm.removeFavorite(item);
+                else       vm.removeFavorite(item);
             } catch (Exception ignored) {
                 android.widget.Toast.makeText(requireContext(),
                         "Error when updating favorites", android.widget.Toast.LENGTH_SHORT).show();
             }
         }
     };
+
+    // Mở DetailActivity và nhận result quay về (fallback/backup cho đồng bộ)
+    private final ActivityResultLauncher<Intent> detailLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                try {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        PhotoItem returned = (PhotoItem) result.getData().getSerializableExtra(RESULT_PHOTO);
+                        boolean isFav = result.getData().getBooleanExtra(RESULT_IS_FAVORITE, false);
+                        if (returned != null) {
+                            if (isFav) vm.addFavorite(returned);
+                            else       vm.removeFavorite(returned);
+                        }
+                    }
+                } catch (Exception e) {
+                    android.widget.Toast.makeText(requireContext(),
+                            "Error when updating favorites", android.widget.Toast.LENGTH_SHORT).show();
+                }
+            });
 
     @Nullable
     @Override
@@ -92,6 +93,9 @@ public class FavoritesFragment extends Fragment {
         SwipeRefreshLayout swipe = view.findViewById(R.id.swipeFavorites);
         RecyclerView rv = view.findViewById(R.id.rvFavorites);
         View empty = view.findViewById(R.id.emptyView);
+
+        // ViewModel dùng scope Activity để chia sẻ giữa các tab
+        vm = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
 
         // Grid 2 cột + padding theo insets
         rv.setLayoutManager(new GridLayoutManager(requireContext(), 2));
@@ -138,9 +142,6 @@ public class FavoritesFragment extends Fragment {
                 }
             }
         });
-
-        // ViewModel dùng scope Activity để chia sẻ giữa các tab
-        vm = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
 
         // Adapter: click ♥ → remove; click item → mở DetailActivity
         adapter = new FavoritesAdapter(
@@ -191,7 +192,7 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
-    // Khuyến nghị: đăng ký/unregister Receiver theo vòng đời hiển thị (an toàn rò rỉ)
+    // Đăng ký/unregister Receiver theo vòng đời hiển thị
     @Override
     public void onStart() {
         super.onStart();
@@ -201,7 +202,7 @@ public class FavoritesFragment extends Fragment {
             if (android.os.Build.VERSION.SDK_INT >= 33) {
                 app.registerReceiver(favReceiver, f, Context.RECEIVER_NOT_EXPORTED);
             } else {
-                // AndroidX Core: ContextCompat.registerReceiver(Context, BroadcastReceiver, IntentFilter, int flags)
+                // AndroidX Core: dùng ContextCompat cho API thấp hơn
                 ContextCompat.registerReceiver(app, favReceiver, f, ContextCompat.RECEIVER_NOT_EXPORTED);
             }
         } catch (Exception ignored) {}

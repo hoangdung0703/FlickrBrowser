@@ -4,6 +4,7 @@ import static android.app.ProgressDialog.show;
 
 import android.app.DownloadManager;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -54,6 +55,8 @@ public class DetailActivity extends AppCompatActivity {
 
     // Trạng thái tim: id đã được tim
     private final HashSet<String> favIds = new HashSet<>();
+
+    private android.content.BroadcastReceiver favChangedReceiver;
 
     // === Helper: Lấy ảnh hiện tại an toàn ===
     private @androidx.annotation.Nullable PhotoItem getCurrentPhoto() {
@@ -398,5 +401,48 @@ public class DetailActivity extends AppCompatActivity {
             super(itemView);
             this.image = image;
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        favChangedReceiver = new android.content.BroadcastReceiver() {
+            @Override
+            public void onReceive(android.content.Context ctx, Intent intent) {
+                if (!ACTION_FAV_CHANGED.equals(intent.getAction())) return;
+
+                PhotoItem p = (PhotoItem) intent.getSerializableExtra(RESULT_PHOTO);
+                boolean isFav = intent.getBooleanExtra(RESULT_IS_FAVORITE, false);
+                PhotoItem cur = getCurrent(); // ảnh hiện tại trong ViewPager
+                if (p == null || cur == null) return;
+
+                // Nếu ảnh nhận broadcast chính là ảnh đang hiển thị → cập nhật icon ngay
+                if (p.id != null && p.id.equals(cur.id)) {
+                    applyFavIcon(isFav);
+                }
+            }
+        };
+
+        IntentFilter f = new IntentFilter(ACTION_FAV_CHANGED);
+        // Dùng ContextCompat để đồng nhất với Android 13+
+        androidx.core.content.ContextCompat.registerReceiver(
+                this, favChangedReceiver, f,
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        );
+    }
+
+    // (3) Hủy trong onStop()
+    @Override
+    protected void onStop() {
+        try { unregisterReceiver(favChangedReceiver); } catch (Exception ignored) {}
+        super.onStop();
+    }
+
+    // (4) Helper cập nhật icon theo trạng thái truyền vào
+    private void applyFavIcon(boolean isFav) {
+        btnFavorite.setIconResource(isFav
+                ? R.drawable.baseline_favorite_24
+                : R.drawable.outline_favorite_24
+        );
     }
 }
