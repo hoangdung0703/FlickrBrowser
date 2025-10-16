@@ -56,6 +56,12 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             notifyItemRemoved(position);
         }
     }
+    /** Xóa toàn bộ dữ liệu và reset trạng thái loading **/
+    public void clearData() { /*** added ***/
+        isLoading = false;
+        data.clear();
+        notifyDataSetChanged();
+    }
     // ====== Phân biệt loại view ======
     @Override
     public int getItemViewType(int position) {
