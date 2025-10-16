@@ -25,4 +25,18 @@
     <color name="colorOnSurface">#1A1A1A</color>
     <color name="outline">#E0E0E0</color> <!-- viền mảnh -->
 
+
+    <color name="nav_bg_black">#CC000000</color>           <!-- đen 80% -->
+    <color name="nav_icon_active">#FFFFFFFF</color>        <!-- trắng -->
+    <color name="nav_icon_inactive">#B3FFFFFF</color>      <!-- trắng 70% -->
+    <color name="nav_ripple_white">#1FFFFFFF</color>       <!-- ripple trắng nhạt -->
+
+    <color name="icon_secondary">#9E9E9E</color>
+
+
+    <color name="search_pill_bg">#3A3A3A</color>        <!-- xám đậm giống Flickr -->
+    <color name="search_icon_tint">#BDBDBD</color>      <!-- icon mờ -->
+    <color name="search_hint_tint">#BDBDBD</color>      <!-- hint mờ -->
+    <color name="search_text_tint">#FFFFFFFF</color>    <!-- text trắng -->
+
 </resources>

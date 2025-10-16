@@ -116,6 +116,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // ============================================================
             // THAY ĐỔI LOGIC Ở ĐÂY
             // ============================================================
+
             if (photo.title != null && !photo.title.trim().isEmpty()) {
                 photoHolder.photoTitle.setText(photo.title);
                 photoHolder.photoTitle.setVisibility(View.VISIBLE); // Hiển thị TextView
