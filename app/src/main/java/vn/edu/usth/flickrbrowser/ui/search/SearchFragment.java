@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
@@ -94,6 +95,14 @@ public class SearchFragment extends Fragment {
         int span = 2;
         GridLayoutManager glm = new GridLayoutManager(getContext(), span);
         binding.rvPhotos.setLayoutManager(glm);
+
+        glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int viewType = adapter.getItemViewType(position);
+                return (viewType == PhotosAdapter.TYPE_LOADING) ? 2 : 1;
+            }
+        });
 
         // Spacing
         int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_m);
@@ -214,7 +223,7 @@ public class SearchFragment extends Fragment {
             endReached = true;
             page = 1;
             binding.swipeRefresh.setRefreshing(false);
-            adapter.submitList(java.util.Collections.emptyList());
+            adapter.clearData();
             setState(new PhotoState.Empty());
             return;
         }
@@ -223,6 +232,13 @@ public class SearchFragment extends Fragment {
         page = 1;
         endReached = false;
         isLoading = true;
+        // 👉 Nếu refresh thì random page
+        if (fromSwipeRefresh) {
+            page = new java.util.Random().nextInt(10) + 1; // random từ 1 tới 10
+        } else {
+            page = 1;
+        }
+
 
         // Huỷ in-flight
         FlickrRepo.cancelSearch();
@@ -230,6 +246,9 @@ public class SearchFragment extends Fragment {
         if (!fromSwipeRefresh) {
             setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Loading());
         } else {
+            /** added: xoá toàn bộ dữ liệu cũ ngay khi refresh **/
+            adapter.clearData();
+
             // Refresh: giữ list, tắt shimmer
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
@@ -269,10 +288,12 @@ public class SearchFragment extends Fragment {
         if (isLoading || endReached || currentQuery.isEmpty()) return;
 
         isLoading = true;
+        adapter.addLoadingFooter();
         FlickrRepo.search(currentQuery, page + 1, perPage, new FlickrRepo.CB() {
             @Override
             public void ok(List<PhotoItem> items) {
                 isLoading = false;
+                adapter.removeLoadingFooter();
                 if (items == null || items.isEmpty()) {
                     endReached = true;
                     return;
@@ -285,6 +306,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void err(Throwable e) {
                 isLoading = false;
+                adapter.removeLoadingFooter();
                 String msg = (e != null && e.getMessage() != null && !e.getMessage().isEmpty())
                         ? e.getMessage()
                         : getString(R.string.load_more_failed);
