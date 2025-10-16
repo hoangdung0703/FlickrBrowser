@@ -1,11 +1,9 @@
 package vn.edu.usth.flickrbrowser.ui.detail;
 
-import static android.app.ProgressDialog.show;
-
 import android.app.DownloadManager;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -15,6 +13,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -22,12 +21,11 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
+import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -35,36 +33,23 @@ public class DetailActivity extends AppCompatActivity {
     public static final String EXTRA_PHOTOS = "PHOTOS";
     public static final String EXTRA_START_INDEX = "START_INDEX";
 
-    // ===== Keys trả kết quả cho màn trước (giống bản cũ)
+    // ===== Keys trả kết quả cho màn trước
     public static final String RESULT_PHOTO = "PHOTO_ITEM";
     public static final String RESULT_IS_FAVORITE = "is_favorite";
     public static final String ACTION_FAV_CHANGED = "vn.edu.usth.flickrbrowser.FAVORITE_CHANGED";
 
-    // ===== Lưu local “đã tim” để không mất khi quay lại
-    private static final String PREFS = "favorites_prefs";
-    private static final String PREF_FAV_IDS = "fav_ids";
-
     private ViewPager2 viewPager;
     private MaterialButton btnFavorite, btnShare, btnDownload, btnInfo;
     private TextView photoTitle, photoOwner;
-    private PhotoItem photoItem;
 
     private ArrayList<PhotoItem> photos = new ArrayList<>();
     private int startIndex = 0;
 
-    // Trạng thái tim: id đã được tim
-    private final HashSet<String> favIds = new HashSet<>();
+    // ViewModel làm nguồn dữ liệu chung
+    private FavoritesViewModel favVM;
 
-    // === Helper: Lấy ảnh hiện tại an toàn ===
-    private @androidx.annotation.Nullable PhotoItem getCurrentPhoto() {
-        if (photoItem != null) return photoItem; // nếu chỉ có 1 ảnh (mở từ Explore/Fav)
-
-        if (photos != null && !photos.isEmpty()) {
-            if (startIndex < 0 || startIndex >= photos.size()) return null;
-            return photos.get(startIndex);
-        }
-        return null;
-    }
+    // Receiver để nhận thay đổi từ Home/Favorites khi activity đang mở
+    private android.content.BroadcastReceiver favChangedReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +62,10 @@ public class DetailActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         tb.setNavigationOnClickListener(v -> setResultAndFinish());
 
+        // ViewModel (single source of truth)
+        favVM = new androidx.lifecycle.ViewModelProvider(this)
+                .get(FavoritesViewModel.class);
+
         // Bind views
         viewPager   = findViewById(R.id.viewPager);
         btnFavorite = findViewById(R.id.btnFavorite);
@@ -86,16 +75,12 @@ public class DetailActivity extends AppCompatActivity {
         photoTitle  = findViewById(R.id.photoTitle);
         photoOwner  = findViewById(R.id.photoOwner);
 
-        // Đọc danh sách “đã tim” từ SharedPreferences
-        restoreFavIds();
-
-        // Nhận PhotoItem từ Explore/Search
+        // Nhận dữ liệu
         try {
             Intent it = getIntent();
             ArrayList<PhotoItem> in = (ArrayList<PhotoItem>) it.getSerializableExtra(EXTRA_PHOTOS);
             if (in != null) photos = in;
             startIndex = it.getIntExtra(EXTRA_START_INDEX, 0);
-            // Sử dụng fallback để đọc photoitem
             if (photos == null || photos.isEmpty()) {
                 PhotoItem single = (PhotoItem) it.getSerializableExtra("PHOTO_ITEM");
                 if (single != null) {
@@ -110,7 +95,6 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        // Validate
         if (photos == null || photos.isEmpty()) {
             Toast.makeText(this, "Không có ảnh để hiển thị", Toast.LENGTH_SHORT).show();
             finish();
@@ -118,7 +102,7 @@ public class DetailActivity extends AppCompatActivity {
         }
         startIndex = Math.max(0, Math.min(startIndex, photos.size() - 1));
 
-        // Adapter nội bộ cho ViewPager2
+        // Adapter cho ViewPager2
         PhotoPagerAdapter adapter = new PhotoPagerAdapter(photos);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(1);
@@ -159,8 +143,6 @@ public class DetailActivity extends AppCompatActivity {
         btnDownload.setOnClickListener(v -> handleDownload());
         btnInfo.setOnClickListener(v -> showInfoSheet());
 
-
-
         // Back hệ thống → trả result
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() { setResultAndFinish(); }
@@ -170,22 +152,21 @@ public class DetailActivity extends AppCompatActivity {
     // === DOWNLOAD ===
     private void handleDownload() {
         try {
-            PhotoItem p = getCurrentPhoto();
+            PhotoItem p = getCurrent();
             if (p == null) { Toast.makeText(this, "Không có ảnh để tải", Toast.LENGTH_SHORT).show(); return; }
 
             String url = p.getFullUrl();
             if (url == null || url.isEmpty()) { Toast.makeText(this, "URL ảnh không hợp lệ", Toast.LENGTH_SHORT).show(); return; }
 
-            android.app.DownloadManager dm = (android.app.DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-            android.net.Uri uri = android.net.Uri.parse(url);
-            android.app.DownloadManager.Request req = new android.app.DownloadManager.Request(uri);
+            DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+            Uri uri = Uri.parse(url);
+            DownloadManager.Request req = new DownloadManager.Request(uri);
             String cleanTitle = (p.title == null || p.title.trim().isEmpty()) ? p.id : p.title.trim();
             cleanTitle = cleanTitle.replaceAll("[^a-zA-Z0-9-_ ]", "-");
             String filename = cleanTitle + "_" + p.id + ".jpg";
 
             req.setTitle(filename);
-            req.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            // Thư mục Download công khai
+            req.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             req.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, filename);
 
             dm.enqueue(req);
@@ -199,13 +180,12 @@ public class DetailActivity extends AppCompatActivity {
     // === INFO ===
     private void showInfoSheet() {
         try {
-            PhotoItem p = getCurrentPhoto();
+            PhotoItem p = getCurrent();
             if (p == null) { Toast.makeText(this, "Không có dữ liệu ảnh", Toast.LENGTH_SHORT).show(); return; }
 
             String title = (p.title == null) ? "" : p.title;
             String owner = (p.owner == null) ? "" : p.owner;
 
-            // Ưu tiên “trang ảnh” nếu có, nếu không dùng fullUrl
             final String pageUrl = (p.getPageUrl() != null && !p.getPageUrl().isEmpty())
                     ? p.getPageUrl()
                     : p.getFullUrl();
@@ -219,7 +199,7 @@ public class DetailActivity extends AppCompatActivity {
                     .setMessage(message)
                     .setPositiveButton("Mở trang nguồn", (d, i) -> {
                         if (pageUrl != null && !pageUrl.isEmpty()) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(pageUrl)));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(pageUrl)));
                         } else {
                             Toast.makeText(this, "Không có URL hợp lệ", Toast.LENGTH_SHORT).show();
                         }
@@ -239,20 +219,23 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-
-
-    // ====== Favorite logic (update + exception)
+    // ====== Favorite logic (ghi vào ViewModel + broadcast)
     private void toggleFavorite(@NonNull PhotoItem p) {
-        boolean nowFav;
-        if (favIds.contains(p.id)) {
-            favIds.remove(p.id);
-            nowFav = false;
-        } else {
-            favIds.add(p.id);
-            nowFav = true;
+        boolean nowFav = !(favVM != null && favVM.isFavorite(p.id));
+
+        // 1) Cập nhật nguồn chung
+        if (favVM != null) {
+            if (nowFav) favVM.addFavorite(p);
+            else        favVM.removeFavorite(p);
         }
-        persistFavIds();              // lưu ngay để không “mất tim” khi quay lại
-        updateFavIcon(p);            // đổi icon
+
+        // 2) Cập nhật icon ngay
+        btnFavorite.setIconResource(
+                nowFav ? R.drawable.baseline_favorite_24
+                        : R.drawable.outline_favorite_24
+        );
+
+        // 3) Toast
         try {
             android.view.LayoutInflater inflater = getLayoutInflater();
             android.view.View layout = inflater.inflate(R.layout.toast_favorites, null);
@@ -279,6 +262,8 @@ public class DetailActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT
             ).show();
         }
+
+        // 4) PHÁT BROADCAST để Home/Favorites nhận ngay
         try {
             Intent bc = new Intent(ACTION_FAV_CHANGED);
             bc.setPackage(getPackageName());
@@ -299,8 +284,9 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void updateFavIcon(@NonNull PhotoItem p) {
+        boolean isFavNow = favVM != null && favVM.isFavorite(p.id);
         btnFavorite.setIconResource(
-                favIds.contains(p.id) ? R.drawable.baseline_favorite_24
+                isFavNow ? R.drawable.baseline_favorite_24
                         : R.drawable.outline_favorite_24
         );
     }
@@ -310,40 +296,15 @@ public class DetailActivity extends AppCompatActivity {
         return (pos >= 0 && pos < photos.size()) ? photos.get(pos) : null;
     }
 
-    // ====== SharedPreferences: lưu/khôi phục danh sách id đã tim
-    private void persistFavIds() {
-        try {
-            SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
-            sp.edit().putStringSet(PREF_FAV_IDS, new HashSet<>(favIds)).apply();
-        } catch (Exception ignored) { /* tránh crash nếu có lỗi I/O */ }
-    }
-
-    private void restoreFavIds() {
-        try {
-            SharedPreferences sp = getSharedPreferences(PREFS, MODE_PRIVATE);
-            Set<String> saved = sp.getStringSet(PREF_FAV_IDS, null);
-            if (saved != null) favIds.addAll(saved);
-        } catch (Exception ignored) { }
-    }
-
-    private void broadcastFavoriteChanged(@NonNull PhotoItem p, boolean nowFav) {
-        try {
-            Intent intent = new Intent(ACTION_FAV_CHANGED);
-            intent.setPackage(getPackageName());
-            intent.putExtra(RESULT_PHOTO, p);
-            intent.putExtra(RESULT_IS_FAVORITE, nowFav);
-            sendBroadcast(intent);
-        } catch (Exception ignored) {}
-    }
-
-    // ====== Trả kết quả giống file cũ (để màn trước có thể cập nhật ngay)
+    // ====== Trả kết quả cho màn trước
     private void setResultAndFinish() {
         try {
             PhotoItem current = getCurrent();
             if (current != null) {
+                boolean isFavNow = favVM != null && favVM.isFavorite(current.id);
                 Intent data = new Intent();
                 data.putExtra(RESULT_PHOTO, current);
-                data.putExtra(RESULT_IS_FAVORITE, favIds.contains(current.id));
+                data.putExtra(RESULT_IS_FAVORITE, isFavNow);
                 setResult(RESULT_OK, data);
             }
         } catch (Exception ignored) { }
@@ -398,5 +359,45 @@ public class DetailActivity extends AppCompatActivity {
             super(itemView);
             this.image = image;
         }
+    }
+
+    // ====== Receiver: nghe thay đổi khi đang mở Detail
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        favChangedReceiver = new android.content.BroadcastReceiver() {
+            @Override public void onReceive(android.content.Context ctx, Intent intent) {
+                if (!ACTION_FAV_CHANGED.equals(intent.getAction())) return;
+
+                PhotoItem p = (PhotoItem) intent.getSerializableExtra(RESULT_PHOTO);
+                boolean isFav = intent.getBooleanExtra(RESULT_IS_FAVORITE, false);
+                PhotoItem cur = getCurrent();
+                if (p == null || cur == null) return;
+
+                if (p.id != null && p.id.equals(cur.id)) {
+                    btnFavorite.setIconResource(
+                            isFav ? R.drawable.baseline_favorite_24
+                                    : R.drawable.outline_favorite_24
+                    );
+                }
+            }
+        };
+
+        IntentFilter f = new IntentFilter(ACTION_FAV_CHANGED);
+        ContextCompat.registerReceiver(
+                this, favChangedReceiver, f,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+        );
+
+        // Đồng bộ icon khi trở lại foreground (trường hợp ở nền không nghe được broadcast)
+        PhotoItem cur = getCurrent();
+        if (cur != null) updateFavIcon(cur);
+    }
+
+    @Override
+    protected void onStop() {
+        try { unregisterReceiver(favChangedReceiver); } catch (Exception ignored) {}
+        super.onStop();
     }
 }

@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.List;
 
@@ -57,6 +60,9 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        MaterialToolbar tb = view.findViewById(R.id.toolbar);
+        setupFlickrToolbar(tb);
+
         // Khởi tạo ViewModels
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
         homeVM = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -77,6 +83,24 @@ public class HomeFragment extends Fragment {
         swipeRefreshHome.setOnRefreshListener(() -> homeVM.loadPhotos(true));
     }
 
+    private void setupFlickrToolbar(MaterialToolbar tb) {
+        // Tắt title mặc định
+        tb.setTitle(null);
+        tb.getMenu().clear();
+        tb.setElevation(0f);
+
+        // Inflate view_toolbar_flickr.xml
+        View brand = LayoutInflater.from(tb.getContext())
+                .inflate(R.layout.view_toolbar_flickr, tb, false);
+
+        // Thêm vào toolbar ở vị trí START, canh giữa theo chiều dọc
+        Toolbar.LayoutParams lp = new Toolbar.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.START | Gravity.CENTER_VERTICAL
+        );
+        tb.addView(brand, lp);
+    }
     private void setupRecyclerView() {
         adapter = new HomeAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -99,14 +123,23 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFavoriteClick(PhotoItem photo) {
-                boolean isCurrentlyFavorite = favVM.isFavorite(photo.id);
-                if (isCurrentlyFavorite) {
-                    favVM.removeFavorite(photo);
-                } else {
-                    favVM.addFavorite(photo);
-                }
-                adapter.updateFavoriteStatus(photo, !isCurrentlyFavorite);
+                boolean willBeFavorite = !favVM.isFavorite(photo.id);
+
+                if (willBeFavorite) favVM.addFavorite(photo);
+                else                favVM.removeFavorite(photo);
+
+                adapter.updateFavoriteStatus(photo, willBeFavorite);
+
+                // broadcast cho Detail / nơi khác
+                try {
+                    Intent i = new Intent(DetailActivity.ACTION_FAV_CHANGED);
+                    i.setPackage(requireContext().getPackageName());
+                    i.putExtra(DetailActivity.RESULT_PHOTO, photo);
+                    i.putExtra(DetailActivity.RESULT_IS_FAVORITE, willBeFavorite);
+                    requireContext().sendBroadcast(i);
+                } catch (Exception ignored) {}
             }
+
             @Override
             public void onShareClick(PhotoItem photo) {
                 try {

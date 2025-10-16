@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:src="@drawable/ic_logo"
+    android:contentDescription="@string/app_name"/>
+
+    <TextView
+        android:id="@+id/brand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Flickr"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#212121"/>
+
+    <TextView
+        android:id="@+id/proChip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:text="PRO"
+        android:textAllCaps="true"
+        android:textSize="12sp"
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="2dp"
+        android:textColor="#1976D2"
+        android:background="@drawable/bg_chip_outline"/>
+</LinearLayout>
