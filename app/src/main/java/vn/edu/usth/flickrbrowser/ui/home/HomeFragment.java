@@ -83,7 +83,6 @@ public class HomeFragment extends Fragment {
         recyclerViewHome.setLayoutManager(layoutManager);
         recyclerViewHome.setAdapter(adapter);
 
-        // ... logic xử lý click không thay đổi ...
         adapter.setOnPhotoInteractionListener(new HomeAdapter.OnPhotoInteractionListener() {
             @Override
             public void onPhotoClick(PhotoItem photo, int position) {
@@ -98,7 +97,6 @@ public class HomeFragment extends Fragment {
                 }
             }
 
-            // ... các hàm click khác ...
             @Override
             public void onFavoriteClick(PhotoItem photo) {
                 boolean isCurrentlyFavorite = favVM.isFavorite(photo.id);
