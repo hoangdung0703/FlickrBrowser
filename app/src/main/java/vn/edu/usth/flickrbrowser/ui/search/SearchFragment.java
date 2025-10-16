@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.api.FlickrRepo;
@@ -222,7 +223,7 @@ public class SearchFragment extends Fragment {
             endReached = true;
             page = 1;
             binding.swipeRefresh.setRefreshing(false);
-            adapter.submitList(java.util.Collections.emptyList());
+            adapter.clearData();
             setState(new PhotoState.Empty());
             return;
         }
@@ -231,6 +232,13 @@ public class SearchFragment extends Fragment {
         page = 1;
         endReached = false;
         isLoading = true;
+        // 👉 Nếu refresh thì random page
+        if (fromSwipeRefresh) {
+            page = new java.util.Random().nextInt(10) + 1; // random từ 1 tới 10
+        } else {
+            page = 1;
+        }
+
 
         // Huỷ in-flight
         FlickrRepo.cancelSearch();
@@ -238,6 +246,9 @@ public class SearchFragment extends Fragment {
         if (!fromSwipeRefresh) {
             setState(new vn.edu.usth.flickrbrowser.ui.state.PhotoState.Loading());
         } else {
+            /** added: xoá toàn bộ dữ liệu cũ ngay khi refresh **/
+            adapter.clearData();
+
             // Refresh: giữ list, tắt shimmer
             stopShimmers(binding.shimmerGrid.getRoot());
             binding.shimmerGrid.getRoot().setVisibility(View.GONE);
