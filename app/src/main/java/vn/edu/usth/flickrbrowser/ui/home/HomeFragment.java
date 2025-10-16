@@ -2,19 +2,19 @@ package vn.edu.usth.flickrbrowser.ui.home;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.List;
 
@@ -44,9 +45,6 @@ public class HomeFragment extends Fragment {
     private FavoritesViewModel favVM;
     private HomeViewModel homeVM;
 
-    private android.content.BroadcastReceiver favChangedReceiver;
-    private boolean favReceiverRegistered = false;
-
     private final ActivityResultLauncher<Intent> detailLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 // ... logic xử lý kết quả từ DetailActivity không thay đổi ...
@@ -61,6 +59,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        MaterialToolbar tb = view.findViewById(R.id.toolbar);
+        setupFlickrToolbar(tb);
 
         // Khởi tạo ViewModels
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
@@ -78,26 +79,34 @@ public class HomeFragment extends Fragment {
         // Lắng nghe thay đổi từ ViewModel
         observeViewModel();
 
-        // Đăng ký nhận broadcast từ Detail
-        registerFavReceiver();
-
         // Gán sự kiện cho pull-to-refresh
         swipeRefreshHome.setOnRefreshListener(() -> homeVM.loadPhotos(true));
     }
 
-    @Override
-    public void onDestroyView() {
-        unregisterFavReceiver();
-        super.onDestroyView();
-    }
+    private void setupFlickrToolbar(MaterialToolbar tb) {
+        // Tắt title mặc định
+        tb.setTitle(null);
+        tb.getMenu().clear();
+        tb.setElevation(0f);
 
+        // Inflate view_toolbar_flickr.xml
+        View brand = LayoutInflater.from(tb.getContext())
+                .inflate(R.layout.view_toolbar_flickr, tb, false);
+
+        // Thêm vào toolbar ở vị trí START, canh giữa theo chiều dọc
+        Toolbar.LayoutParams lp = new Toolbar.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.START | Gravity.CENTER_VERTICAL
+        );
+        tb.addView(brand, lp);
+    }
     private void setupRecyclerView() {
         adapter = new HomeAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerViewHome.setLayoutManager(layoutManager);
         recyclerViewHome.setAdapter(adapter);
 
-        // ... logic xử lý click không thay đổi ...
         adapter.setOnPhotoInteractionListener(new HomeAdapter.OnPhotoInteractionListener() {
             @Override
             public void onPhotoClick(PhotoItem photo, int position) {
@@ -112,26 +121,25 @@ public class HomeFragment extends Fragment {
                 }
             }
 
-            // ... các hàm click khác ...
             @Override
             public void onFavoriteClick(PhotoItem photo) {
-                boolean isCurrentlyFavorite = favVM.isFavorite(photo.id);
-                boolean willBeFavorite = !isCurrentlyFavorite;
+                boolean willBeFavorite = !favVM.isFavorite(photo.id);
 
-                // 1) Cập nhật VM + UI như bạn đang làm
-                if (isCurrentlyFavorite) favVM.removeFavorite(photo);
-                else                     favVM.addFavorite(photo);
+                if (willBeFavorite) favVM.addFavorite(photo);
+                else                favVM.removeFavorite(photo);
+
                 adapter.updateFavoriteStatus(photo, willBeFavorite);
 
-                // 2) PHÁT BROADCAST để Detail (và màn khác) nhận ngay
+                // broadcast cho Detail / nơi khác
                 try {
                     Intent i = new Intent(DetailActivity.ACTION_FAV_CHANGED);
-                    i.setPackage(requireContext().getPackageName());   // giới hạn nội bộ app
+                    i.setPackage(requireContext().getPackageName());
                     i.putExtra(DetailActivity.RESULT_PHOTO, photo);
                     i.putExtra(DetailActivity.RESULT_IS_FAVORITE, willBeFavorite);
                     requireContext().sendBroadcast(i);
                 } catch (Exception ignored) {}
             }
+
             @Override
             public void onShareClick(PhotoItem photo) {
                 try {
@@ -220,47 +228,5 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
     }
-
-    // ===== Broadcast receiver đăng ký động =====
-    private void registerFavReceiver() {
-        if (favReceiverRegistered) return;
-
-        favChangedReceiver = new android.content.BroadcastReceiver() {
-            @Override
-            public void onReceive(android.content.Context context, Intent intent) {
-                if (!DetailActivity.ACTION_FAV_CHANGED.equals(intent.getAction())) return;
-
-                PhotoItem p = (PhotoItem) intent.getSerializableExtra(DetailActivity.RESULT_PHOTO);
-                boolean isFav = intent.getBooleanExtra(DetailActivity.RESULT_IS_FAVORITE, false);
-                if (p == null) return;
-
-                // 1) Cập nhật single source (VM)
-                if (isFav) favVM.addFavorite(p); else favVM.removeFavorite(p);
-
-                // 2) Cập nhật UI Home ngay lập tức
-                if (adapter != null) adapter.updateFavoriteStatus(p, isFav);
-            }
-        };
-
-        IntentFilter filter = new IntentFilter(DetailActivity.ACTION_FAV_CHANGED);
-        // Android 13+ yêu cầu flag rõ ràng khi đăng ký động
-        ContextCompat.registerReceiver(
-                requireContext(),
-                favChangedReceiver,
-                filter,
-                ContextCompat.RECEIVER_NOT_EXPORTED
-        );
-        favReceiverRegistered = true;
-    }
-
-    private void unregisterFavReceiver() {
-        if (!favReceiverRegistered || favChangedReceiver == null) return;
-        try {
-            requireContext().unregisterReceiver(favChangedReceiver);
-        } catch (Exception ignored) {}
-        favReceiverRegistered = false;
-        favChangedReceiver = null;
-    }
 }
-
 

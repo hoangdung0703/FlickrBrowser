@@ -88,7 +88,7 @@ public class SearchFragment extends Fragment {
         binding.rvPhotos.setAdapter(adapter);
 
         // AppBar title
-        binding.topAppBar.setTitle(R.string.search_hint);
+
 
         // Grid 2 cột
         int span = 2;

@@ -60,7 +60,7 @@
     <string name="load_failed">Load failed. Please try again.</string>
     <string name="no_connection">No internet connection. Please try again.</string>
     <string name="no_photos_yet">Search photos\n</string>
-    <string name="nav_noti">Notifications</string>
+    <string name="nav_noti">Noti</string>
     <string name="nav_search">Search</string>
 
     <string name="about_version_format">Version %1$s</string>

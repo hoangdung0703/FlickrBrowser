@@ -9,42 +9,41 @@
 
     <!-- Sử dụng padding ở root thay vì từng view -->
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="@dimen/spacing_l">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:title="Flickr"
-            app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-            android:layout_marginStart="-16dp"
-            android:layout_marginEnd="-16dp"/>
+        android:background="@color/md_theme_background"
+        android:paddingStart="@dimen/spacing_l"
+        android:paddingEnd="@dimen/spacing_l">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilSearch"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            style="@style/Widget.Flickr.SearchPill"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_m"
-            app:boxCornerRadiusBottomEnd="28dp"
-            app:boxCornerRadiusBottomStart="28dp"
-            app:boxCornerRadiusTopEnd="28dp"
-            app:boxCornerRadiusTopStart="28dp"
+            android:layout_marginTop="@dimen/spacing_xl"
+            app:hintEnabled="false"
+            app:startIconDrawable="@android:drawable/ic_menu_search"
             app:endIconMode="clear_text"
-            app:startIconDrawable="@android:drawable/ic_menu_search">
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+        app:boxStrokeColor="@android:color/transparent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtQuery"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/search_hint"
+                android:background="@null"
                 android:imeOptions="actionSearch"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
-                android:textSize="16sp" />
+                android:textColor="@color/search_text_tint"
+                android:textColorHint="@color/search_hint_tint"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- KHU VỰC GỢI Ý (SUGGESTED) -->
