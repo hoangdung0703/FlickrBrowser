@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -125,12 +127,31 @@ public class HomeFragment extends Fragment {
 
                 // 2) PHÁT BROADCAST để Detail (và màn khác) nhận ngay
                 try {
-                    Intent i = new Intent(DetailActivity.ACTION_FAV_CHANGED);
-                    i.setPackage(requireContext().getPackageName());   // giới hạn nội bộ app
-                    i.putExtra(DetailActivity.RESULT_PHOTO, photo);
-                    i.putExtra(DetailActivity.RESULT_IS_FAVORITE, willBeFavorite);
-                    requireContext().sendBroadcast(i);
-                } catch (Exception ignored) {}
+                    LayoutInflater inflater = LayoutInflater.from(requireContext());
+                    View layout = inflater.inflate(R.layout.toast_favorites, null);
+
+                    ImageView imgIcon = layout.findViewById(R.id.imgIcon);
+                    TextView tvMessage = layout.findViewById(R.id.tvMessage);
+
+                    if (willBeFavorite) {
+                        imgIcon.setImageResource(R.drawable.baseline_favorite_24);
+                        tvMessage.setText("Added to Favorites");
+                    } else {
+                        imgIcon.setImageResource(R.drawable.outline_favorite_24);
+                        tvMessage.setText("Removed from Favorites");
+                    }
+
+                    Toast toast = new Toast(requireContext().getApplicationContext());
+                    toast.setDuration(Toast.LENGTH_SHORT);
+                    toast.setView(layout);
+                    toast.show();
+                } catch (Exception e) {
+                    Toast.makeText(
+                            requireContext(),
+                            willBeFavorite ? "Added to Favorites" : "Removed from Favorites",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
             }
             @Override
             public void onShareClick(PhotoItem photo) {
