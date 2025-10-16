@@ -95,6 +95,14 @@ public class SearchFragment extends Fragment {
         GridLayoutManager glm = new GridLayoutManager(getContext(), span);
         binding.rvPhotos.setLayoutManager(glm);
 
+        glm.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int viewType = adapter.getItemViewType(position);
+                return (viewType == PhotosAdapter.TYPE_LOADING) ? 2 : 1;
+            }
+        });
+
         // Spacing
         int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_m);
         binding.rvPhotos.addItemDecoration(new GridSpacingDecoration(span, spacingPx, true));
@@ -269,10 +277,12 @@ public class SearchFragment extends Fragment {
         if (isLoading || endReached || currentQuery.isEmpty()) return;
 
         isLoading = true;
+        adapter.addLoadingFooter();
         FlickrRepo.search(currentQuery, page + 1, perPage, new FlickrRepo.CB() {
             @Override
             public void ok(List<PhotoItem> items) {
                 isLoading = false;
+                adapter.removeLoadingFooter();
                 if (items == null || items.isEmpty()) {
                     endReached = true;
                     return;
@@ -285,6 +295,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void err(Throwable e) {
                 isLoading = false;
+                adapter.removeLoadingFooter();
                 String msg = (e != null && e.getMessage() != null && !e.getMessage().isEmpty())
                         ? e.getMessage()
                         : getString(R.string.load_more_failed);
