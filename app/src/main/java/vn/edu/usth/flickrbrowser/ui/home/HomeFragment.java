@@ -1,19 +1,22 @@
 package vn.edu.usth.flickrbrowser.ui.home;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -44,6 +47,18 @@ public class HomeFragment extends Fragment {
     private HomeAdapter adapter;
     private FavoritesViewModel favVM;
     private HomeViewModel homeVM;
+    
+    // Flag để chỉ restore scroll position 1 lần
+    private boolean hasRestoredPosition = false;
+
+    // BroadcastReceiver để scroll to top + refresh khi tap Home lại
+    private final BroadcastReceiver homeReselectedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("HomeFragment", "Received HOME_RESELECTED broadcast");
+            scrollToTopAndRefresh();
+        }
+    };
 
     private final ActivityResultLauncher<Intent> detailLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -225,17 +240,20 @@ public class HomeFragment extends Fragment {
         recyclerViewHome.setVisibility(View.VISIBLE);
         adapter.setData(items, favVM.getFavorites().getValue());
         
-        // Restore scroll position after layout is ready
-        recyclerViewHome.post(() -> {
-            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerViewHome.getLayoutManager();
-            if (layoutManager != null && homeVM != null) {
-                int position = homeVM.getScrollPosition();
-                int offset = homeVM.getScrollOffset();
-                if (position > 0 || offset != 0) {
-                    layoutManager.scrollToPositionWithOffset(position, offset);
+        // Chỉ restore scroll position 1 lần khi mới vào fragment
+        if (!hasRestoredPosition) {
+            recyclerViewHome.post(() -> {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerViewHome.getLayoutManager();
+                if (layoutManager != null && homeVM != null) {
+                    int position = homeVM.getScrollPosition();
+                    int offset = homeVM.getScrollOffset();
+                    if (position > 0 || offset != 0) {
+                        layoutManager.scrollToPositionWithOffset(position, offset);
+                    }
                 }
-            }
-        });
+            });
+            hasRestoredPosition = true;
+        }
     }
 
     private void setEmptyState() {
@@ -256,6 +274,22 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("HomeFragment", "onResume - Registering receiver");
+        // Register receiver để lắng nghe khi tap Home lại
+        if (getContext() != null) {
+            IntentFilter filter = new IntentFilter("ACTION_HOME_RESELECTED");
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                requireContext().registerReceiver(homeReselectedReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                requireContext().registerReceiver(homeReselectedReceiver, filter);
+            }
+            Log.d("HomeFragment", "Receiver registered successfully");
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         // Save scroll position when leaving fragment
@@ -267,6 +301,44 @@ public class HomeFragment extends Fragment {
                 int offset = (firstVisibleView == null) ? 0 : firstVisibleView.getTop();
                 homeVM.saveScrollPosition(position, offset);
             }
+        }
+        
+        // Reset flag để lần sau vào lại sẽ restore position
+        hasRestoredPosition = false;
+        
+        // Unregister receiver
+        try {
+            if (getContext() != null) {
+                requireContext().unregisterReceiver(homeReselectedReceiver);
+            }
+        } catch (IllegalArgumentException ignored) {
+            // Receiver chưa được register
+        }
+    }
+    
+    private void scrollToTopAndRefresh() {
+        Log.d("HomeFragment", "scrollToTopAndRefresh called");
+        if (recyclerViewHome != null) {
+            Log.d("HomeFragment", "Scrolling to top...");
+            // Scroll to top smooth
+            recyclerViewHome.smoothScrollToPosition(0);
+            
+            // Reset scroll position trong ViewModel
+            if (homeVM != null) {
+                homeVM.saveScrollPosition(0, 0);
+            }
+            
+            // Reset flag vì đã refresh
+            hasRestoredPosition = true;
+            
+            // Trigger refresh
+            if (swipeRefreshHome != null) {
+                Log.d("HomeFragment", "Triggering refresh...");
+                swipeRefreshHome.setRefreshing(true);
+                homeVM.loadPhotos(true);
+            }
+        } else {
+            Log.e("HomeFragment", "recyclerViewHome is null!");
         }
     }
 }
