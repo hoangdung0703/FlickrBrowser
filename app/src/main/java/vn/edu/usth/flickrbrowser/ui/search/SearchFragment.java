@@ -1,3 +1,4 @@
+// placeholder
 package vn.edu.usth.flickrbrowser.ui.search;
 
 import android.app.Activity;
@@ -104,9 +105,6 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // Spacing
-        int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_m);
-        binding.rvPhotos.addItemDecoration(new GridSpacingDecoration(span, spacingPx, true));
 
         // Infinite scroll
         final int visibleThreshold = 6;
