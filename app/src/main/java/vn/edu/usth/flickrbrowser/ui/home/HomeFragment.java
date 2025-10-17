@@ -63,9 +63,9 @@ public class HomeFragment extends Fragment {
         MaterialToolbar tb = view.findViewById(R.id.toolbar);
         setupFlickrToolbar(tb);
 
-        // Khởi tạo ViewModels
+        // Khởi tạo ViewModels - Dùng Activity scope để giữ data khi switch tabs
         favVM = new ViewModelProvider(requireActivity()).get(FavoritesViewModel.class);
-        homeVM = new ViewModelProvider(this).get(HomeViewModel.class);
+        homeVM = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         // Ánh xạ Views
         swipeRefreshHome = view.findViewById(R.id.swipeRefreshHome);
@@ -79,8 +79,22 @@ public class HomeFragment extends Fragment {
         // Lắng nghe thay đổi từ ViewModel
         observeViewModel();
 
-        // Gán sự kiện cho pull-to-refresh
+        // Gán sự kiện cho pull-to-refresh với theming
+        swipeRefreshHome.setColorSchemeResources(
+            R.color.md_theme_primary,
+            R.color.md_theme_secondary
+        );
+        swipeRefreshHome.setProgressBackgroundColorSchemeResource(R.color.md_theme_surface);
         swipeRefreshHome.setOnRefreshListener(() -> homeVM.loadPhotos(true));
+        
+        // Trigger current state to restore UI when returning to fragment
+        PhotoState currentState = homeVM.photosState.getValue();
+        if (currentState != null) {
+            swipeRefreshHome.setRefreshing(false);
+            if (currentState instanceof PhotoState.Success) {
+                setSuccessState(((PhotoState.Success) currentState).getItems());
+            }
+        }
     }
 
     private void setupFlickrToolbar(MaterialToolbar tb) {
@@ -210,6 +224,18 @@ public class HomeFragment extends Fragment {
         emptyViewHome.setVisibility(View.GONE);
         recyclerViewHome.setVisibility(View.VISIBLE);
         adapter.setData(items, favVM.getFavorites().getValue());
+        
+        // Restore scroll position after layout is ready
+        recyclerViewHome.post(() -> {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerViewHome.getLayoutManager();
+            if (layoutManager != null && homeVM != null) {
+                int position = homeVM.getScrollPosition();
+                int offset = homeVM.getScrollOffset();
+                if (position > 0 || offset != 0) {
+                    layoutManager.scrollToPositionWithOffset(position, offset);
+                }
+            }
+        });
     }
 
     private void setEmptyState() {
@@ -225,8 +251,22 @@ public class HomeFragment extends Fragment {
         recyclerViewHome.setVisibility(View.GONE);
         emptyViewHome.setVisibility(View.GONE);
         if (getContext() != null && message != null) {
-            Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Save scroll position when leaving fragment
+        if (recyclerViewHome != null && homeVM != null) {
+            LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerViewHome.getLayoutManager();
+            if (layoutManager != null) {
+                int position = layoutManager.findFirstVisibleItemPosition();
+                View firstVisibleView = layoutManager.findViewByPosition(position);
+                int offset = (firstVisibleView == null) ? 0 : firstVisibleView.getTop();
+                homeVM.saveScrollPosition(position, offset);
+            }
         }
     }
 }
-

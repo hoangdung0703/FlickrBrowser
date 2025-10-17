@@ -1,5 +1,4 @@
 <resources>
-    <style name="Text.Flickr.Title" parent="TextAppearance.Material3.TitleLarge"/>
     <style name="Text.Flickr.Section" parent="TextAppearance.Material3.TitleMedium"/>
     <style name="Text.Flickr.Body" parent="TextAppearance.Material3.BodyMedium"/>
     <style name="Text.Flickr.Caption" parent="TextAppearance.Material3.BodySmall"/>
@@ -12,12 +11,12 @@
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="strokeColor">@color/md_theme_outline</item>
         <item name="strokeWidth">0dp</item>
+        <item name="rippleColor">?attr/colorSecondaryContainer</item>
     </style>
 
 
     <!-- ShapeAppearance chung cho card -->
     <style name="ShapeAppearance.App.Card" parent="ShapeAppearance.Material3.MediumComponent">
-        <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/radius_m</item>
     </style>
 
@@ -38,11 +37,11 @@
 
     </style>
 
-    <!-- Search pill tối, không viền, bo lớn -->
+    <!-- Search pill - adaptive color for both themes -->
     <style name="Widget.Flickr.SearchPill"
         parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundMode">filled</item>
-        <item name="boxBackgroundColor">@color/search_pill_bg</item>
+        <item name="boxBackgroundColor">?attr/colorSurfaceVariant</item>
         <item name="boxStrokeColor">@android:color/transparent</item>
         <item name="boxCornerRadiusTopStart">28dp</item>
         <item name="boxCornerRadiusTopEnd">28dp</item>
@@ -51,10 +50,10 @@
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
 
-        <!-- icon & hint/text -->
-        <item name="startIconTint">@color/search_icon_tint</item>
-        <item name="hintTextColor">@color/search_hint_tint</item>
-        <item name="android:textColor">@color/search_text_tint</item>
+        <!-- icon & hint/text adaptive -->
+        <item name="startIconTint">?attr/colorOnSurfaceVariant</item>
+        <item name="hintTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
 </resources>

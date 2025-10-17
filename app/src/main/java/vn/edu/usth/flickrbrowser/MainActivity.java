@@ -7,11 +7,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import vn.edu.usth.flickrbrowser.core.util.ThemeUtil;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize theme before setting content view
+        ThemeUtil.initTheme(this);
+        
         super.onCreate(savedInstanceState);
         // Sử dụng layout activity_main có chứa NavHostFragment
         setContentView(R.layout.activity_main);

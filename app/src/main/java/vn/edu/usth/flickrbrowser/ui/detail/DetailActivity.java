@@ -25,6 +25,7 @@ import java.util.List;
 
 import vn.edu.usth.flickrbrowser.R;
 import vn.edu.usth.flickrbrowser.core.model.PhotoItem;
+import vn.edu.usth.flickrbrowser.core.util.HapticUtil;
 import vn.edu.usth.flickrbrowser.ui.favorites.FavoritesViewModel;
 
 public class DetailActivity extends AppCompatActivity {
@@ -121,6 +122,7 @@ public class DetailActivity extends AppCompatActivity {
         btnFavorite.setOnClickListener(v -> {
             PhotoItem cur = getCurrent();
             if (cur == null) return;
+            HapticUtil.medium(v);
             toggleFavorite(cur);
         });
 
@@ -140,8 +142,14 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        btnDownload.setOnClickListener(v -> handleDownload());
-        btnInfo.setOnClickListener(v -> showInfoSheet());
+        btnDownload.setOnClickListener(v -> {
+            HapticUtil.medium(v);
+            handleDownload();
+        });
+        btnInfo.setOnClickListener(v -> {
+            HapticUtil.light(v);
+            showInfoSheet();
+        });
 
         // Back hệ thống → trả result
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -170,6 +178,7 @@ public class DetailActivity extends AppCompatActivity {
             req.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, filename);
 
             dm.enqueue(req);
+            HapticUtil.success(btnDownload);
             Toast.makeText(this, "Đang tải xuống…", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();

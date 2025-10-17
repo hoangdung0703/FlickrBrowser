@@ -3,10 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Flickr.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/spacing_m">
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardElevation="@dimen/elev_s"
+    app:cardBackgroundColor="?attr/colorSurface"
+    android:layout_margin="@dimen/spacing_xs">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

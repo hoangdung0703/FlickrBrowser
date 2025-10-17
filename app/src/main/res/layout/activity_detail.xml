@@ -93,10 +93,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minWidth="64dp"
+                android:minHeight="64dp"
                 app:icon="@drawable/outline_favorite_24"
                 app:iconTint="@android:color/white"
+                app:iconSize="24dp"
                 android:text="@string/favorite"
                 android:textColor="@android:color/white"
+                android:textSize="12sp"
                 app:iconGravity="top" />
 
             <!-- Share -->
@@ -106,10 +110,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minWidth="64dp"
+                android:minHeight="64dp"
                 app:icon="@drawable/ic_share"
                 app:iconTint="@android:color/white"
+                app:iconSize="24dp"
                 android:text="@string/share"
                 android:textColor="@android:color/white"
+                android:textSize="12sp"
                 app:iconGravity="top" />
 
             <!-- Download -->
@@ -119,10 +127,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minWidth="64dp"
+                android:minHeight="64dp"
                 app:icon="@drawable/ic_download"
                 app:iconTint="@android:color/white"
+                app:iconSize="24dp"
                 android:text="@string/download"
                 android:textColor="@android:color/white"
+                android:textSize="12sp"
                 app:iconGravity="top" />
 
             <!-- Info -->
@@ -132,10 +144,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minWidth="64dp"
+                android:minHeight="64dp"
                 app:icon="@drawable/ic_info"
                 app:iconTint="@android:color/white"
+                app:iconSize="24dp"
                 android:text="@string/info"
                 android:textColor="@android:color/white"
+                android:textSize="12sp"
                 app:iconGravity="top" />
         </LinearLayout>
     </LinearLayout>
