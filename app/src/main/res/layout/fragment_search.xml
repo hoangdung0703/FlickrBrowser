@@ -1,48 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_background"
-    android:padding="@dimen/spacing_l">
+    android:background="@color/md_theme_background">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topAppBar"
-        android:style="?attr/materialToolbarStyle"
+    <!-- Sử dụng padding ở root thay vì từng view -->
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:title="@string/search_hint"
-        android:titleTextColor="@color/md_theme_onBackground" />
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilSearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_m">
+        android:layout_height="match_parent"
+        android:background="@color/md_theme_background"
+        android:paddingStart="@dimen/spacing_l"
+        android:paddingEnd="@dimen/spacing_l">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edtQuery"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilSearch"
+            style="@style/Widget.Flickr.SearchPill"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/search_hint"
-            android:imeOptions="actionSearch"
-            android:singleLine="true" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="@dimen/spacing_xl"
+            app:hintEnabled="false"
+            app:startIconDrawable="@android:drawable/ic_menu_search"
+            app:endIconMode="clear_text"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+        app:boxStrokeColor="@android:color/transparent">
 
-    <TextView
-        android:id="@+id/txtEmpty"
-        style="@style/Text.Flickr.Caption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_m"
-        android:textColor="@color/md_text_secondary"
-        android:visibility="gone" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtQuery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/search_hint"
+                android:background="@null"
+                android:imeOptions="actionSearch"
+                android:inputType="text|textNoSuggestions"
+                android:maxLines="1"
+                android:textColor="@color/search_text_tint"
+                android:textColorHint="@color/search_hint_tint"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPhotos"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/spacing_m"
-        android:layout_weight="1"
-        android:clipToPadding="false" />
+        <!-- KHU VỰC GỢI Ý (SUGGESTED) -->
+        <LinearLayout
+            android:id="@+id/suggested_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/spacing_l">
+
+            <TextView
+                style="@style/Text.Flickr.Section"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Suggested" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_suggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_suggestion_chip"/>
+        </LinearLayout>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:layout_weight="1">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPhotos"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false" />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <!-- Shimmer overlay -->
+            <include
+                android:id="@+id/shimmerGrid"
+                layout="@layout/include_shimmer_grid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <!-- EmptyView overlay -->
+            <include
+                android:id="@+id/emptyView"
+                layout="@layout/view_empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>
+

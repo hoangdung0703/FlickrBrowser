@@ -37,4 +37,24 @@
 
 
     </style>
+
+    <!-- Search pill tối, không viền, bo lớn -->
+    <style name="Widget.Flickr.SearchPill"
+        parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxBackgroundColor">@color/search_pill_bg</item>
+        <item name="boxStrokeColor">@android:color/transparent</item>
+        <item name="boxCornerRadiusTopStart">28dp</item>
+        <item name="boxCornerRadiusTopEnd">28dp</item>
+        <item name="boxCornerRadiusBottomStart">28dp</item>
+        <item name="boxCornerRadiusBottomEnd">28dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+
+        <!-- icon & hint/text -->
+        <item name="startIconTint">@color/search_icon_tint</item>
+        <item name="hintTextColor">@color/search_hint_tint</item>
+        <item name="android:textColor">@color/search_text_tint</item>
+    </style>
+
 </resources>

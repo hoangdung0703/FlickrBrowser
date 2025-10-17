@@ -2,10 +2,18 @@
     <!-- Tên ứng dụng -->
     <string name="app_name">FlickrBrowser</string>
 
+    <!-- Detail actions -->
+    <string name="cd_share">Share</string>
+    <string name="cd_download">Download</string>
+
     <!-- Search -->
     <string name="search_hint">Search photos</string>
     <string name="search_empty_message">Type a keyword and press Search</string>
     <string name="photo_content_desc">Photo item</string>
+
+    <!-- Empty state -->
+    <string name="empty_default">No data</string>
+    <string name="empty_icon_desc">No icon</string>
 
     <!-- Favorites screen -->
     <string name="favorites_title">Favorites</string>
@@ -17,4 +25,60 @@
     <!-- Search/Explore screen -->
     <string name="no_photos_found">No photos found</string>
     <string name="search_no_photos_text">No photos found</string>
+
+
+
+
+    <!-- Nav-->
+
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_about">About</string>
+
+    <string name="photo_detail_content_desc">Description for the detailed photo</string>
+    <string name="cd_info">Picture available\n</string>
+
+    <!-- Pagination / errors -->
+    <string name="load_more_failed">Failed to load more</string>
+
+    <!-- About screen -->
+
+    <string name="about_app_icon">App icon</string>
+    <string name="about_version">Version 1.0</string>
+    <string name="about_title">About this app</string>
+    <string name="about_subtitle">A simple Flickr photo browser.</string>
+    <string name="features_title">Features</string>
+    <string name="features_subtitle">Explore, search, and save favorites.</string>
+    <string name="favorite">favorite</string>
+    <string name="share">share</string>
+    <string name="download">download</string>
+    <string name="info">info</string>
+
+    <string name="search_failed">Search failed. Please try again.</string>
+    <string name="load_failed">Load failed. Please try again.</string>
+    <string name="no_connection">No internet connection. Please try again.</string>
+    <string name="no_photos_yet">Search photos\n</string>
+    <string name="nav_noti">Noti</string>
+    <string name="nav_search">Search</string>
+
+    <string name="about_version_format">Version %1$s</string>
+    <string name="about_welcome_format">Welcome, %1$s</string>
+    <string name="logout">Log out</string>
+    <string name="logged_out_success">Logged out successfully</string>
+    <string name="logged_out_failed">Log out failed</string>
+    <string name="about_welcome_guest">Welcome</string>
+    <string name="version_fmt">Version %1$s</string>
+    <string name="guest">Guest</string>
+    <string name="welcome_fmt">Welcome, %1$s</string>
+    <string name="logged_out">Logged out successfully.</string>
+    <string name="logout_failed">Logout failed. Please try again.</string>
+
+    <string name="error_email_required">Enter Email</string>
+    <string name="error_password_required">Enter Password</string>
+    <string name="error_fix_inputs">Please fix the highlighted fields</string>
+    <string name="login_success">Login Successful</string>
+    <string name="login_failed">Authentication Failed.</string>
 </resources>

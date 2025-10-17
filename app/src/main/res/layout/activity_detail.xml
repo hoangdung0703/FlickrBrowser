@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="#000000">
+
+    <!-- 1) ViewPager2: hiển thị/ vuốt qua các ảnh (full screen) -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- 2) Top bar: Back + bộ đếm ảnh (giống gallery) -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/gradient_top_scrim"
+            app:navigationIcon="@drawable/ic_back"
+            app:title=""
+            app:titleTextColor="@android:color/white">
+
+            <!-- Giữ tiêu đề/đếm ảnh nằm giữa như bản tham chiếu -->
+            <TextView
+                android:id="@+id/photoCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"/>
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- 3) Bottom Action Bar: giữ đúng ID các nút + tiêu đề/owner -->
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="@drawable/gradient_bottom_scrim"
+        android:padding="16dp">
+
+        <!-- Thông tin ảnh -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/photoTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Photo title"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="@android:color/white"/>
+
+            <TextView
+                android:id="@+id/photoOwner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="by Owner"
+                android:textSize="14sp"
+                android:textColor="#DDDDDD"/>
+        </LinearLayout>
+
+        <!-- Hàng nút hành động -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <!-- Favorite -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFavorite"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/outline_favorite_24"
+                app:iconTint="@android:color/white"
+                android:text="@string/favorite"
+                android:textColor="@android:color/white"
+                app:iconGravity="top" />
+
+            <!-- Share -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShare"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/ic_share"
+                app:iconTint="@android:color/white"
+                android:text="@string/share"
+                android:textColor="@android:color/white"
+                app:iconGravity="top" />
+
+            <!-- Download -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDownload"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/ic_download"
+                app:iconTint="@android:color/white"
+                android:text="@string/download"
+                android:textColor="@android:color/white"
+                app:iconGravity="top" />
+
+            <!-- Info -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnInfo"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:icon="@drawable/ic_info"
+                app:iconTint="@android:color/white"
+                android:text="@string/info"
+                android:textColor="@android:color/white"
+                app:iconGravity="top" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

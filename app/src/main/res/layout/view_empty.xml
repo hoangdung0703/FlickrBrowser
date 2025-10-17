@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/emptyRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xl"
+    android:background="@color/md_theme_background"
+    android:animateLayoutChanges="true">
+
+    <!-- Animated Icon Container -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/emptyIconCard"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginBottom="32dp"
+        app:cardCornerRadius="80dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/md_theme_primaryContainer">
+
+        <ImageView
+            android:id="@+id/emptyIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="40dp"
+            android:src="@drawable/ic_empty_state"
+            android:contentDescription="@string/empty_icon_desc"
+            app:tint="@color/md_theme_primary" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/emptyTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_photos_yet"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/md_theme_onBackground"
+        android:gravity="center"
+        android:letterSpacing="0.01" />
+
+    <!-- Subtitle -->
+
+</LinearLayout>
