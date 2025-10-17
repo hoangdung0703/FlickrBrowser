@@ -104,8 +104,8 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // Spacing
-        int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_m);
+        // Spacing - reduced for tighter grid
+        int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_xs);
         binding.rvPhotos.addItemDecoration(new GridSpacingDecoration(span, spacingPx, true));
 
         // Infinite scroll
@@ -125,6 +125,11 @@ public class SearchFragment extends Fragment {
         });
 
         // Pull-to-refresh: giữ list, không show shimmer full
+        binding.swipeRefresh.setColorSchemeResources(
+            R.color.md_theme_primary,
+            R.color.md_theme_secondary
+        );
+        binding.swipeRefresh.setProgressBackgroundColorSchemeResource(R.color.md_theme_surface);
         binding.swipeRefresh.setOnRefreshListener(() -> {
             String q = binding.edtQuery.getText() != null ? binding.edtQuery.getText().toString() : "";
             doSearch(q, true);

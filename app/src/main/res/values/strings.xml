@@ -81,4 +81,10 @@
     <string name="error_fix_inputs">Please fix the highlighted fields</string>
     <string name="login_success">Login Successful</string>
     <string name="login_failed">Authentication Failed.</string>
+
+    <!-- Empty state improvements -->
+    <string name="empty_subtitle">Try searching for something or explore trending photos</string>
+    <string name="explore_photos">Explore Photos</string>
+    <string name="retry">Retry</string>
+    <string name="error_loading_photos">Failed to load photos</string>
 </resources>

@@ -22,11 +22,31 @@ public class HomeViewModel extends ViewModel {
     private static final int PER_PAGE = 10;
     private boolean isLoading = false;
     private boolean endReached = false;
+    
+    // Save scroll position
+    private int scrollPosition = 0;
+    private int scrollOffset = 0;
+    
+    public void saveScrollPosition(int position, int offset) {
+        this.scrollPosition = position;
+        this.scrollOffset = offset;
+    }
+    
+    public int getScrollPosition() {
+        return scrollPosition;
+    }
+    
+    public int getScrollOffset() {
+        return scrollOffset;
+    }
 
     public HomeViewModel() {
         // Chỉ tải dữ liệu lần đầu tiên khi ViewModel được tạo và danh sách trống
         if (photoList.isEmpty()) {
             loadPhotos(false);
+        } else {
+            // Nếu đã có data, emit lại để fragment hiển thị và restore scroll
+            _photosState.setValue(new PhotoState.Success(new ArrayList<>(photoList)));
         }
     }
 

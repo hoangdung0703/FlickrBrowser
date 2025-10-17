@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import vn.edu.usth.flickrbrowser.BuildConfig;
 import vn.edu.usth.flickrbrowser.R;
+import vn.edu.usth.flickrbrowser.core.util.ThemeUtil;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class AboutFragment extends Fragment {
 
@@ -44,6 +46,13 @@ public class AboutFragment extends Fragment {
                 : getString(R.string.guest);
         TextView tvWelcome = v.findViewById(R.id.tvWelcome);
         tvWelcome.setText(getString(R.string.welcome_fmt, email));
+
+        // Dark Mode Switch
+        SwitchMaterial switchDarkMode = v.findViewById(R.id.switchDarkMode);
+        switchDarkMode.setChecked(ThemeUtil.isDarkMode(requireContext()));
+        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            ThemeUtil.setDarkMode(requireContext(), isChecked);
+        });
 
         // Logout
         v.findViewById(R.id.btnLogout).setOnClickListener(btn -> {

@@ -22,8 +22,12 @@
                 android:id="@+id/rvFavorites"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/spacing_m"
+                android:paddingStart="@dimen/spacing_xs"
+                android:paddingEnd="@dimen/spacing_xs"
+                android:paddingTop="@dimen/spacing_s"
+                android:paddingBottom="@dimen/spacing_xl"
                 android:clipToPadding="false"
+                android:layoutAnimation="@anim/layout_animation_fall_down"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
                 tools:listitem="@layout/item_favorite" />

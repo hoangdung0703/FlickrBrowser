@@ -91,7 +91,12 @@ public class ExploreFragment extends Fragment {
             }
         });
 
-        // Pull-to-refresh
+        // Pull-to-refresh with theming
+        swipe.setColorSchemeResources(
+            R.color.md_theme_primary,
+            R.color.md_theme_secondary
+        );
+        swipe.setProgressBackgroundColorSchemeResource(R.color.md_theme_surface);
         swipe.setOnRefreshListener(this::refresh);
 
         // Endless scroll (tiệm cận đáy)

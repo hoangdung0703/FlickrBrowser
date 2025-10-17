@@ -5,9 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="0dp">
+    android:layout_marginBottom="@dimen/spacing_m"
+    app:cardElevation="@dimen/elev_s"
+    app:cardCornerRadius="@dimen/radius_m"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeWidth="0dp"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -72,52 +75,89 @@
             tools:text="Honoring Hispanic Heritage Month"/>
 
         <!-- Hàng nút tương tác (Tim, Bình luận, Chia sẻ) -->
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:paddingBottom="8dp">
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:gravity="center_vertical">
 
-            <!-- Nút Favorite (Tim) -->
+            <!-- Nút Favorite (Tim) - bên trái -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFavorite"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:minWidth="0dp"
+                android:minHeight="48dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 app:icon="@drawable/outline_favorite_24"
                 app:iconTint="?attr/colorOnSurfaceVariant"
+                app:iconSize="20dp"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
                 tools:text="295"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"/>
 
-            <!-- Nút Comment (chưa làm chức năng, chỉ để hiển thị) -->
+            <!-- Spacer trái -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
-            <!-- Nút Share (Chia sẻ) ở góc phải -->
-
+            <!-- Nút Comment - ở giữa -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnComment"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="87dp"
-                android:layout_toEndOf="@id/btnFavorite"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:minWidth="0dp"
+                android:minHeight="48dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 app:icon="@drawable/ic_comment"
                 app:iconTint="?attr/colorOnSurfaceVariant"
+                app:iconSize="20dp"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                android:textSize="14sp"
                 tools:text="13" />
 
+            <!-- Spacer phải -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Nút Share - bên phải -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnShare"
                 style="@style/Widget.Material3.Button.TextButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="-36dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:padding="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
                 app:icon="@drawable/ic_share"
-                app:iconTint="?attr/colorOnSurfaceVariant" />
+                app:iconTint="?attr/colorOnSurfaceVariant"
+                app:iconSize="20dp"
+                app:iconGravity="start"
+                app:iconPadding="0dp" />
 
-        </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
 
