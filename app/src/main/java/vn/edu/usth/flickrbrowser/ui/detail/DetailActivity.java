@@ -91,13 +91,13 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         } catch (Exception e) {
-            Toast.makeText(this, "Dữ liệu không hợp lệ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Invalid Data", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
         if (photos == null || photos.isEmpty()) {
-            Toast.makeText(this, "Không có ảnh để hiển thị", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No photos to display", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -130,7 +130,7 @@ public class DetailActivity extends AppCompatActivity {
             PhotoItem cur = getCurrent();
             try {
                 if (cur == null || cur.getFullUrl() == null || cur.getFullUrl().isEmpty()) {
-                    Toast.makeText(this, "Không có URL để chia sẻ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "No URL to share", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Intent share = new Intent(Intent.ACTION_SEND);
@@ -138,7 +138,7 @@ public class DetailActivity extends AppCompatActivity {
                 share.setType("text/plain");
                 startActivity(Intent.createChooser(share, "Share via"));
             } catch (Exception e) {
-                Toast.makeText(this, "Không thể chia sẻ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cannot be shared", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -161,10 +161,10 @@ public class DetailActivity extends AppCompatActivity {
     private void handleDownload() {
         try {
             PhotoItem p = getCurrent();
-            if (p == null) { Toast.makeText(this, "Không có ảnh để tải", Toast.LENGTH_SHORT).show(); return; }
+            if (p == null) { Toast.makeText(this, "No images to load", Toast.LENGTH_SHORT).show(); return; }
 
             String url = p.getFullUrl();
-            if (url == null || url.isEmpty()) { Toast.makeText(this, "URL ảnh không hợp lệ", Toast.LENGTH_SHORT).show(); return; }
+            if (url == null || url.isEmpty()) { Toast.makeText(this, "Invalid image URL", Toast.LENGTH_SHORT).show(); return; }
 
             DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             Uri uri = Uri.parse(url);
@@ -179,10 +179,10 @@ public class DetailActivity extends AppCompatActivity {
 
             dm.enqueue(req);
             HapticUtil.success(btnDownload);
-            Toast.makeText(this, "Đang tải xuống…", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Tải xuống thất bại", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Download failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -190,7 +190,7 @@ public class DetailActivity extends AppCompatActivity {
     private void showInfoSheet() {
         try {
             PhotoItem p = getCurrent();
-            if (p == null) { Toast.makeText(this, "Không có dữ liệu ảnh", Toast.LENGTH_SHORT).show(); return; }
+            if (p == null) { Toast.makeText(this, "No image data available", Toast.LENGTH_SHORT).show(); return; }
 
             String title = (p.title == null) ? "" : p.title;
             String owner = (p.owner == null) ? "" : p.owner;
@@ -210,7 +210,7 @@ public class DetailActivity extends AppCompatActivity {
                         if (pageUrl != null && !pageUrl.isEmpty()) {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(pageUrl)));
                         } else {
-                            Toast.makeText(this, "Không có URL hợp lệ", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .setNeutralButton("Chia sẻ", (d, i) -> {
@@ -224,7 +224,7 @@ public class DetailActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Lỗi hiển thị thông tin ảnh", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Image information display error", Toast.LENGTH_SHORT).show();
         }
     }
 
