@@ -1,3 +1,4 @@
+// placeholder
 package vn.edu.usth.flickrbrowser.ui.search;
 
 import android.app.Activity;
