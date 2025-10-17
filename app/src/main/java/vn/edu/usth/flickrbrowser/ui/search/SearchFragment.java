@@ -104,9 +104,6 @@ public class SearchFragment extends Fragment {
             }
         });
 
-        // Spacing
-        int spacingPx = getResources().getDimensionPixelSize(R.dimen.spacing_m);
-        binding.rvPhotos.addItemDecoration(new GridSpacingDecoration(span, spacingPx, true));
 
         // Infinite scroll
         final int visibleThreshold = 6;
