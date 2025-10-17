@@ -1,6 +1,8 @@
 package vn.edu.usth.flickrbrowser;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -32,6 +34,17 @@ public class MainActivity extends AppCompatActivity {
             // Kết nối thanh điều hướng dưới cùng với NavController
             // Tự động xử lý việc chuyển fragment khi bấm nút
             NavigationUI.setupWithNavController(bottomNavView, navController);
+
+            // Detect khi tap lại nút đang active → scroll to top + refresh
+            bottomNavView.setOnItemReselectedListener(item -> {
+                Log.d("MainActivity", "Item reselected: " + item.getItemId());
+                if (item.getItemId() == R.id.navigation_home_new) {
+                    Log.d("MainActivity", "Sending HOME_RESELECTED broadcast");
+                    Intent intent = new Intent("ACTION_HOME_RESELECTED");
+                    intent.setPackage(getPackageName());
+                    sendBroadcast(intent);
+                }
+            });
 
             // Thêm một listener để theo dõi màn hình nào đang hiển thị
             navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
