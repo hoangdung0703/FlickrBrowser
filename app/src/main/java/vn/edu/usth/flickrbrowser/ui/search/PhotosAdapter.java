@@ -47,6 +47,11 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             notifyItemInserted(data.size() - 1);
         }
     }
+    
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
 
     public void removeLoadingFooter() {
         if (isLoading && data.size() > 0) {
@@ -82,6 +87,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         // Tạo view tùy theo loại
         if (viewType == TYPE_PHOTO) {
             View v = LayoutInflater.from(parent.getContext())
+
                     .inflate(R.layout.item_photo, parent, false);
             return new VH(v);
         } else {
@@ -100,7 +106,6 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 .placeholder(R.drawable.bg_skeleton_rounded)
                 .centerCrop()
                 .into(h.img);
-
         if (onItemClick != null) {
             h.itemView.setOnClickListener(v -> {
                 int p = h.getBindingAdapterPosition();
@@ -110,9 +115,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             });
         }
     }
-
-    @Override public int getItemCount() { return data.size(); }
-
+    
     static class VH extends RecyclerView.ViewHolder {
         ImageView img;
         VH(@NonNull View itemView) {

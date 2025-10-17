@@ -5,31 +5,23 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_background">
-
-    <!-- Sử dụng padding ở root thay vì từng view -->
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/md_theme_background"
-        android:paddingStart="@dimen/spacing_l"
-        android:paddingEnd="@dimen/spacing_l">
+    android:background="@color/md_theme_background"
+    android:paddingStart="@dimen/spacing_l"
+    android:paddingEnd="@dimen/spacing_l">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilSearch"
             style="@style/Widget.Flickr.SearchPill"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginTop="@dimen/spacing_m"
+            android:elevation="@dimen/elev_s"
             app:hintEnabled="false"
             app:startIconDrawable="@android:drawable/ic_menu_search"
             app:endIconMode="clear_text"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
-        app:boxStrokeColor="@android:color/transparent">
+            app:boxStrokeColor="@android:color/transparent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtQuery"
@@ -86,7 +78,10 @@
                     android:id="@+id/rvPhotos"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:clipToPadding="false" />
+                    android:clipToPadding="false"
+                    android:paddingTop="@dimen/spacing_s"
+                    android:paddingBottom="@dimen/spacing_xl"
+                    android:layoutAnimation="@anim/layout_animation_fall_down" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
             <!-- Shimmer overlay -->
@@ -105,6 +100,5 @@
                 android:layout_height="match_parent"
                 android:visibility="gone" />
         </FrameLayout>
-    </LinearLayout>
 </LinearLayout>
 

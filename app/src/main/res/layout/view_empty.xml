@@ -43,5 +43,27 @@
         android:letterSpacing="0.01" />
 
     <!-- Subtitle -->
+    <TextView
+        android:id="@+id/emptySubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:text="@string/empty_subtitle"
+        android:textSize="14sp"
+        android:textColor="@color/md_text_secondary"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp" />
+
+    <!-- CTA Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/emptyActionButton"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xl"
+        android:text="@string/explore_photos"
+        android:paddingStart="@dimen/spacing_xl"
+        android:paddingEnd="@dimen/spacing_xl"
+        android:visibility="gone" />
 
 </LinearLayout>

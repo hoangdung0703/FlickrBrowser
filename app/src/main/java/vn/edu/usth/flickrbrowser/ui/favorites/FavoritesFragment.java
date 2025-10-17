@@ -162,7 +162,12 @@ public class FavoritesFragment extends Fragment {
         );
         rv.setAdapter(adapter);
 
-        // Pull-to-refresh: reload từ ViewModel storage
+        // Pull-to-refresh: reload từ ViewModel storage với theming
+        swipe.setColorSchemeResources(
+            R.color.md_theme_primary,
+            R.color.md_theme_secondary
+        );
+        swipe.setProgressBackgroundColorSchemeResource(R.color.md_theme_surface);
         swipe.setOnRefreshListener(() -> {
             try {
                 vm.refresh();
