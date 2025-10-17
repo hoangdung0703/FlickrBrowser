@@ -339,7 +339,7 @@ public class DetailActivity extends AppCompatActivity {
             ));
             android.widget.ImageView iv = new android.widget.ImageView(parent.getContext());
             iv.setAdjustViewBounds(true);
-            iv.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+            iv.setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
             root.addView(iv, new android.widget.FrameLayout.LayoutParams(
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT
